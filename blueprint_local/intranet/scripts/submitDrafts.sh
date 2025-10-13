@@ -1,23 +1,25 @@
 #!/bin/bash
-# Ce script reçoit le JSON envoyé par fetch() et le sauvegarde dans /intranet/projects/drafts/
+# This script receives JSON data from a fetch() request and saves it as a draft
+# project file in the `/intranet/projects/drafts/` directory.
 
-# Chemin absolu vers le dossier de brouillons
+# The absolute path to the drafts directory.
 DRAFT_DIR="$(dirname "$0")/../projects/drafts"
 
-# Lecture du flux JSON envoyé par fetch
+# Read the JSON stream sent by the fetch() request from standard input.
 read -r body
 
-# Extraction du titre depuis le JSON (simple mais efficace)
+# Extract the title from the JSON to use as the filename.
+# This replaces spaces with underscores to create a valid filename.
 TITLE=$(echo "$body" | grep -oP '(?<="titre":")[^"]+')
 FILENAME="${TITLE// /_}.json"
 
-# Création du dossier s’il n’existe pas
+# Create the drafts directory if it doesn't already exist.
 mkdir -p "$DRAFT_DIR"
 
-# Écriture du contenu
+# Write the received JSON data to the new draft file.
 echo "$body" > "$DRAFT_DIR/$FILENAME"
 
-# En-tête HTTP
+# Output a success message.
 echo "Content-Type: text/plain"
 echo ""
 echo "Brouillon enregistré sous $DRAFT_DIR/$FILENAME"

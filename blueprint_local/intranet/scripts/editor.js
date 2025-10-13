@@ -11,7 +11,12 @@ tinymce.init({
   }
 });
 
-/// Sauvegarde un brouillon dans localStorage
+/**
+ * Saves the current state of the editor as a draft in localStorage.
+ * It constructs a data object with the project title and content from the
+ * TinyMCE editors. If the title is missing, it alerts the user.
+ * Otherwise, it saves the draft and updates the draft list.
+ */
 function saveDraft() {
   const data = {
     titre: document.getElementById('titre').value,
@@ -32,18 +37,27 @@ function saveDraft() {
   updateDraftList();
 }
 
-// Ouvre la fenêtre de gestion des brouillons
+/**
+ * Opens the draft management modal window.
+ * It first updates the list of drafts and then makes the modal visible.
+ */
 function showDrafts() {
   updateDraftList();
   document.getElementById('draftModal').classList.add('is-active');
 }
 
-// Ferme la fenêtre
+/**
+ * Closes the draft management modal window.
+ */
 function closeModal() {
   document.getElementById('draftModal').classList.remove('is-active');
 }
 
-// Met à jour la liste des brouillons dans la modale
+/**
+ * Updates the list of drafts displayed in the modal.
+ * It retrieves all draft keys from localStorage, clears the current list,
+ * and then repopulates it with the latest draft information.
+ */
 function updateDraftList() {
   const container = document.getElementById('draftList');
   const drafts = Object.keys(localStorage).filter(k => k.startsWith("draft_"));
@@ -71,7 +85,10 @@ function updateDraftList() {
   });
 }
 
-// Charge un brouillon dans l’éditeur
+/**
+ * Loads a selected draft into the editor.
+ * @param {string} key The localStorage key for the draft to load.
+ */
 function loadDraft(key) {
   const data = JSON.parse(localStorage.getItem(key));
   document.getElementById('titre').value = data.titre;
@@ -84,7 +101,10 @@ function loadDraft(key) {
   alert(`📖 Brouillon "${data.titre}" chargé.`);
 }
 
-// Supprime un brouillon
+/**
+ * Deletes a draft from localStorage.
+ * @param {string} key The localStorage key for the draft to delete.
+ */
 function deleteDraft(key) {
   if (confirm("Supprimer ce brouillon ?")) {
     localStorage.removeItem(key);
@@ -92,6 +112,12 @@ function deleteDraft(key) {
   }
 }
 
+/**
+ * Submits the current project for review.
+ * It gathers the data from the form, sends it to the `submitDraft.sh`
+ * script on the server, and handles the response.
+ * @returns {Promise<void>} A promise that resolves when the submission is complete.
+ */
 async function submitForReview() {
   const titre = document.getElementById('titre').value.trim();
   if (!titre) {

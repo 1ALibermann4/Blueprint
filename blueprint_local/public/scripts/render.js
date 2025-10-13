@@ -1,11 +1,21 @@
-// Fonction utilitaire : extrait les fichiers JSON listés par le serveur
+/**
+ * Fetches a directory listing and extracts all `.json` file names.
+ * This function is a utility to get a list of project files from the server.
+ * @param {string} path The path to the directory to fetch.
+ * @returns {Promise<string[]>} A promise that resolves to an array of JSON file names.
+ */
 async function listJSONFiles(path) {
   const res = await fetch(path);
   const text = await res.text();
   return [...text.matchAll(/href="([^"]+\.json)"/g)].map(m => m[1]);
 }
 
-// --- Page principale : affichage de la liste des projets ---
+/**
+ * Renders the list of published projects on the main page.
+ * It fetches project data for each published project and creates a summary
+ * card, which is then appended to the projects container.
+ * @returns {Promise<void>} A promise that resolves when the rendering is complete.
+ */
 async function renderIndex() {
   const container = document.getElementById('projectsContainer');
   if (!container) return; // si on est sur project.html
@@ -31,7 +41,12 @@ async function renderIndex() {
   }
 }
 
-// --- Page de détail : affichage d’un projet complet ---
+/**
+ * Renders the full details of a single project on the project page.
+ * It retrieves the project file name from the URL parameters, fetches the
+ * corresponding JSON data, and populates the project content section.
+ * @returns {Promise<void>} A promise that resolves when the project is rendered.
+ */
 async function renderProject() {
   const container = document.getElementById('projectContent');
   if (!container) return; // si on est sur index.html
