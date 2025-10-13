@@ -1,14 +1,7 @@
-// Initialisation TinyMCE (version locale)
-tinymce.init({
-  selector: 'textarea',
-  plugins: 'lists link image table code',
-  toolbar: 'undo redo | bold italic underline | bullist numlist | alignleft aligncenter alignright | link image | code',
-  height: 180,
-  menubar: false,
-  branding: false,
-  setup: (editor) => {
-    editor.on('change keyup paste input', () => updatePreview());
-  }
+const notyf = new Notyf({
+  duration: 3000,
+  position: { x: 'right', y: 'top' },
+  dismissible: true
 });
 
 /**
@@ -28,12 +21,12 @@ function saveDraft() {
   };
 
   if (!data.titre) {
-    alert("⚠️ Merci de saisir un titre pour le projet.");
+    notyf.error("Merci de saisir un titre pour le projet.");
     return;
   }
 
   localStorage.setItem(`draft_${data.titre}`, JSON.stringify(data));
-  alert(`✅ Brouillon "${data.titre}" enregistré !`);
+  notyf.success(`Brouillon "${data.titre}" enregistré !`);
   updateDraftList();
 }
 
@@ -98,7 +91,7 @@ function loadDraft(key) {
   tinymce.get('ressenti').setContent(data.ressenti || "");
   updatePreview();
   closeModal();
-  alert(`📖 Brouillon "${data.titre}" chargé.`);
+  notyf.success(`Brouillon "${data.titre}" chargé.`);
 }
 
 /**
@@ -121,7 +114,7 @@ function deleteDraft(key) {
 async function submitForReview() {
   const titre = document.getElementById('titre').value.trim();
   if (!titre) {
-    alert("⚠️ Merci de saisir un titre avant de soumettre le projet.");
+    notyf.error("Merci de saisir un titre avant de soumettre le projet.");
     return;
   }
 
@@ -135,16 +128,17 @@ async function submitForReview() {
   };
 
   // Envoi du brouillon au serveur pour copie dans /drafts/
-  const response = await fetch('../scripts/submitDraft.sh', {
+  const response = await fetch('/api/drafts', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
 
   if (response.ok) {
-    const res = await response.text();
-    alert(`✅ Projet "${titre}" soumis pour relecture !\n${res}`);
+    const res = await response.json();
+    notyf.success(`Projet "${titre}" soumis pour relecture !`);
+    // Optionally, clear the form or redirect
   } else {
-    alert("❌ Erreur : impossible de soumettre le projet. Vérifie les permissions.");
+    notyf.error("Erreur : impossible de soumettre le projet.");
   }
 }

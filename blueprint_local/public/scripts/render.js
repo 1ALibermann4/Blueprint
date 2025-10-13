@@ -4,10 +4,9 @@
  * @param {string} path The path to the directory to fetch.
  * @returns {Promise<string[]>} A promise that resolves to an array of JSON file names.
  */
-async function listJSONFiles(path) {
-  const res = await fetch(path);
-  const text = await res.text();
-  return [...text.matchAll(/href="([^"]+\.json)"/g)].map(m => m[1]);
+async function listJSONFiles() {
+  const res = await fetch('/api/projects/published');
+  return res.json();
 }
 
 /**
@@ -20,7 +19,7 @@ async function renderIndex() {
   const container = document.getElementById('projectsContainer');
   if (!container) return; // si on est sur project.html
 
-  const files = await listJSONFiles('./projects/published/');
+  const files = await listJSONFiles();
   if (files.length === 0) {
     container.innerHTML = "<p>Aucun projet publié pour le moment.</p>";
     return;
