@@ -1,0 +1,29 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "BluePrint is a lightweight, file-based project management tool designed to streamline the process of creating, reviewing, and publishing project reports. It provides a simple yet effective workflow for teams to document their work and share it with a wider audience.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1ALibermann4/Blueprint.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/1ALibermann4/Blueprint/issues"
+  },
+  "homepage": "https://github.com/1ALibermann4/Blueprint#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "multer": "^2.0.2",
+    "notyf": "^3.10.0",
+    "openid-client": "^6.8.1"
+  }
+}
