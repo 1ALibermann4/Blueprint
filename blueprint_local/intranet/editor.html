@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Éditeur BluePrint</title>
+  <link rel="stylesheet" href="../styles/style.css">
+  <script src="./tinymce/tinymce.min.js"></script>
+</head>
+<body>
+  <div class="container-split">
+
+    <!-- Zone d'édition -->
+    <div class="editor-pane">
+      <h1 class="title">Création de projet</h1>
+      <div class="field">
+        <label class="label">Titre du projet</label>
+        <input id="titre" class="input" placeholder="Titre du projet">
+      </div>
+
+      <div class="field">
+        <label class="label">Contexte</label>
+        <textarea id="context"></textarea>
+      </div>
+
+      <div class="field">
+        <label class="label">Objectifs</label>
+        <textarea id="objectifs"></textarea>
+      </div>
+
+      <div class="field">
+        <label class="label">Résultats</label>
+        <textarea id="resultats"></textarea>
+      </div>
+
+      <div class="field">
+        <label class="label">Ressenti de l’équipe</label>
+        <textarea id="ressenti"></textarea>
+      </div>
+
+      <div class="buttons">
+        <button class="button is-primary" onclick="saveDraft()">💾 Enregistrer</button>
+        <button class="button is-link" onclick="showDrafts()">📂 Brouillons</button>
+        <button class="button is-success" onclick="submitForReview()">📤 Soumettre pour relecture</button>
+      </div>
+
+    <!-- Zone de prévisualisation -->
+    <div class="preview-pane" id="preview">
+      <h2 class="title is-3 has-text-grey">Prévisualisation du projet</h2>
+      <p>Le contenu s’affichera ici en direct…</p>
+    </div>
+  </div>
+
+  <!-- Fenêtre modale de gestion des brouillons -->
+  <div class="modal" id="draftModal">
+    <div class="modal-background" onclick="closeModal()"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">📚 Mes brouillons</p>
+        <button class="delete" aria-label="close" onclick="closeModal()"></button>
+      </header>
+      <section class="modal-card-body" id="draftList">
+        <!-- Liste dynamique ici -->
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button" onclick="closeModal()">Fermer</button>
+      </footer>
+    </div>
+  </div>
+
+  <script src="./scripts/editor.js"></script>
+  <script src="./scripts/preview.js"></script>
+</body>
+</html>

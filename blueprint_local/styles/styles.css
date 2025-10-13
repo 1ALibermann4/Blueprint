@@ -1,0 +1,36 @@
+@import url('https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css');
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+.container-split {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100%;
+}
+
+.editor-pane, .preview-pane {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.editor-pane {
+  background: #ffffff;
+  border-right: 2px solid #e5e5e5;
+}
+
+.preview-pane {
+  background: #fafafa;
+}
+
+.preview-pane h2 {
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}

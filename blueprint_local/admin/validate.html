@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Validation des projets - BluePrint</title>
+  <link rel="stylesheet" href="../styles/style.css">
+</head>
+<body>
+  <section class="section">
+    <h1 class="title">📋 Relecture et validation des projets</h1>
+    <p>Liste des projets soumis pour relecture :</p>
+    <div id="projectList" class="mt-4"></div>
+
+    <div id="projectView" class="mt-6 box" style="display:none;">
+      <h2 class="title is-4" id="projTitle"></h2>
+      <div id="projContent"></div>
+      <div class="buttons mt-4">
+        <button class="button is-success" id="publishBtn">✅ Publier</button>
+        <button class="button is-light" onclick="closeView()">Fermer</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="./scripts/validate.js"></script>
+</body>
+</html>
