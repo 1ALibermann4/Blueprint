@@ -2,8 +2,8 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs').promises;
 const session = require('express-session');
-const { Issuer } = require('openid-client');
-const openidConfig = require('./openid-config');
+// const { Issuer } = require('openid-client');
+// const openidConfig = require('./openid-config');
 
 const app = express();
 const port = 3000;
@@ -20,11 +20,11 @@ app.use(session({
 
 // Middleware to protect routes
 const checkAuth = (req, res, next) => {
-  if (req.session.user) {
+  // if (req.session.user) {
     next();
-  } else {
-    res.redirect('/login');
-  }
+  // } else {
+  //   res.redirect('/login');
+  // }
 };
 
 // Serve static files from the 'blueprint_local' directory
@@ -138,77 +138,77 @@ app.post('/api/upload', checkAuth, upload.single('file'), (req, res) => {
 });
 
 
-app.get('/login', (req, res) => {
-  const { nonce, state } = Issuer.generate();
-  req.session.nonce = nonce;
-  req.session.state = state;
+// app.get('/login', (req, res) => {
+//   const { nonce, state } = Issuer.generate();
+//   req.session.nonce = nonce;
+//   req.session.state = state;
 
-  const authUrl = client.authorizationUrl({
-    scope: openidConfig.scope,
-    response_mode: 'form_post',
-    nonce,
-    state,
-  });
-  res.redirect(authUrl);
-});
+//   const authUrl = client.authorizationUrl({
+//     scope: openidConfig.scope,
+//     response_mode: 'form_post',
+//     nonce,
+//     state,
+//   });
+//   res.redirect(authUrl);
+// });
 
-app.post('/auth/callback', async (req, res) => {
-  try {
-    const params = client.callbackParams(req);
-    const { nonce, state } = req.session;
-    delete req.session.nonce;
-    delete req.session.state;
+// app.post('/auth/callback', async (req, res) => {
+//   try {
+//     const params = client.callbackParams(req);
+//     const { nonce, state } = req.session;
+//     delete req.session.nonce;
+//     delete req.session.state;
 
-    const tokenSet = await client.callback(openidConfig.redirect_uri, params, { nonce, state });
-    const claims = tokenSet.claims();
+//     const tokenSet = await client.callback(openidConfig.redirect_uri, params, { nonce, state });
+//     const claims = tokenSet.claims();
 
-    req.session.user = {
-      id: claims.sub,
-      name: claims.name,
-      email: claims.email,
-    };
-    req.session.id_token = tokenSet.id_token;
+//     req.session.user = {
+//       id: claims.sub,
+//       name: claims.name,
+//       email: claims.email,
+//     };
+//     req.session.id_token = tokenSet.id_token;
 
-    res.redirect('/intranet/editor.html');
-  } catch (err) {
-    console.error('Callback error:', err);
-    res.status(400).send('Authentication failed');
-  }
-});
+//     res.redirect('/intranet/editor.html');
+//   } catch (err) {
+//     console.error('Callback error:', err);
+//     res.status(400).send('Authentication failed');
+//   }
+// });
 
-app.get('/logout', (req, res) => {
-  const id_token = req.session.id_token;
-  delete req.session.id_token;
-  req.session.destroy(err => {
-    if (err) console.error('Failed to destroy session:', err);
-    const endSessionUrl = client.endSessionUrl({
-      id_token_hint: id_token,
-      post_logout_redirect_uri: 'http://localhost:3000', // Redirect after logout
-    });
-    res.redirect(endSessionUrl);
-  });
-});
+// app.get('/logout', (req, res) => {
+//   const id_token = req.session.id_token;
+//   delete req.session.id_token;
+//   req.session.destroy(err => {
+//     if (err) console.error('Failed to destroy session:', err);
+//     const endSessionUrl = client.endSessionUrl({
+//       id_token_hint: id_token,
+//       post_logout_redirect_uri: 'http://localhost:3000', // Redirect after logout
+//     });
+//     res.redirect(endSessionUrl);
+//   });
+// });
 
 // A simple test route to confirm the server is running.
 app.get('/api/status', (req, res) => {
   res.json({ status: 'ok', message: 'Welcome to the BluePrint API' });
 });
 
-let client;
-Issuer.discover(openidConfig.issuer)
-  .then(issuer => {
-    client = new issuer.Client({
-      client_id: openidConfig.client_id,
-      client_secret: openidConfig.client_secret,
-      redirect_uris: [openidConfig.redirect_uri],
-      response_types: ['code'],
-    });
-    console.log('OpenID client discovered and configured.');
-  })
-  .catch(err => {
-    console.error('Failed to discover OpenID issuer:', err);
-    process.exit(1);
-  });
+// let client;
+// Issuer.discover(openidConfig.issuer)
+//   .then(issuer => {
+//     client = new issuer.Client({
+//       client_id: openidConfig.client_id,
+//       client_secret: openidConfig.client_secret,
+//       redirect_uris: [openidConfig.redirect_uri],
+//       response_types: ['code'],
+//     });
+//     console.log('OpenID client discovered and configured.');
+//   })
+//   .catch(err => {
+//     console.error('Failed to discover OpenID issuer:', err);
+//     process.exit(1);
+//   });
 
 // Start the server and log a message to the console.
 app.listen(port, () => {
