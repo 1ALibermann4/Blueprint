@@ -2,8 +2,10 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs').promises;
 const session = require('express-session');
-const { Issuer } = require('openid-client');
-const openidConfig = require('./openid-config');
+const matter = require('gray-matter');
+const MarkdownIt = require('markdown-it');
+// const { Issuer } = require('openid-client');
+// const openidConfig = require('./openid-config');
 
 const app = express();
 const port = 3000;
@@ -20,11 +22,11 @@ app.use(session({
 
 // Middleware to protect routes
 const checkAuth = (req, res, next) => {
-  if (req.session.user) {
+  // if (req.session.user) {
     next();
-  } else {
-    res.redirect('/login');
-  }
+  // } else {
+  //   res.redirect('/login');
+  // }
 };
 
 // Serve static files from the 'blueprint_local' directory
@@ -37,11 +39,11 @@ app.use('/admin', checkAuth);
 const DRAFTS_DIR = path.join(__dirname, 'blueprint_local', 'intranet', 'projects', 'drafts');
 const PUBLISHED_DIR = path.join(__dirname, 'blueprint_local', 'public', 'projects', 'published');
 
-// Helper function to list JSON files in a directory
+// Helper function to list Markdown files in a directory
 const listProjects = async (dir) => {
   try {
     const files = await fs.readdir(dir);
-    return files.filter(file => file.endsWith('.json'));
+    return files.filter(file => file.endsWith('.md'));
   } catch (error) {
     // If the directory doesn't exist, return an empty array.
     if (error.code === 'ENOENT') {
@@ -73,23 +75,53 @@ app.get('/api/projects/published', async (req, res) => {
   }
 });
 
-// API route to create a new draft project
+// API route to get a single project's content
+app.get('/api/project', async (req, res) => {
+  const { file, type } = req.query;
+  if (!file || !type) {
+    return res.status(400).json({ error: 'File and type are required' });
+  }
+
+  const dir = type === 'draft' ? DRAFTS_DIR : PUBLISHED_DIR;
+  const filePath = path.join(dir, file);
+
+  try {
+    const fileContent = await fs.readFile(filePath, 'utf8');
+    const { data, content } = matter(fileContent);
+    const md = new MarkdownIt();
+    const htmlContent = md.render(content);
+
+    // Send the parsed front matter and the HTML content back
+    res.json({ frontMatter: data, content: content, htmlContent: htmlContent });
+  } catch (error) {
+    console.error('Error reading project file:', error);
+    res.status(500).json({ error: 'Failed to read project file' });
+  }
+});
+
+// API route to create or update a draft project
 app.post('/api/drafts', checkAuth, async (req, res) => {
   try {
-    const { titre, ...content } = req.body;
-    if (!titre) {
-      return res.status(400).json({ error: 'Title is required' });
+    const { frontMatter, content } = req.body;
+
+    if (!frontMatter || !frontMatter.titre) {
+      return res.status(400).json({ error: 'Title is required in front matter' });
     }
+
     // Sanitize the title to create a safe filename.
-    const fileName = `${titre.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
+    const fileName = `${frontMatter.titre.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
     const filePath = path.join(DRAFTS_DIR, fileName);
 
+    // Use gray-matter to format the content with front matter
+    const fileContent = matter.stringify(content || '', frontMatter);
+
     await fs.mkdir(DRAFTS_DIR, { recursive: true });
-    await fs.writeFile(filePath, JSON.stringify(req.body, null, 2));
-    res.status(201).json({ message: 'Draft created successfully', file: fileName });
+    await fs.writeFile(filePath, fileContent);
+
+    res.status(201).json({ message: 'Draft saved successfully', file: fileName });
   } catch (error) {
-    console.error('Error creating draft:', error);
-    res.status(500).json({ error: 'Failed to create draft' });
+    console.error('Error saving draft:', error);
+    res.status(500).json({ error: 'Failed to save draft' });
   }
 });
 
@@ -138,77 +170,77 @@ app.post('/api/upload', checkAuth, upload.single('file'), (req, res) => {
 });
 
 
-app.get('/login', (req, res) => {
-  const { nonce, state } = Issuer.generate();
-  req.session.nonce = nonce;
-  req.session.state = state;
+// app.get('/login', (req, res) => {
+//   const { nonce, state } = Issuer.generate();
+//   req.session.nonce = nonce;
+//   req.session.state = state;
 
-  const authUrl = client.authorizationUrl({
-    scope: openidConfig.scope,
-    response_mode: 'form_post',
-    nonce,
-    state,
-  });
-  res.redirect(authUrl);
-});
+//   const authUrl = client.authorizationUrl({
+//     scope: openidConfig.scope,
+//     response_mode: 'form_post',
+//     nonce,
+//     state,
+//   });
+//   res.redirect(authUrl);
+// });
 
-app.post('/auth/callback', async (req, res) => {
-  try {
-    const params = client.callbackParams(req);
-    const { nonce, state } = req.session;
-    delete req.session.nonce;
-    delete req.session.state;
+// app.post('/auth/callback', async (req, res) => {
+//   try {
+//     const params = client.callbackParams(req);
+//     const { nonce, state } = req.session;
+//     delete req.session.nonce;
+//     delete req.session.state;
 
-    const tokenSet = await client.callback(openidConfig.redirect_uri, params, { nonce, state });
-    const claims = tokenSet.claims();
+//     const tokenSet = await client.callback(openidConfig.redirect_uri, params, { nonce, state });
+//     const claims = tokenSet.claims();
 
-    req.session.user = {
-      id: claims.sub,
-      name: claims.name,
-      email: claims.email,
-    };
-    req.session.id_token = tokenSet.id_token;
+//     req.session.user = {
+//       id: claims.sub,
+//       name: claims.name,
+//       email: claims.email,
+//     };
+//     req.session.id_token = tokenSet.id_token;
 
-    res.redirect('/intranet/editor.html');
-  } catch (err) {
-    console.error('Callback error:', err);
-    res.status(400).send('Authentication failed');
-  }
-});
+//     res.redirect('/intranet/editor.html');
+//   } catch (err) {
+//     console.error('Callback error:', err);
+//     res.status(400).send('Authentication failed');
+//   }
+// });
 
-app.get('/logout', (req, res) => {
-  const id_token = req.session.id_token;
-  delete req.session.id_token;
-  req.session.destroy(err => {
-    if (err) console.error('Failed to destroy session:', err);
-    const endSessionUrl = client.endSessionUrl({
-      id_token_hint: id_token,
-      post_logout_redirect_uri: 'http://localhost:3000', // Redirect after logout
-    });
-    res.redirect(endSessionUrl);
-  });
-});
+// app.get('/logout', (req, res) => {
+//   const id_token = req.session.id_token;
+//   delete req.session.id_token;
+//   req.session.destroy(err => {
+//     if (err) console.error('Failed to destroy session:', err);
+//     const endSessionUrl = client.endSessionUrl({
+//       id_token_hint: id_token,
+//       post_logout_redirect_uri: 'http://localhost:3000', // Redirect after logout
+//     });
+//     res.redirect(endSessionUrl);
+//   });
+// });
 
 // A simple test route to confirm the server is running.
 app.get('/api/status', (req, res) => {
   res.json({ status: 'ok', message: 'Welcome to the BluePrint API' });
 });
 
-let client;
-Issuer.discover(openidConfig.issuer)
-  .then(issuer => {
-    client = new issuer.Client({
-      client_id: openidConfig.client_id,
-      client_secret: openidConfig.client_secret,
-      redirect_uris: [openidConfig.redirect_uri],
-      response_types: ['code'],
-    });
-    console.log('OpenID client discovered and configured.');
-  })
-  .catch(err => {
-    console.error('Failed to discover OpenID issuer:', err);
-    process.exit(1);
-  });
+// let client;
+// Issuer.discover(openidConfig.issuer)
+//   .then(issuer => {
+//     client = new issuer.Client({
+//       client_id: openidConfig.client_id,
+//       client_secret: openidConfig.client_secret,
+//       redirect_uris: [openidConfig.redirect_uri],
+//       response_types: ['code'],
+//     });
+//     console.log('OpenID client discovered and configured.');
+//   })
+//   .catch(err => {
+//     console.error('Failed to discover OpenID issuer:', err);
+//     process.exit(1);
+//   });
 
 // Start the server and log a message to the console.
 app.listen(port, () => {
