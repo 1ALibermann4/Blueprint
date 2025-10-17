@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <title>Éditeur BluePrint</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-  <link rel="stylesheet" href="/styles/style.css">
-  <link rel="stylesheet" href="/node_modules/notyf/notyf.min.css">
+  <!-- Corrected paths to be relative to the file's location -->
+  <link rel="stylesheet" href="../styles/styles.css">
+  <link rel="stylesheet" href="../../node_modules/notyf/notyf.min.css">
   <script src="./tinymce/tinymce.min.js"></script>
 </head>
 <body>
@@ -62,6 +63,7 @@
         <button class="button is-link" onclick="showDrafts()">📂 Brouillons</button>
         <button class="button is-success" onclick="submitForReview()">📤 Soumettre pour relecture</button>
       </div>
+    </div>
 
     <!-- Zone de prévisualisation -->
     <div class="preview-pane" id="preview">
@@ -87,8 +89,9 @@
     </div>
   </div>
 
-  <script src="/node_modules/notyf/notyf.min.js"></script>
-  <script src="/scripts/header.js"></script>
+  <!-- Corrected paths to be relative -->
+  <script src="../../node_modules/notyf/notyf.min.js"></script>
+  <script src="../scripts/header.js"></script>
   <script src="./scripts/editor.js"></script>
   <script src="./scripts/preview.js"></script>
 </body>
