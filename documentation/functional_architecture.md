@@ -14,7 +14,7 @@ graph TD
 
     subgraph "Administrateurs"
         E[Administrateur] --> F{Zone Admin};
-        E --> D; % Les admins peuvent aussi être des contributeurs
+        E --> D; %% Les admins peuvent aussi être des contributeurs
     end
 
     B --- G((Base de Fichiers .md));
