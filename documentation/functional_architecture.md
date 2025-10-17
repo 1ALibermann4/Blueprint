@@ -4,33 +4,34 @@ Ce document décrit l'architecture fonctionnelle de haut niveau de l'application
 
 ```mermaid
 graph TD
-    subgraph "Utilisateurs Externes (Public)"
-        A[Visiteur du site] --> B{Zone Publique};
-    end
+  subgraph "Utilisateurs Externes (Public)"
+    A[Visiteur du site] --> B{Zone Publique}
+  end
 
-    subgraph "Utilisateurs Internes (Contributeurs)"
-        C[Contributeur / Étudiant] --> D{Zone Intranet};
-    end
+  subgraph "Utilisateurs Internes (Contributeurs)"
+    C[Contributeur / Étudiant] --> D{Zone Intranet}
+  end
 
-    subgraph "Administrateurs"
-        E[Administrateur] --> F{Zone Admin};
-        E --> D; %% Les admins peuvent aussi être des contributeurs
-    end
+  subgraph "Administrateurs"
+    E[Administrateur] --> F{Zone Admin}
+    %% Les admins peuvent aussi être des contributeurs
+    E --> D
+  end
 
-    B --- G((Base de Fichiers .md));
-    D --- G;
-    F --- G;
+  B --> G((Base de Fichiers .md / .json))
+  D --> G
+  F --> G
 
-    D -- "Sauvegarde Brouillon" --> H(Dossier /drafts);
-    D -- "Soumet pour relecture" --> I(Déplacement vers /published);
-    F -- "Valide et Publie" --> I;
-    B -- "Lit les Projets" --> J(Dossier /published);
+  D -- "Sauvegarde brouillon" --> H[Dossier /drafts]
+  D -- "Soumet pour relecture" --> H
+  F -- "Valide et publie" --> I[Dossier /published]
+  B -- "Lit les projets publiés" --> I
 
-    H -- "fs.rename()" --> J;
+  H -- "fs.rename() / mv (publication)" --> I
 
-    style B fill:#cff,stroke:#333,stroke-width:2px
-    style D fill:#fcf,stroke:#333,stroke-width:2px
-    style F fill:#ffc,stroke:#333,stroke-width:2px
+  style B fill:#cff,stroke:#333,stroke-width:2px
+  style D fill:#fcf,stroke:#333,stroke-width:2px
+  style F fill:#ffc,stroke:#333,stroke-width:2px
 
 ```
 
