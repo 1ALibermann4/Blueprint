@@ -1,132 +1,164 @@
-const notyf = new Notyf({
-  duration: 3000,
-  position: { x: 'right', y: 'top' },
-  dismissible: true
+document.addEventListener('DOMContentLoaded', () => {
+    loadPendingProjects();
+    loadPublishedProjects();
+    loadLoginHistory();
 });
 
 /**
- * Loads and displays the list of draft projects awaiting review.
- * It fetches the list of `.json` files from the drafts directory,
- * and for each file, it creates a box with the file name and an "Open" button.
- * @returns {Promise<void>} A promise that resolves when the drafts are loaded.
+ * Charge et affiche les projets en attente de relecture.
  */
-async function loadDrafts() {
-  const container = document.getElementById('projectList');
-  const response = await fetch('/api/projects/drafts');
-  const files = await response.json();
+async function loadPendingProjects() {
+    const container = document.getElementById('pending-projects-list');
+    container.innerHTML = '<p>Chargement...</p>';
 
-  if (files.length === 0) {
-    container.innerHTML = "<p>Aucun projet en attente de relecture.</p>";
-    return;
-  }
+    try {
+        const response = await fetch('/api/projects/drafts');
+        if (!response.ok) throw new Error('Failed to fetch pending projects.');
 
-  container.innerHTML = "";
-  for (const file of files) {
-    const div = document.createElement('div');
-    div.className = 'box';
-    div.innerHTML = `
-      <strong>${file}</strong><br>
-      <button class="button is-small is-link mt-2" onclick="openProject('${file}')">Ouvrir</button>
-    `;
-    container.appendChild(div);
-  }
-}
+        const projects = await response.json();
 
-/**
- * Opens a specific project for review.
- * It fetches the project data, hides the project list, and displays the
- * project view with the project's title and content.
- * @param {string} file The name of the project file to open.
- * @returns {Promise<void>} A promise that resolves when the project is opened.
- */
-async function openProject(file) {
-  // Note: This path is now pointing to the static file served by Express
-  const res = await fetch(`/intranet/projects/drafts/${file}`);
-  const data = await res.json();
-
-  document.getElementById('projectList').style.display = 'none';
-  const view = document.getElementById('projectView');
-  view.style.display = 'block';
-  document.getElementById('projTitle').textContent = data.titre;
-
-  document.getElementById('projContent').innerHTML = `
-    <h3 class="subtitle">Contexte</h3>${data.contexte}
-    <h3 class="subtitle">Objectifs</h3>${data.objectifs}
-    <h3 class="subtitle">Résultats</h3>${data.resultats}
-    <h3 class="subtitle">Ressenti de l’équipe</h3>${data.ressenti}
-  `;
-
-  // bouton publier
-  document.getElementById('publishBtn').onclick = () => publishProject(file);
-}
-
-/**
- * Closes the project view and returns to the project list.
- */
-function closeView() {
-  document.getElementById('projectView').style.display = 'none';
-  document.getElementById('projectList').style.display = 'block';
-}
-
-/**
- * Publishes a project by calling the `publish.sh` script.
- * It asks for confirmation, then sends a POST request to the script.
- * On success, it displays a confirmation message, closes the project view,
- * and reloads the list of drafts. On failure, it shows an error message.
- * @param {string} file The name of the project file to publish.
- * @returns {Promise<void>} A promise that resolves when the publish operation is complete.
- */
-async function publishProject(file) {
-  const confirmation = await new Promise(resolve => {
-    notyf.confirm({
-      message: `Publier le projet "${file}" ?`,
-      buttons: [
-        {
-          tagName: 'button',
-          className: 'notyf__button notyf__button--confirm',
-          text: 'Publier',
-          onClick: ({ close }) => {
-            resolve(true);
-            close();
-          }
-        },
-        {
-          tagName: 'button',
-          className: 'notyf__button notyf__button--cancel',
-          text: 'Annuler',
-          onClick: ({ close }) => {
-            resolve(false);
-            close();
-          }
+        if (projects.length === 0) {
+            container.innerHTML = '<p>Aucun projet en attente.</p>';
+            return;
         }
-      ]
-    });
-  });
 
-  if (!confirmation) {
-    return;
-  }
-
-  const response = await fetch('/api/publish', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ file: file }),
-  });
-
-  if (response.ok) {
-    const result = await response.json();
-    notyf.success(result.message);
-    closeView();
-    loadDrafts();
-  } else {
-    notyf.error("Erreur lors de la publication.");
-  }
+        container.innerHTML = ''; // Vider le conteneur
+        projects.forEach(file => {
+            const projectItem = document.createElement('div');
+            projectItem.className = 'project-item';
+            projectItem.innerHTML = `
+                <span>${file}</span>
+                <div class="buttons">
+                    <button class="button is-info is-small" onclick="reviewProject('${file}')">Relire</button>
+                    <button class="button is-success is-small" onclick="validateProject('${file}')">Valider</button>
+                    <button class="button is-danger is-small" onclick="rejectProject('${file}')">Rejeter</button>
+                </div>
+            `;
+            container.appendChild(projectItem);
+        });
+    } catch (error) {
+        container.innerHTML = '<p class="has-text-danger">Erreur lors du chargement des projets.</p>';
+        console.error(error);
+    }
 }
 
 /**
- * When the window loads, call `loadDrafts` to populate the list of projects
- * awaiting review. This serves as the main entry point for the validation page.
+ * Charge et affiche l'historique des connexions.
  */
-window.onload = loadDrafts;
+async function loadLoginHistory() {
+    const container = document.getElementById('login-history');
+    container.innerHTML = '<p>Chargement...</p>';
+
+    try {
+        const response = await fetch('/api/logs/logins');
+        if (!response.ok) throw new Error('Failed to fetch login history.');
+
+        const loginEvents = await response.json();
+
+        if (loginEvents.length === 0) {
+            container.innerHTML = '<p>Aucune activité de connexion enregistrée.</p>';
+            return;
+        }
+
+        let html = '<ul>';
+        loginEvents.forEach(event => {
+            const timestamp = new Date(event.timestamp).toLocaleString('fr-FR');
+            html += `<li><strong>${event.details.user}</strong> s'est connecté(e) le ${timestamp}</li>`;
+        });
+        html += '</ul>';
+
+        container.innerHTML = html;
+
+    } catch (error) {
+        container.innerHTML = '<p class="has-text-danger">Erreur lors du chargement de l\'historique.</p>';
+        console.error(error);
+    }
+}
+
+/**
+ * Charge et affiche les projets déjà publiés.
+ */
+async function loadPublishedProjects() {
+    const container = document.getElementById('published-projects-list');
+    container.innerHTML = '<p>Chargement...</p>';
+
+    try {
+        const response = await fetch('/api/projects/published');
+        if (!response.ok) throw new Error('Failed to fetch published projects.');
+
+        const projects = await response.json();
+
+        if (projects.length === 0) {
+            container.innerHTML = '<p>Aucun projet publié.</p>';
+            return;
+        }
+
+        container.innerHTML = ''; // Vider le conteneur
+        projects.forEach(file => {
+            const projectItem = document.createElement('div');
+            projectItem.className = 'project-item';
+            projectItem.innerHTML = `<span>${file}</span>`;
+            container.appendChild(projectItem);
+        });
+    } catch (error) {
+        container.innerHTML = '<p class="has-text-danger">Erreur lors du chargement des projets.</p>';
+        console.error(error);
+    }
+}
+
+// --- Fonctions pour les actions ---
+
+function reviewProject(fileName) {
+    // Ouvre la page de relecture dans un nouvel onglet en passant le nom du fichier en paramètre
+    window.open(`/admin/review.html?file=${encodeURIComponent(fileName)}`, '_blank');
+}
+
+async function validateProject(fileName) {
+    try {
+        const response = await fetch('/api/publish', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fileName: fileName.replace('.md', '') }) // L'API attend le nom sans extension
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to publish project.');
+        }
+
+        alert('Projet validé et publié avec succès !');
+        // Rafraîchir les deux listes pour voir le changement
+        loadPendingProjects();
+        loadPublishedProjects();
+
+    } catch (error) {
+        alert(`Erreur lors de la validation : ${error.message}`);
+        console.error(error);
+    }
+}
+
+async function rejectProject(fileName) {
+    if (!confirm(`Êtes-vous sûr de vouloir rejeter et supprimer définitivement le projet "${fileName}" ?`)) {
+        return;
+    }
+
+    try {
+        // Note: L'API attend le nom de fichier complet, y compris l'extension .md
+        const response = await fetch(`/api/drafts/${fileName}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to delete project draft.');
+        }
+
+        alert('Projet rejeté et supprimé avec succès.');
+        // Rafraîchir la liste des projets en attente
+        loadPendingProjects();
+
+    } catch (error) {
+        alert(`Erreur lors du rejet : ${error.message}`);
+        console.error(error);
+    }
+}

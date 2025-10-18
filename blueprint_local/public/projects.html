@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Projets - BluePrint</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/styles.css"> <!-- Assumant que le style général est ici -->
+    <style>
+        /* Copier/coller le CSS de page_accueil.html pour la cohérence */
+        :root {
+            --color-black: #c5c5c5;
+            --color-dark-bg: #f0f0f0;
+            --color-text-light: #000000;
+            --color-text-gray: #000000;
+            --color-accent-red: #C00040;
+            --color-accent-purple: #8A3D9E;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--color-dark-bg);
+            color: var(--color-text-light);
+            margin: 0;
+            padding: 0;
+        }
+        header, footer {
+            background-color: var(--color-black);
+            padding: 15px 5%;
+        }
+        /* ... (styles de l'en-tête et du pied de page de index.html) ... */
+
+        /* Styles pour la grille de projets, inspirés par l'exemple externe */
+        .projects-container {
+            padding: 40px 5%;
+        }
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .project-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+        .project-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .project-card-content {
+            padding: 15px;
+        }
+        .project-card h2 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .project-card p {
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- En-tête (copié de index.html) -->
+    <header>
+        <div class="header-left">
+            <div class="menu-icon" style="color: var(--color-text-light);">☰</div>
+            <a href="index.html" class="header-title">Accueil</a>
+        </div>
+        <div class="header-logo">
+            <img src="/public/images/epf-logo-header.png" alt="EPF Logo Header">
+        </div>
+    </header>
+
+    <main class="projects-container">
+        <h1>Tous les Projets</h1>
+        <div id="project-grid" class="project-grid">
+            <!-- Les projets seront injectés ici par JavaScript -->
+        </div>
+    </main>
+
+    <!-- Pied de page (copié de index.html) -->
+    <footer>
+        <!-- ... (Contenu du pied de page de index.html) ... -->
+    </footer>
+
+    <script src="/public/scripts/project-list.js"></script>
+</body>
+</html>

@@ -4,6 +4,7 @@ const fs = require('fs').promises;
 const session = require('express-session');
 const matter = require('gray-matter');
 const MarkdownIt = require('markdown-it');
+const { logAction } = require('./logger');
 // const { Issuer } = require('openid-client');
 // const openidConfig = require('./openid-config');
 
@@ -22,11 +23,12 @@ app.use(session({
 
 // Middleware to protect routes
 const checkAuth = (req, res, next) => {
-  // if (req.session.user) {
+  if (req.session.user) {
     next();
-  // } else {
-  //   res.redirect('/login');
-  // }
+  } else {
+    // Redirect to the new simulation login page
+    res.redirect('/login.html');
+  }
 };
 
 // Serve static files from the 'blueprint_local' directory
@@ -39,11 +41,33 @@ app.use('/admin', checkAuth);
 const DRAFTS_DIR = path.join(__dirname, 'blueprint_local', 'intranet', 'projects', 'drafts');
 const PUBLISHED_DIR = path.join(__dirname, 'blueprint_local', 'public', 'projects', 'published');
 
-// Helper function to list Markdown files in a directory
+// API route for simulated login
+app.post('/api/login', async (req, res) => {
+  try {
+    const { username } = req.body;
+    if (!username) {
+      return res.status(400).json({ message: 'Username is required.' });
+    }
+
+    // Create a user session
+    req.session.user = { name: username };
+
+    // Log the login event
+    await logAction('USER_LOGIN', { user: username, result: 'success' });
+
+    res.status(200).json({ message: 'Login successful.' });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'An internal error occurred.' });
+  }
+});
+
+// Helper function to list project files in a directory
 const listProjects = async (dir) => {
   try {
     const files = await fs.readdir(dir);
-    return files.filter(file => file.endsWith('.md'));
+    // Drafts are .md, published projects are .html
+    return files.filter(file => file.endsWith('.md') || file.endsWith('.html'));
   } catch (error) {
     // If the directory doesn't exist, return an empty array.
     if (error.code === 'ENOENT') {
@@ -146,6 +170,7 @@ app.post('/api/drafts', checkAuth, async (req, res) => {
     await fs.mkdir(DRAFTS_DIR, { recursive: true });
     await fs.writeFile(newFilePath, fileContent);
 
+    await logAction('SAVE_DRAFT', { file: newFileName, result: 'success' });
     res.status(201).json({ message: 'Draft saved successfully', file: newFileName });
   } catch (error) {
     console.error('Error saving draft:', error);
@@ -160,15 +185,57 @@ app.post('/api/publish', checkAuth, async (req, res) => {
     if (!file) {
       return res.status(400).json({ error: 'File name is required' });
     }
-    const sourcePath = path.join(DRAFTS_DIR, file);
-    const destPath = path.join(PUBLISHED_DIR, file);
 
+    const sourceMdPath = path.join(DRAFTS_DIR, file);
+
+    // 1. Read the Markdown file and extract its HTML content
+    const mdContent = await fs.readFile(sourceMdPath, 'utf8');
+    const { content: htmlContent } = matter(mdContent);
+
+    // 2. Create the destination HTML file path
+    const htmlFileName = file.replace('.md', '.html');
+    const destHtmlPath = path.join(PUBLISHED_DIR, htmlFileName);
+
+    // 3. Write the extracted HTML to the new file
     await fs.mkdir(PUBLISHED_DIR, { recursive: true });
-    await fs.rename(sourcePath, destPath);
-    res.json({ message: `Project ${file} published successfully` });
+    await fs.writeFile(destHtmlPath, htmlContent);
+
+    // 4. Delete the original Markdown file from drafts
+    await fs.unlink(sourceMdPath);
+
+    await logAction('PUBLISH_PROJECT', { file: htmlFileName, result: 'success' });
+    res.json({ message: `Project ${htmlFileName} published successfully` });
   } catch (error) {
     console.error('Error publishing project:', error);
     res.status(500).json({ error: 'Failed to publish project' });
+  }
+});
+
+// API route for deleting a draft
+app.delete('/api/drafts/:fileName', checkAuth, async (req, res) => {
+  try {
+    const { fileName } = req.params;
+    if (!fileName) {
+      return res.status(400).json({ message: 'File name is required.' });
+    }
+
+    const filePath = path.join(DRAFTS_DIR, fileName);
+
+    // Security check: ensure the path is within the drafts directory
+    if (path.dirname(filePath) !== DRAFTS_DIR) {
+        return res.status(400).json({ message: 'Invalid file path.' });
+    }
+
+    await fs.unlink(filePath);
+    await logAction('DELETE_DRAFT', { file: fileName, result: 'success' });
+    res.status(200).json({ message: `Draft ${fileName} deleted successfully.` });
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return res.status(404).json({ message: 'Draft not found.' });
+    }
+    console.error('Error deleting draft:', error);
+    await logAction('DELETE_DRAFT', { file: req.params.fileName, result: 'failure', error: error.message });
+    res.status(500).json({ message: 'Failed to delete draft.' });
   }
 });
 
@@ -189,12 +256,36 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // API route for file uploads
-app.post('/api/upload', checkAuth, upload.single('file'), (req, res) => {
+app.post('/api/upload', checkAuth, upload.single('file'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded.' });
   }
   // TinyMCE expects a JSON response with a 'location' property.
-  res.json({ location: `/uploads/${req.file.filename}` });
+  const filePath = `/uploads/${req.file.filename}`;
+  await logAction('FILE_UPLOAD', { file: req.file.filename, path: filePath, result: 'success' });
+  res.json({ location: filePath });
+});
+
+// API route to get login history
+app.get('/api/logs/logins', checkAuth, async (req, res) => {
+  try {
+    const logFilePath = path.join(__dirname, 'logs', 'backend-actions.json');
+    const logs = JSON.parse(await fs.readFile(logFilePath, 'utf8'));
+
+    // Filter for login events and reverse to show most recent first
+    const loginEvents = logs
+      .filter(log => log.action === 'USER_LOGIN')
+      .reverse();
+
+    res.json(loginEvents);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      // If the log file doesn't exist yet, return an empty array
+      return res.json([]);
+    }
+    console.error('Error reading login logs:', error);
+    res.status(500).json({ error: 'Failed to retrieve login history.' });
+  }
 });
 
 
