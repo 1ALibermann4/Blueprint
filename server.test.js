@@ -7,18 +7,10 @@ const matter = require('gray-matter');
 const DRAFTS_DIR = path.join(__dirname, 'blueprint_local', 'intranet', 'projects', 'drafts');
 
 describe('BluePrint API', () => {
-  let agent;
-
   beforeEach(async () => {
     // Clean up the drafts directory before each test
     await fs.rm(DRAFTS_DIR, { recursive: true, force: true });
     await fs.mkdir(DRAFTS_DIR, { recursive: true });
-
-    // Create a logged-in agent before each test
-    agent = request.agent(app);
-    await agent
-      .post('/api/login')
-      .send({ username: 'test-user' });
   });
 
   it('should save HTML content inside a Markdown file with front-matter', async () => {
@@ -27,8 +19,8 @@ describe('BluePrint API', () => {
       content: '<h1>Hello World</h1><p>This is HTML content.</p>'
     };
 
-    // Use the authenticated agent for the request
-    const response = await agent
+    // With auth disabled, we can use a direct request
+    const response = await request(app)
       .post('/api/drafts')
       .send(draftData);
 
@@ -52,7 +44,7 @@ describe('BluePrint API', () => {
     await fs.writeFile(filePath, '---\ntitre: To Be Deleted\n---\n<p>Delete me.</p>');
 
     // 2. Send the delete request
-    const response = await agent
+    const response = await request(app)
       .delete(`/api/drafts/${fileName}`);
 
     // 3. Assert the response

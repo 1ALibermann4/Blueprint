@@ -5,8 +5,6 @@ const session = require('express-session');
 const matter = require('gray-matter');
 const MarkdownIt = require('markdown-it');
 const { logAction } = require('./logger');
-// const { Issuer } = require('openid-client');
-// const openidConfig = require('./openid-config');
 
 const app = express();
 const port = 3000;
@@ -23,12 +21,8 @@ app.use(session({
 
 // Middleware to protect routes
 const checkAuth = (req, res, next) => {
-  if (req.session.user) {
-    next();
-  } else {
-    // Redirect to the new simulation login page
-    res.redirect('/login.html');
-  }
+  // AUTHENTICATION DISABLED: No check, all requests are allowed.
+  next();
 };
 
 // Serve static files from the 'blueprint_local' directory
@@ -41,7 +35,8 @@ app.use('/admin', checkAuth);
 const DRAFTS_DIR = path.join(__dirname, 'blueprint_local', 'intranet', 'projects', 'drafts');
 const PUBLISHED_DIR = path.join(__dirname, 'blueprint_local', 'public', 'projects', 'published');
 
-// API route for simulated login
+/*
+// API route for simulated login (DISABLED)
 app.post('/api/login', async (req, res) => {
   try {
     const { username } = req.body;
@@ -61,6 +56,7 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ message: 'An internal error occurred.' });
   }
 });
+*/
 
 // Helper function to list project files in a directory
 const listProjects = async (dir) => {
@@ -289,83 +285,122 @@ app.get('/api/logs/logins', checkAuth, async (req, res) => {
 });
 
 
-// app.get('/login', (req, res) => {
-//   const { nonce, state } = Issuer.generate();
-//   req.session.nonce = nonce;
-//   req.session.state = state;
-
-//   const authUrl = client.authorizationUrl({
-//     scope: openidConfig.scope,
-//     response_mode: 'form_post',
-//     nonce,
-//     state,
-//   });
-//   res.redirect(authUrl);
-// });
-
-// app.post('/auth/callback', async (req, res) => {
-//   try {
-//     const params = client.callbackParams(req);
-//     const { nonce, state } = req.session;
-//     delete req.session.nonce;
-//     delete req.session.state;
-
-//     const tokenSet = await client.callback(openidConfig.redirect_uri, params, { nonce, state });
-//     const claims = tokenSet.claims();
-
-//     req.session.user = {
-//       id: claims.sub,
-//       name: claims.name,
-//       email: claims.email,
-//     };
-//     req.session.id_token = tokenSet.id_token;
-
-//     res.redirect('/intranet/editor.html');
-//   } catch (err) {
-//     console.error('Callback error:', err);
-//     res.status(400).send('Authentication failed');
-//   }
-// });
-
-// app.get('/logout', (req, res) => {
-//   const id_token = req.session.id_token;
-//   delete req.session.id_token;
-//   req.session.destroy(err => {
-//     if (err) console.error('Failed to destroy session:', err);
-//     const endSessionUrl = client.endSessionUrl({
-//       id_token_hint: id_token,
-//       post_logout_redirect_uri: 'http://localhost:3000', // Redirect after logout
-//     });
-//     res.redirect(endSessionUrl);
-//   });
-// });
-
 // A simple test route to confirm the server is running.
 app.get('/api/status', (req, res) => {
   res.json({ status: 'ok', message: 'Welcome to the BluePrint API' });
 });
 
-// let client;
-// Issuer.discover(openidConfig.issuer)
-//   .then(issuer => {
-//     client = new issuer.Client({
-//       client_id: openidConfig.client_id,
-//       client_secret: openidConfig.client_secret,
-//       redirect_uris: [openidConfig.redirect_uri],
-//       response_types: ['code'],
-//     });
-//     console.log('OpenID client discovered and configured.');
-//   })
-//   .catch(err => {
-//     console.error('Failed to discover OpenID issuer:', err);
-//     process.exit(1);
-//   });
+/*
+// =================================================================
+// START OF OPENID CONNECT AUTHENTICATION LOGIC
+// =================================================================
+// NOTE: This section is commented out to allow for simulated login.
+// To enable OpenID Connect:
+//   1. Create a `openid-config.js` file based on the example.
+//   2. Uncomment this entire section.
+//   3. Comment out the simulated login route (`/api/login`).
+//   4. In `checkAuth`, comment out `res.redirect('/login.html')`
+//      and uncomment `res.redirect('/login')`.
+// =================================================================
 
-// Start the server and log a message to the console.
-if (require.main === module) {
+let client;
+
+async function initializeOpenID() {
+  try {
+    // Dynamically import openid-client (ESM) into this CommonJS module
+    const { Issuer } = await import('openid-client');
+    const openidConfig = require('./openid-config');
+
+    const issuer = await Issuer.discover(openidConfig.issuer);
+
+    client = new issuer.Client({
+      client_id: openidConfig.client_id,
+      client_secret: openidConfig.client_secret,
+      redirect_uris: [openidConfig.redirect_uri],
+      response_types: ['code'],
+    });
+
+    console.log('OpenID client discovered and configured.');
+    return true; // Indicate success
+  } catch (err) {
+    console.error('Failed to initialize OpenID client:', err);
+    console.error('OpenID authentication will be unavailable.');
+    return false; // Indicate failure
+  }
+}
+
+// OpenID Connect Routes
+app.get('/login', (req, res) => {
+  if (!client) return res.status(503).send('OpenID client not available.');
+  const { nonce, state } = Issuer.generate();
+  req.session.nonce = nonce;
+  req.session.state = state;
+
+  const authUrl = client.authorizationUrl({
+    scope: openidConfig.scope,
+    response_mode: 'form_post',
+    nonce,
+    state,
+  });
+  res.redirect(authUrl);
+});
+
+app.post('/auth/callback', async (req, res) => {
+  if (!client) return res.status(503).send('OpenID client not available.');
+  try {
+    const params = client.callbackParams(req);
+    const { nonce, state } = req.session;
+    delete req.session.nonce;
+    delete req.session.state;
+
+    const tokenSet = await client.callback(openidConfig.redirect_uri, params, { nonce, state });
+    const claims = tokenSet.claims();
+
+    req.session.user = {
+      id: claims.sub,
+      name: claims.name,
+      email: claims.email,
+    };
+    req.session.id_token = tokenSet.id_token;
+
+    res.redirect('/intranet/editor.html');
+  } catch (err) {
+    console.error('Callback error:', err);
+    res.status(400).send('Authentication failed');
+  }
+});
+
+app.get('/logout', (req, res) => {
+  if (!client) return res.status(503).send('OpenID client not available.');
+  const id_token = req.session.id_token;
+  delete req.session.id_token;
+  req.session.destroy(err => {
+    if (err) console.error('Failed to destroy session:', err);
+    const endSessionUrl = client.endSessionUrl({
+      id_token_hint: id_token,
+      post_logout_redirect_uri: 'http://localhost:3000',
+    });
+    res.redirect(endSessionUrl);
+  });
+});
+
+// =================================================================
+// END OF OPENID CONNECT AUTHENTICATION LOGIC
+// =================================================================
+*/
+
+// --- Server Startup ---
+async function startServer() {
+  // Uncomment the line below to enable OpenID initialization
+  // await initializeOpenID();
+
   app.listen(port, () => {
     console.log(`BluePrint server is running on http://localhost:${port}`);
   });
+}
+
+if (require.main === module) {
+  startServer();
 }
 
 module.exports = app;
