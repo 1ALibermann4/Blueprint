@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - BluePrint</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-one-third">
+                    <h1 class="title has-text-centered">Connexion (Simulation)</h1>
+                    <div class="box">
+                        <div class="field">
+                            <label class="label" for="username">Nom d'utilisateur</label>
+                            <div class="control">
+                                <input class="input" type="text" id="username" placeholder="Entrez votre nom">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <button class="button is-primary is-fullwidth" onclick="login()">Se connecter</button>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="error-message" class="has-text-danger has-text-centered"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        async function login() {
+            const username = document.getElementById('username').value;
+            const errorMessage = document.getElementById('error-message');
+
+            if (!username) {
+                errorMessage.textContent = 'Veuillez entrer un nom d\'utilisateur.';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+
+                if (response.ok) {
+                    // Rediriger vers la page d'administration après une connexion réussie
+                    window.location.href = '/admin/validate.html';
+                } else {
+                    const data = await response.json();
+                    errorMessage.textContent = data.message || 'Erreur de connexion.';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Une erreur est survenue.';
+                console.error('Login error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

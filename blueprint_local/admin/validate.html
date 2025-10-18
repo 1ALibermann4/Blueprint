@@ -1,31 +1,86 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Validation des projets - BluePrint</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-  <link rel="stylesheet" href="/styles/style.css">
-  <link rel="stylesheet" href="/node_modules/notyf/notyf.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Validation des Projets</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <style>
+        :root {
+            --color-black: #c5c5c5;
+            --color-dark-bg: #f0f0f0;
+            --color-text-light: #000000;
+            --color-accent-red: #C00040;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--color-dark-bg);
+        }
+        .hero.is-primary {
+            background-color: var(--color-accent-red);
+        }
+        .section {
+            padding: 2rem 1.5rem;
+        }
+        .box {
+            margin-bottom: 1.5rem;
+        }
+        .project-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #dbdbdb;
+        }
+        .project-item:last-child {
+            border-bottom: none;
+        }
+    </style>
 </head>
 <body>
-  <section class="section">
-    <h1 class="title">📋 Relecture et validation des projets</h1>
-    <p>Liste des projets soumis pour relecture :</p>
-    <div id="projectList" class="mt-4"></div>
 
-    <div id="projectView" class="mt-6 box" style="display:none;">
-      <h2 class="title is-4" id="projTitle"></h2>
-      <div id="projContent"></div>
-      <div class="buttons mt-4">
-        <button class="button is-success" id="publishBtn">✅ Publier</button>
-        <button class="button is-light" onclick="closeView()">Fermer</button>
-      </div>
+    <section class="hero is-primary">
+        <div class="hero-body">
+            <p class="title">
+                Panneau d'Administration
+            </p>
+            <p class="subtitle">
+                Validation des projets et monitoring
+            </p>
+        </div>
+    </section>
+
+    <div class="container section">
+        <!-- Section des projets en attente -->
+        <div class="box">
+            <h2 class="title is-4">Projets en attente de relecture</h2>
+            <div id="pending-projects-list">
+                <!-- La liste sera chargée ici -->
+                <p>Chargement...</p>
+            </div>
+        </div>
+
+        <!-- Section des projets validés -->
+        <div class="box">
+            <h2 class="title is-4">Projets validés (publiés)</h2>
+            <div id="published-projects-list">
+                <!-- La liste sera chargée ici -->
+                <p>Chargement...</p>
+            </div>
+        </div>
+
+        <!-- Section du monitoring des connexions -->
+        <div class="box">
+            <h2 class="title is-4">Historique des connexions</h2>
+            <div id="login-history">
+                <!-- L'historique sera chargé ici -->
+                <p>Chargement...</p>
+            </div>
+        </div>
     </div>
-  </section>
 
-  <script src="/node_modules/notyf/notyf.min.js"></script>
-  <script src="/scripts/notyf.confirm.js"></script>
-  <script src="/scripts/header.js"></script>
-  <script src="./scripts/validate.js"></script>
+    <script src="/admin/scripts/validate.js"></script>
+
 </body>
 </html>
