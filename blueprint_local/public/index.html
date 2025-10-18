@@ -1,19 +1,120 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>BluePrint – Projets publiés</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-  <link rel="stylesheet" href="/styles/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Projets EPF - Reproduction Fidèle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ... CSS ... */
+    </style>
 </head>
 <body>
-  <section class="section">
-    <h1 class="title">🌍 Projets publiés – BluePrint</h1>
-    <div id="projectsContainer" class="columns is-multiline mt-5"></div>
-  </section>
 
-  <script src="/scripts/header.js"></script>
-  <script src="./scripts/render.js"></script>
+    <header>
+        <div class="header-left">
+            <div class="menu-icon" style="color: var(--color-text-light);">☰</div>
+            <div class="header-title">Page Projets</div>
+        </div>
+        <div class="header-logo">
+            <img src="/public/images/epf-logo-header.png" alt="EPF Logo Header">
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <h1>Liste des projets</h1>
+    </section>
+
+    <div class="category-filters">
+        <a href="#" class="filter-btn active">Tous les projets</a>
+        <a href="#" class="filter-btn">Informatique & IA</a>
+        <a href="#" class="filter-btn">Robotique & Électronique</a>
+        <a href="#" class="filter-btn">Mécanique & Matériaux</a>
+        <a href="#" class="filter-btn">Énergie & Environnement</a>
+        <a href="#" class="filter-btn">Data</a>
+        <a href="#" class="filter-btn">Système d'Info</a>
+    </div>
+
+    <main class="project-grid">
+        <div class="main-project-card">
+            <div class="main-project-images">
+                <img src="/public/images/project-robotique-1.jpg" alt="Image Robotique 1">
+                <img src="/public/images/project-robotique-2.jpg" alt="Image Robotique 2">
+                <img src="/public/images/project-robotique-3.jpg" alt="Image Robotique 3">
+            </div>
+            <div class="main-project-content">
+                <h2>Projet Robotique</h2>
+                <div class="project-meta">
+                    <span>Concours entre étudiants</span>
+                    <a href="#" class="learn-more">En savoir plus <span class="arrow">→</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="side-projects-list">
+            <div class="side-project-item">
+                 <img src="/public/images/project-hydrogene-1.jpg" alt="Image Hydrogène 1">
+                <div class="side-project-text">
+                    <h3>Projet Hydrogène</h3>
+                    <p>Réalisation d'une plateforme de test pour la création d'hydrogène</p>
+                    <a href="#" class="learn-more">En savoir plus <span class="arrow">→</span></a>
+                </div>
+            </div>
+            <div class="side-project-item">
+                <img src="/public/images/project-hydrogene-2.jpg" alt="Image Hydrogène 2">
+                <div class="side-project-text">
+                    <h3>Projet Hydrogène</h3>
+                    <p>Réalisation d'une plateforme de test pour la création d'hydrogène</p>
+                    <a href="#" class="learn-more">En savoir plus <span class="arrow">→</span></a>
+                </div>
+            </div>
+            <div class="side-project-item">
+                <img src="/public/images/project-hydrogene-3.jpg" alt="Image Hydrogène 3">
+                <div class="side-project-text">
+                    <h3>Projet Hydrogène</h3>
+                    <p>Réalisation d'une plateforme de test pour la création d'hydrogène</p>
+                    <a href="#" class="learn-more">En savoir plus <span class="arrow">→</span></a>
+                </div>
+            </div>
+            <a href="projects.html" class="view-more-btn">Voir Plus</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-top">
+            <div class="footer-logo-block">
+                 <img class="epf-logo" src="/public/images/epf-logo-footer.png" alt="EPF Logo">
+                <img class="epf-years" src="/public/images/epf-1925-2025.png" alt="1925-2025">
+            </div>
+            <div class="footer-social">
+                <span>Follow us</span>
+                <div class="footer-social-icons">
+                    <a href="#">f</a><a href="#">d</a><a href="#">i</a><a href="#">l</a><a href="#">y</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-links-grid">
+            <!-- ... colonnes ... -->
+        </div>
+
+        <div class="footer-bottom-bar">
+            <span>© 2024 EPF</span>
+            <div class="footer-logos">
+                <img src="/public/images/logo-partner-1.png" alt="Partner Logo 1">
+                <img src="/public/images/logo-partner-2.png" alt="Partner Logo 2">
+                <img src="/public/images/logo-partner-3.png" alt="Partner Logo 3">
+                <img src="/public/images/logo-partner-4.png" alt="Partner Logo 4">
+                <img src="/public/images/logo-partner-5.png" alt="Partner Logo 5">
+            </div>
+            <div class="footer-links-bottom">
+                <a href="#">Contact</a>
+                <a href="#">Legal Information</a>
+                <a href="#">Données personnelles</a>
+                <a href="#">Press</a>
+            </div>
+        </div>
+    </footer>
+
 </body>
 </html>
-
