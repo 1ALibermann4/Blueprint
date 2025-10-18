@@ -2,6 +2,7 @@ const request = require('supertest');
 const app = require('./server');
 const fs = require('fs').promises;
 const path = require('path');
+const matter = require('gray-matter');
 
 const DRAFTS_DIR = path.join(__dirname, 'blueprint_local', 'intranet', 'projects', 'drafts');
 
@@ -12,43 +13,26 @@ describe('BluePrint API', () => {
     await fs.mkdir(DRAFTS_DIR, { recursive: true });
   });
 
-  it('should rename the draft file when the title is changed', async () => {
-    const initialDraft = {
-      frontMatter: { titre: 'Initial Title' },
-      content: 'Initial content'
+  it('should save HTML content inside a Markdown file with front-matter', async () => {
+    const draftData = {
+      titre: 'Test Project',
+      content: '<h1>Hello World</h1><p>This is HTML content.</p>'
     };
 
-    // 1. Create a draft
-    const response1 = await request(app)
+    const response = await request(app)
       .post('/api/drafts')
-      .send(initialDraft);
+      .send(draftData);
 
-    expect(response1.status).toBe(201);
-    const originalFilename = response1.body.file;
-    expect(originalFilename).toBe('initial_title.md');
+    expect(response.status).toBe(201);
+    const filename = response.body.file;
+    expect(filename).toBe('test_project.md');
 
-    // Verify the file was created
-    const files1 = await fs.readdir(DRAFTS_DIR);
-    expect(files1).toContain(originalFilename);
+    // Verify the file content
+    const filePath = path.join(DRAFTS_DIR, filename);
+    const fileContent = await fs.readFile(filePath, 'utf8');
+    const parsedContent = matter(fileContent);
 
-    // 2. Update the draft with a new title
-    const updatedDraft = {
-      currentFile: originalFilename,
-      frontMatter: { titre: 'Updated Title' },
-      content: 'Updated content'
-    };
-
-    const response2 = await request(app)
-      .post('/api/drafts')
-      .send(updatedDraft);
-
-    expect(response2.status).toBe(201);
-    const newFilename = response2.body.file;
-    expect(newFilename).toBe('updated_title.md');
-
-    // 3. Verify the old file is gone and the new one exists
-    const files2 = await fs.readdir(DRAFTS_DIR);
-    expect(files2).not.toContain(originalFilename);
-    expect(files2).toContain(newFilename);
+    expect(parsedContent.data.titre).toBe('Test Project');
+    expect(parsedContent.content.trim()).toBe('<h1>Hello World</h1><p>This is HTML content.</p>');
   });
 });

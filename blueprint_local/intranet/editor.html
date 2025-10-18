@@ -4,75 +4,65 @@
   <meta charset="UTF-8">
   <title>Éditeur BluePrint</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-  <!-- Corrected paths to be relative to the file's location -->
+  <!-- Utilisation du CDN pour Notyf pour éviter les problèmes de chemin -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
   <link rel="stylesheet" href="../styles/styles.css">
-  <link rel="stylesheet" href="../../node_modules/notyf/notyf.min.css">
   <script src="./tinymce/tinymce.min.js"></script>
+  <style>
+    /* Styles pour un éditeur qui prend plus de place */
+    body, html {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      background-color: #f5f5f5;
+    }
+    .editor-container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+    .editor-field {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .tox-tinymce {
+      flex-grow: 1 !important;
+    }
+  </style>
 </head>
 <body>
-  <div class="container-split">
 
-    <!-- Zone d'édition -->
-    <div class="editor-pane">
-      <h1 class="title">Création de projet</h1>
-      <div class="field">
-        <label class="label">Titre du projet</label>
+  <div class="editor-container">
+    <h1 class="title">Éditeur de Projet</h1>
+
+    <!-- Garder le titre pour le nom du fichier -->
+    <div class="field">
+      <label class="label">Titre du projet (utilisé pour le nom du fichier)</label>
+      <div class="control">
         <input id="titre" class="input" placeholder="Titre du projet">
-      </div>
-
-      <div class="field">
-        <label class="label">Contenu Principal (pour le multimédia, etc.)</label>
-        <textarea id="contenu-principal"></textarea>
-      </div>
-
-      <hr>
-      <h2 class="subtitle">Métadonnées du Projet</h2>
-
-      <div class="field">
-        <label class="label">Contexte</label>
-        <textarea id="contexte"></textarea>
-      </div>
-
-      <div class="field">
-        <label class="label">Objectifs</label>
-        <textarea id="objectifs"></textarea>
-      </div>
-
-      <div class="field">
-        <label class="label">Résultats</label>
-        <textarea id="resultats"></textarea>
-      </div>
-
-      <div class="field">
-        <label class="label">Ressenti de l’équipe</label>
-        <textarea id="ressenti"></textarea>
-      </div>
-
-      <div class="field">
-        <label class="label">Étudiants (noms, un par ligne)</label>
-        <textarea id="etudiants" class="textarea" placeholder="Alice\nBob\nCharlie"></textarea>
-      </div>
-
-      <div class="field">
-        <label class="label">Encadrants (noms, un par ligne)</label>
-        <textarea id="encadrants" class="textarea" placeholder="Dr. Dupont"></textarea>
-      </div>
-
-      <div class="buttons">
-        <button class="button is-primary" onclick="saveDraft()">💾 Enregistrer</button>
-        <button class="button is-link" onclick="showDrafts()">📂 Brouillons</button>
-        <button class="button is-success" onclick="submitForReview()">📤 Soumettre pour relecture</button>
       </div>
     </div>
 
-    <!-- Zone de prévisualisation -->
-    <div class="preview-pane" id="preview">
-      <h2 class="title is-3 has-text-grey">Prévisualisation du projet</h2>
-      <p>Le contenu s’affichera ici en direct…</p>
+    <!-- Cible pour l'éditeur TinyMCE -->
+    <div class="field editor-field">
+      <label class="label">Contenu de la page</label>
+      <div class="control editor-field">
+        <textarea id="tinymce-editor"></textarea>
+      </div>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="buttons mt-4">
+      <button class="button is-primary" onclick="saveDraft()">💾 Enregistrer</button>
+      <button class="button is-link" onclick="showDrafts()">📂 Brouillons</button>
+      <button class="button is-success" onclick="submitForReview()">📤 Soumettre pour relecture</button>
     </div>
   </div>
 
-  <!-- Fenêtre modale de gestion des brouillons -->
+  <!-- Fenêtre modale de gestion des brouillons (inchangée) -->
   <div class="modal" id="draftModal">
     <div class="modal-background" onclick="closeModal()"></div>
     <div class="modal-card">
@@ -89,10 +79,10 @@
     </div>
   </div>
 
-  <!-- Corrected paths to be relative -->
-  <script src="../../node_modules/notyf/notyf.min.js"></script>
+  <!-- Scripts -->
+  <!-- Utilisation du CDN pour Notyf -->
+  <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
   <script src="../scripts/header.js"></script>
   <script src="./scripts/editor.js"></script>
-  <script src="./scripts/preview.js"></script>
 </body>
 </html>

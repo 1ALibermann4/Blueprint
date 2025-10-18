@@ -75,7 +75,25 @@ app.get('/api/projects/published', async (req, res) => {
   }
 });
 
-// API route to get a single project's content
+// API route to get the project template
+app.get('/api/templates/project', checkAuth, async (req, res) => {
+  try {
+    const templatePath = path.join(__dirname, 'blueprint_local', 'public', 'templates', 'page_projet.html');
+    const templateContent = await fs.readFile(templatePath, 'utf8');
+
+    // Extract only the content within the <body> tag
+    const bodyContentMatch = templateContent.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+    const extractedContent = bodyContentMatch ? bodyContentMatch[1] : '';
+
+    res.setHeader('Content-Type', 'text/html');
+    res.send(extractedContent);
+  } catch (error) {
+    console.error('Error reading project template:', error);
+    res.status(500).json({ error: 'Failed to read project template' });
+  }
+});
+
+// API route to get a single project's content (Markdown container version)
 app.get('/api/project', async (req, res) => {
   const { file, type } = req.query;
   if (!file || !type) {
@@ -88,28 +106,26 @@ app.get('/api/project', async (req, res) => {
   try {
     const fileContent = await fs.readFile(filePath, 'utf8');
     const { data, content } = matter(fileContent);
-    const md = new MarkdownIt();
-    const htmlContent = md.render(content);
 
-    // Send the parsed front matter and the HTML content back
-    res.json({ frontMatter: data, content: content, htmlContent: htmlContent });
+    // Send the parsed front matter (for the title) and the HTML content back
+    res.json({ frontMatter: data, content: content });
   } catch (error) {
     console.error('Error reading project file:', error);
     res.status(500).json({ error: 'Failed to read project file' });
   }
 });
 
-// API route to create or update a draft project
+// API route to create or update a draft project (Markdown container version)
 app.post('/api/drafts', checkAuth, async (req, res) => {
   try {
-    const { frontMatter, content, currentFile } = req.body;
+    const { titre, content, currentFile } = req.body;
 
-    if (!frontMatter || !frontMatter.titre) {
-      return res.status(400).json({ error: 'Title is required in front matter' });
+    if (!titre) {
+      return res.status(400).json({ error: 'Title is required' });
     }
 
-    // Sanitize the title to create a safe filename.
-    const newFileName = `${frontMatter.titre.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
+    // Sanitize the title to create a safe filename with .md extension.
+    const newFileName = `${titre.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
     const newFilePath = path.join(DRAFTS_DIR, newFileName);
 
     // If a currentFile is provided and it's different from the new file name,
@@ -119,13 +135,12 @@ app.post('/api/drafts', checkAuth, async (req, res) => {
       try {
         await fs.unlink(oldFilePath);
       } catch (error) {
-        // Log the error but don't block the save operation
-        // The file might not exist, which is fine.
         console.error(`Could not delete old file: ${oldFilePath}`, error);
       }
     }
 
-    // Use gray-matter to format the content with front matter
+    // Create front matter and stringify the content
+    const frontMatter = { titre: titre };
     const fileContent = matter.stringify(content || '', frontMatter);
 
     await fs.mkdir(DRAFTS_DIR, { recursive: true });
@@ -178,8 +193,8 @@ app.post('/api/upload', checkAuth, upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded.' });
   }
-  // The file is saved by multer. We return the path to the file.
-  res.json({ filePath: `/uploads/${req.file.filename}` });
+  // TinyMCE expects a JSON response with a 'location' property.
+  res.json({ location: `/uploads/${req.file.filename}` });
 });
 
 

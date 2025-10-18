@@ -4,56 +4,52 @@ const notyf = new Notyf({
   dismissible: true
 });
 
-let currentFile = null; // To keep track of the currently loaded file
+let currentFile = null; // Pour garder une trace du fichier actuellement chargé
 
-// --- Initialization on DOMContentLoaded ---
+// --- Initialisation après le chargement du DOM ---
 document.addEventListener('DOMContentLoaded', () => {
   tinymce.init({
-    selector: '#contenu-principal',
-    plugins: 'link image media table code autoresize',
-    toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | link image media | code',
+    selector: '#tinymce-editor', // Sélecteur mis à jour
+    plugins: 'link image media table code fullscreen autoresize',
+    toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | link image media | code | fullscreen',
+    height: '100%',
+    automatic_uploads: true,
+    images_upload_url: '/api/upload',
+    file_picker_types: 'image',
+    document_base_url: '/',
     setup: function(editor) {
-      // This setup function is the core of the event handling
       editor.on('init', () => {
-        updatePreview(); // Initial preview
-        setupPreviewEventListeners(); // Attach listeners to all fields
-      });
-
-      // Update preview on any change in the editor
-      editor.on('keyup change input', () => {
-        updatePreview();
+        // Ajouter un petit délai pour s'assurer que l'éditeur est entièrement prêt
+        setTimeout(() => {
+          loadTemplate();
+        }, 100);
       });
     }
   });
 });
 
 /**
- * Attaches event listeners to all form fields to trigger live preview updates.
+ * Récupère le modèle de projet et le charge dans l'éditeur.
  */
-function setupPreviewEventListeners() {
-  const fieldsToWatch = [
-    'titre', 'contexte', 'objectifs', 'resultats',
-    'ressenti', 'etudiants', 'encadrants'
-  ];
-
-  fieldsToWatch.forEach(id => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.addEventListener('keyup', updatePreview);
-      element.addEventListener('change', updatePreview);
-      element.addEventListener('input', updatePreview); // More reliable for programmatic changes
-    }
-  });
+async function loadTemplate() {
+  try {
+    const response = await fetch('/api/templates/project');
+    if (!response.ok) throw new Error('Le chargement du modèle a échoué');
+    const templateHtml = await response.text();
+    tinymce.get('tinymce-editor').setContent(templateHtml);
+    notyf.success('Modèle de projet chargé.');
+  } catch (error) {
+    notyf.error('Erreur : ' + error.message);
+  }
 }
 
-
 /**
- * Shows the modal with a list of draft projects.
+ * Affiche la modale avec la liste des brouillons.
  */
 async function showDrafts() {
   try {
     const response = await fetch('/api/projects/drafts');
-    if (!response.ok) throw new Error('Failed to fetch drafts');
+    if (!response.ok) throw new Error('La récupération des brouillons a échoué');
 
     const drafts = await response.json();
     const container = document.getElementById('draftList');
@@ -74,93 +70,80 @@ async function showDrafts() {
     }
     document.getElementById('draftModal').classList.add('is-active');
   } catch (error) {
-    notyf.error('Erreur: ' + error.message);
+    notyf.error('Erreur : ' + error.message);
   }
 }
 
 /**
- * Loads a draft project into the editor.
- * @param {string} fileName - The name of the file to load.
+ * Charge un projet brouillon dans l'éditeur.
+ * @param {string} fileName - Le nom du fichier à charger.
  */
 async function loadDraft(fileName) {
   try {
+    // Ce point d'API devra être adapté pour renvoyer du HTML brut
     const response = await fetch(`/api/project?file=${fileName}&type=draft`);
-    if (!response.ok) throw new Error('Failed to load draft');
+    if (!response.ok) throw new Error('Le chargement du brouillon a échoué');
 
+    // La logique côté serveur sera adaptée pour renvoyer une structure simple
     const project = await response.json();
 
-    // Populate form fields
+    // Nous avons toujours besoin de remplir le champ titre
     document.getElementById('titre').value = project.frontMatter.titre || '';
-    document.getElementById('contexte').value = project.frontMatter.contexte || '';
-    document.getElementById('objectifs').value = project.frontMatter.objectifs || '';
-    document.getElementById('resultats').value = project.frontMatter.resultats || '';
-    document.getElementById('ressenti').value = project.frontMatter.ressenti || '';
-    document.getElementById('etudiants').value = (project.frontMatter.etudiants || []).join('\n');
-    document.getElementById('encadrants').value = (project.frontMatter.encadrants || []).join('\n');
-
-    tinymce.get('contenu-principal').setContent(project.content || '');
+    // Charger le contenu HTML complet
+    tinymce.get('tinymce-editor').setContent(project.content || '');
 
     currentFile = fileName;
     closeModal();
     notyf.success(`Brouillon "${fileName}" chargé.`);
-    updatePreview(); // Refresh preview after loading
   } catch (error) {
-    notyf.error('Erreur: ' + error.message);
+    notyf.error('Erreur : ' + error.message);
   }
 }
 
 /**
- * Closes the drafts modal.
+ * Ferme la modale des brouillons.
  */
 function closeModal() {
   document.getElementById('draftModal').classList.remove('is-active');
 }
 
 /**
- * Saves the current project as a draft.
+ * Enregistre le projet actuel comme brouillon.
  */
 async function saveDraft() {
   const titre = document.getElementById('titre').value.trim();
   if (!titre) {
-    notyf.error("Le titre est obligatoire.");
+    notyf.error("Le titre est obligatoire pour nommer le fichier.");
     return;
   }
 
+  // La nouvelle structure de données est beaucoup plus simple
   const data = {
     currentFile: currentFile,
-    frontMatter: {
-      titre: titre,
-      contexte: document.getElementById('contexte').value,
-      objectifs: document.getElementById('objectifs').value,
-      resultats: document.getElementById('resultats').value,
-      ressenti: document.getElementById('ressenti').value,
-      etudiants: document.getElementById('etudiants').value.split('\n').filter(Boolean),
-      encadrants: document.getElementById('encadrants').value.split('\n').filter(Boolean),
-      date_de_creation: new Date().toISOString()
-    },
-    content: tinymce.get('contenu-principal').getContent()
+    titre: titre,
+    content: tinymce.get('tinymce-editor').getContent()
   };
 
   try {
+    // Ce point d'API sera adapté pour gérer du HTML
     const response = await fetch('/api/drafts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
 
-    if (!response.ok) throw new Error('Failed to save draft');
+    if (!response.ok) throw new Error("L'enregistrement du brouillon a échoué");
 
     const result = await response.json();
     currentFile = result.file;
     notyf.success(`Brouillon "${titre}" enregistré !`);
   } catch (error) {
-    notyf.error('Erreur: ' + error.message);
+    notyf.error('Erreur : ' + error.message);
   }
 }
 
 /**
- * Submits the current draft for review, which means publishing it.
- * This function will call the publish API endpoint.
+ * Soumet le brouillon actuel pour relecture (publication).
  */
 async function submitForReview() {
   if (!currentFile) {
@@ -168,7 +151,6 @@ async function submitForReview() {
     return;
   }
 
-  // Simple confirmation dialog
   if (!confirm(`Êtes-vous sûr de vouloir soumettre le projet "${currentFile}" pour relecture ? Cette action le publiera.`)) {
     return;
   }
@@ -182,31 +164,22 @@ async function submitForReview() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to publish project');
+      throw new Error(errorData.error || 'La publication du projet a échoué');
     }
 
     notyf.success(`Projet "${currentFile}" publié avec succès !`);
-
-    // Reset the editor for a new project
     resetEditor();
-
   } catch (error) {
     notyf.error('Erreur lors de la publication : ' + error.message);
   }
 }
 
 /**
- * Resets all form fields to their initial state.
+ * Réinitialise l'éditeur pour un nouveau projet.
  */
 function resetEditor() {
   document.getElementById('titre').value = '';
-  document.getElementById('contexte').value = '';
-  document.getElementById('objectifs').value = '';
-  document.getElementById('resultats').value = '';
-  document.getElementById('ressenti').value = '';
-  document.getElementById('etudiants').value = '';
-  document.getElementById('encadrants').value = '';
-  tinymce.get('contenu-principal').setContent('');
   currentFile = null;
-  updatePreview();
+  // Recharger le modèle de base
+  loadTemplate();
 }
