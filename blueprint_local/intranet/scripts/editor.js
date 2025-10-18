@@ -127,6 +127,7 @@ async function saveDraft() {
   }
 
   const data = {
+    currentFile: currentFile,
     frontMatter: {
       titre: titre,
       contexte: document.getElementById('contexte').value,

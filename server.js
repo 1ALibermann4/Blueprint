@@ -102,23 +102,36 @@ app.get('/api/project', async (req, res) => {
 // API route to create or update a draft project
 app.post('/api/drafts', checkAuth, async (req, res) => {
   try {
-    const { frontMatter, content } = req.body;
+    const { frontMatter, content, currentFile } = req.body;
 
     if (!frontMatter || !frontMatter.titre) {
       return res.status(400).json({ error: 'Title is required in front matter' });
     }
 
     // Sanitize the title to create a safe filename.
-    const fileName = `${frontMatter.titre.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
-    const filePath = path.join(DRAFTS_DIR, fileName);
+    const newFileName = `${frontMatter.titre.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
+    const newFilePath = path.join(DRAFTS_DIR, newFileName);
+
+    // If a currentFile is provided and it's different from the new file name,
+    // it means we are renaming the file. We should delete the old one.
+    if (currentFile && currentFile !== newFileName) {
+      const oldFilePath = path.join(DRAFTS_DIR, currentFile);
+      try {
+        await fs.unlink(oldFilePath);
+      } catch (error) {
+        // Log the error but don't block the save operation
+        // The file might not exist, which is fine.
+        console.error(`Could not delete old file: ${oldFilePath}`, error);
+      }
+    }
 
     // Use gray-matter to format the content with front matter
     const fileContent = matter.stringify(content || '', frontMatter);
 
     await fs.mkdir(DRAFTS_DIR, { recursive: true });
-    await fs.writeFile(filePath, fileContent);
+    await fs.writeFile(newFilePath, fileContent);
 
-    res.status(201).json({ message: 'Draft saved successfully', file: fileName });
+    res.status(201).json({ message: 'Draft saved successfully', file: newFileName });
   } catch (error) {
     console.error('Error saving draft:', error);
     res.status(500).json({ error: 'Failed to save draft' });
@@ -243,6 +256,10 @@ app.get('/api/status', (req, res) => {
 //   });
 
 // Start the server and log a message to the console.
-app.listen(port, () => {
-  console.log(`BluePrint server is running on http://localhost:${port}`);
-});
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`BluePrint server is running on http://localhost:${port}`);
+  });
+}
+
+module.exports = app;
