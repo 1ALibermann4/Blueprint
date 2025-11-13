@@ -53,6 +53,10 @@ async function loadDraft(fileName) {
         container.innerHTML = project.content;
         makeContentEditable(container);
 
+        // Remplir le champ des tags
+        const tags = project.frontMatter.tags || [];
+        document.getElementById('project-tags').value = tags.join(', ');
+
         currentFile = fileName;
         initializeEditor();
         notyf.success(`Brouillon "${fileName}" chargé.`);
@@ -275,10 +279,14 @@ async function saveDraft() {
         return;
     }
 
+    // Récupérer et parser les tags
+    const tagsInput = document.getElementById('project-tags').value;
+    const tags = tagsInput.split(',').map(tag => tag.trim()).filter(Boolean);
+
     const data = {
         currentFile: currentFile,
         titre: titre,
-        tags: [], // Les tags ne sont plus gérés via un champ séparé.
+        tags: tags,
         content: content
     };
 
