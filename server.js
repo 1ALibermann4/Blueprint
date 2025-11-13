@@ -73,12 +73,44 @@ const listProjects = async (dir) => {
   }
 };
 
-// API route to list draft projects
+// API route to list draft projects with sorting and filtering
 app.get('/api/projects/drafts', checkAuth, async (req, res) => {
   try {
-    const projects = await listProjects(DRAFTS_DIR);
+    const { sortBy, tag } = req.query;
+
+    const files = await fs.readdir(DRAFTS_DIR);
+    const mdFiles = files.filter(file => file.endsWith('.md'));
+
+    let projects = await Promise.all(mdFiles.map(async file => {
+      const filePath = path.join(DRAFTS_DIR, file);
+      const fileContent = await fs.readFile(filePath, 'utf8');
+      const { data } = matter(fileContent);
+      return {
+        fileName: file,
+        titre: data.titre,
+        tags: data.tags || [],
+        dateModification: data.dateModification
+      };
+    }));
+
+    // Filtering by tag
+    if (tag) {
+      projects = projects.filter(p => p.tags.includes(tag));
+    }
+
+    // Sorting (defaults to by date descending)
+    if (sortBy === 'date' || !sortBy) {
+      projects.sort((a, b) => new Date(b.dateModification) - new Date(a.dateModification));
+    } else if (sortBy === 'title') {
+      projects.sort((a, b) => a.titre.localeCompare(b.titre));
+    }
+
     res.json(projects);
   } catch (error) {
+    if (error.code === 'ENOENT') {
+      // If the directory doesn't exist, return an empty array.
+      return res.json([]);
+    }
     console.error('Error listing draft projects:', error);
     res.status(500).json({ error: 'Failed to list draft projects' });
   }
@@ -138,7 +170,7 @@ app.get('/api/project', async (req, res) => {
 // API route to create or update a draft project (Markdown container version)
 app.post('/api/drafts', checkAuth, async (req, res) => {
   try {
-    const { titre, content, currentFile } = req.body;
+    const { titre, content, tags, currentFile } = req.body;
 
     if (!titre) {
       return res.status(400).json({ error: 'Title is required' });
@@ -148,10 +180,24 @@ app.post('/api/drafts', checkAuth, async (req, res) => {
     const newFileName = `${titre.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
     const newFilePath = path.join(DRAFTS_DIR, newFileName);
 
-    // If a currentFile is provided and it's different from the new file name,
-    // it means we are renaming the file. We should delete the old one.
-    if (currentFile && currentFile !== newFileName) {
-      const oldFilePath = path.join(DRAFTS_DIR, currentFile);
+    const oldFilePath = currentFile ? path.join(DRAFTS_DIR, currentFile) : null;
+    let dateCreation = new Date().toISOString(); // Default to now
+
+    // If a file exists, read its creation date to preserve it
+    if (currentFile) {
+        try {
+            const oldContent = await fs.readFile(oldFilePath, 'utf8');
+            const oldFrontMatter = matter(oldContent).data;
+            if (oldFrontMatter.dateCreation) {
+                dateCreation = oldFrontMatter.dateCreation;
+            }
+        } catch (error) {
+            // File might not exist if it's a new draft, which is fine
+        }
+    }
+
+    // If we are renaming the file, delete the old one
+    if (oldFilePath && currentFile !== newFileName) {
       try {
         await fs.unlink(oldFilePath);
       } catch (error) {
@@ -159,8 +205,13 @@ app.post('/api/drafts', checkAuth, async (req, res) => {
       }
     }
 
-    // Create front matter and stringify the content
-    const frontMatter = { titre: titre };
+    // Create front matter with dates and tags
+    const frontMatter = {
+      titre: titre,
+      tags: tags || [],
+      dateCreation: dateCreation,
+      dateModification: new Date().toISOString()
+    };
     const fileContent = matter.stringify(content || '', frontMatter);
 
     await fs.mkdir(DRAFTS_DIR, { recursive: true });

@@ -6,32 +6,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * Charge et affiche les projets en attente de relecture.
+ * @param {string} sortBy - Le critère de tri ('date' ou 'title').
+ * @param {string} tag - Le tag par lequel filtrer.
  */
-async function loadPendingProjects() {
+async function loadPendingProjects(sortBy = 'date', tag = '') {
     const container = document.getElementById('pending-projects-list');
     container.innerHTML = '<p>Chargement...</p>';
 
     try {
-        const response = await fetch('/api/projects/drafts');
+        let apiUrl = `/api/projects/drafts?sortBy=${sortBy}`;
+        if (tag) {
+            apiUrl += `&tag=${encodeURIComponent(tag)}`;
+        }
+
+        const response = await fetch(apiUrl);
         if (!response.ok) throw new Error('Failed to fetch pending projects.');
 
         const projects = await response.json();
 
         if (projects.length === 0) {
-            container.innerHTML = '<p>Aucun projet en attente.</p>';
+            container.innerHTML = '<p>Aucun projet en attente correspondant aux critères.</p>';
             return;
         }
 
         container.innerHTML = ''; // Vider le conteneur
-        projects.forEach(file => {
+        projects.forEach(project => {
             const projectItem = document.createElement('div');
             projectItem.className = 'project-item';
             projectItem.innerHTML = `
-                <span>${file}</span>
+                <span>
+                    <strong>${project.titre}</strong><br>
+                    <small>Tags: ${project.tags.join(', ') || 'aucun'}</small>
+                </span>
                 <div class="buttons">
-                    <button class="button is-info is-small" onclick="reviewProject('${file}')">Relire</button>
-                    <button class="button is-success is-small" onclick="validateProject('${file}')">Valider</button>
-                    <button class="button is-danger is-small" onclick="rejectProject('${file}')">Rejeter</button>
+                    <button class="button is-info is-small" onclick="reviewProject('${project.fileName}')">Relire</button>
+                    <button class="button is-success is-small" onclick="validateProject('${project.fileName}')">Valider</button>
+                    <button class="button is-danger is-small" onclick="rejectProject('${project.fileName}')">Rejeter</button>
                 </div>
             `;
             container.appendChild(projectItem);
@@ -104,6 +114,15 @@ async function loadPublishedProjects() {
         container.innerHTML = '<p class="has-text-danger">Erreur lors du chargement des projets.</p>';
         console.error(error);
     }
+}
+
+/**
+ * Applique le filtre par tag en rechargeant la liste.
+ */
+function applyTagFilter() {
+    const tag = document.getElementById('tag-filter-input').value.trim();
+    // Le premier argument est le tri, gardons 'date' par défaut lors du filtrage
+    loadPendingProjects('date', tag);
 }
 
 // --- Fonctions pour les actions ---
