@@ -81,6 +81,15 @@
 
     <main class="projects-container">
         <h1>Tous les Projets</h1>
+
+        <!-- Contrôles de tri et de filtre -->
+        <div class="filter-controls" style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+            <button onclick="loadProjects('date')">Trier par date</button>
+            <button onclick="loadProjects('title')">Trier par titre</button>
+            <input type="text" id="tag-filter-input" placeholder="Filtrer par tag..." style="flex-grow: 1; padding: 5px;">
+            <button onclick="applyTagFilter()">Filtrer</button>
+        </div>
+
         <div id="project-grid" class="project-grid">
             <!-- Les projets seront injectés ici par JavaScript -->
         </div>

@@ -34,6 +34,7 @@ app.use('/admin', checkAuth);
 
 const DRAFTS_DIR = path.join(__dirname, 'blueprint_local', 'intranet', 'projects', 'drafts');
 const PUBLISHED_DIR = path.join(__dirname, 'blueprint_local', 'public', 'projects', 'published');
+const PUBLISHED_MD_DIR = path.join(__dirname, 'blueprint_local', 'intranet', 'projects', 'published_md');
 
 /*
 // API route for simulated login (DISABLED)
@@ -116,10 +117,40 @@ app.get('/api/projects/drafts', checkAuth, async (req, res) => {
   }
 });
 
-// API route to list published projects
+// API route to list published projects with sorting and filtering
 app.get('/api/projects/published', async (req, res) => {
   try {
-    const projects = await listProjects(PUBLISHED_DIR);
+    const { sortBy, tag } = req.query;
+
+    // We now read from the directory containing the Markdown files of published projects
+    const files = await fs.readdir(PUBLISHED_MD_DIR);
+    const mdFiles = files.filter(file => file.endsWith('.md'));
+
+    let projects = await Promise.all(mdFiles.map(async file => {
+      const filePath = path.join(PUBLISHED_MD_DIR, file);
+      const fileContent = await fs.readFile(filePath, 'utf8');
+      const { data } = matter(fileContent);
+      return {
+        // We return the .html version of the file for the link
+        fileName: file.replace('.md', '.html'),
+        titre: data.titre,
+        tags: data.tags || [],
+        dateModification: data.dateModification
+      };
+    }));
+
+    // Filtering by tag
+    if (tag) {
+      projects = projects.filter(p => p.tags.includes(tag));
+    }
+
+    // Sorting (defaults to by date descending)
+    if (sortBy === 'date' || !sortBy) {
+      projects.sort((a, b) => new Date(b.dateModification) - new Date(a.dateModification));
+    } else if (sortBy === 'title') {
+      projects.sort((a, b) => a.titre.localeCompare(b.titre));
+    }
+
     res.json(projects);
   } catch (error) {
     console.error('Error listing published projects:', error);
@@ -247,8 +278,10 @@ app.post('/api/publish', checkAuth, async (req, res) => {
     await fs.mkdir(PUBLISHED_DIR, { recursive: true });
     await fs.writeFile(destHtmlPath, htmlContent);
 
-    // 4. Delete the original Markdown file from drafts
-    await fs.unlink(sourceMdPath);
+    // 4. Move the original Markdown file to the published_md directory
+    await fs.mkdir(PUBLISHED_MD_DIR, { recursive: true });
+    const destMdPath = path.join(PUBLISHED_MD_DIR, file);
+    await fs.rename(sourceMdPath, destMdPath);
 
     await logAction('PUBLISH_PROJECT', { file: htmlFileName, result: 'success' });
     res.json({ message: `Project ${htmlFileName} published successfully` });
