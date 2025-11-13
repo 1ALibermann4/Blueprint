@@ -1,11 +1,8 @@
 ---
-titre: Projet BlueprintLab (avec Tags)
-tags:
-  - nodejs
-  - gestion de projet
-  - test
-dateCreation: '2025-11-13T20:47:41.147Z'
-dateModification: '2025-11-13T20:47:41.147Z'
+titre: Projet Final de Test Images
+tags: []
+dateCreation: '2025-11-13T21:43:00.090Z'
+dateModification: '2025-11-13T21:43:00.090Z'
 ---
 <header class="top-header">
         <div class="header-left-icons">
@@ -18,7 +15,7 @@ dateModification: '2025-11-13T20:47:41.147Z'
     </header>
 
     <div class="hero-section">
-        <h1 class="project-title" id="mce_0">Projet BlueprintLab (avec Tags)</h1>
+        <h1 class="project-title" id="mce_0">Projet Final de Test Images</h1>
     </div>
 
     <nav class="category-filters">
@@ -35,7 +32,7 @@ dateModification: '2025-11-13T20:47:41.147Z'
         <section class="content-section">
             <div class="intro-grid">
                 <div class="intro-image-container">
-                    <img src="https://via.placeholder.com/350x200?text=Cliquez+pour+changer" alt="Image du projet Hydrogène (banc de test)" class="">
+                    <img src="/uploads/1763070179734-image1.jpg" alt="Image du projet Hydrogène (banc de test)" class="">
                 </div>
                 <div class="intro-text-block" id="mce_12"><p>Cliquez ici pour écrire un résumé de votre projet...</p>
 <p>À travers des travaux pratiques dans une optique concret, accueillir et ludique, afin de permettre aux étudiants d'expérimenter concrètement la production et l'utilisation de l'hydrogène.</p>
@@ -84,7 +81,7 @@ dateModification: '2025-11-13T20:47:41.147Z'
             <h2 class="etudiants-title">Noms des étudiants</h2>
             <div class="people-grid">
                 <div class="person-card" style="">
-                    <img src="persona0.png" alt="Photo Anthony Larharsen" class="">
+                    <img src="/uploads/1763070179839-image2.png" alt="Photo Anthony Larharsen" class="">
                     <span class="name" id="mce_16">Anthony Larharsen</span>
                 </div>
                 <div class="person-card" style="">
