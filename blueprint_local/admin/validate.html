@@ -55,6 +55,23 @@
         <!-- Section des projets en attente -->
         <div class="box">
             <h2 class="title is-4">Projets en attente de relecture</h2>
+
+            <!-- Contrôles de tri et de filtre -->
+            <div class="field is-grouped mb-4">
+                <div class="control">
+                    <div class="buttons has-addons">
+                        <button class="button" onclick="loadPendingProjects('date')">Trier par date</button>
+                        <button class="button" onclick="loadPendingProjects('title')">Trier par titre</button>
+                    </div>
+                </div>
+                <div class="control is-expanded">
+                    <input class="input" type="text" id="tag-filter-input" placeholder="Filtrer par tag...">
+                </div>
+                <div class="control">
+                    <button class="button is-info" onclick="applyTagFilter()">Filtrer</button>
+                </div>
+            </div>
+
             <div id="pending-projects-list">
                 <!-- La liste sera chargée ici -->
                 <p>Chargement...</p>

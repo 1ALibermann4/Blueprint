@@ -89,6 +89,8 @@ async function loadDraft(fileName) {
 
     // Nous avons toujours besoin de remplir le champ titre
     document.getElementById('titre').value = project.frontMatter.titre || '';
+    // Remplir les tags, en les joignant par une virgule si c'est un tableau
+    document.getElementById('tags').value = (project.frontMatter.tags || []).join(', ');
     // Charger le contenu HTML complet
     tinymce.get('tinymce-editor').setContent(project.content || '');
 
@@ -116,11 +118,14 @@ async function saveDraft() {
     notyf.error("Le titre est obligatoire pour nommer le fichier.");
     return;
   }
+  // Récupérer les tags et les transformer en tableau
+  const tags = document.getElementById('tags').value.trim().split(',').map(tag => tag.trim()).filter(Boolean);
 
   // La nouvelle structure de données est beaucoup plus simple
   const data = {
     currentFile: currentFile,
     titre: titre,
+    tags: tags,
     content: tinymce.get('tinymce-editor').getContent()
   };
 
