@@ -2,95 +2,27 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Éditeur BluePrint</title>
+  <title>Éditeur Visuel - BluePrint</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-  <!-- Utilisation du CDN pour Notyf pour éviter les problèmes de chemin -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
-  <link rel="stylesheet" href="../styles/styles.css">
+  <!-- Les styles du template seront ajoutés ici ou chargés depuis un fichier CSS -->
+  <link rel="stylesheet" href="../styles/page_projet.css">
   <script src="./tinymce/tinymce.min.js"></script>
-  <style>
-    /* Styles pour un éditeur qui prend plus de place */
-    body, html {
-      height: 100%;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      background-color: #f5f5f5;
-    }
-    .editor-container {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-    }
-    .editor-field {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .tox-tinymce {
-      flex-grow: 1 !important;
-    }
-  </style>
 </head>
 <body>
 
-  <div class="editor-container">
-    <h1 class="title">Éditeur de Projet</h1>
-
-    <!-- Garder le titre pour le nom du fichier -->
-    <div class="field">
-      <label class="label">Titre du projet (utilisé pour le nom du fichier)</label>
-      <div class="control">
-        <input id="titre" class="input" placeholder="Titre du projet">
-      </div>
-    </div>
-
-    <!-- Champ pour les tags -->
-    <div class="field">
-      <label class="label">Tags (séparés par des virgules)</label>
-      <div class="control">
-        <input id="tags" class="input" placeholder="Ex: web, design, ux">
-      </div>
-    </div>
-
-    <!-- Cible pour l'éditeur TinyMCE -->
-    <div class="field editor-field">
-      <label class="label">Contenu de la page</label>
-      <div class="control editor-field">
-        <textarea id="tinymce-editor"></textarea>
-      </div>
-    </div>
-
-    <!-- Boutons d'action -->
-    <div class="buttons mt-4">
-      <button class="button is-primary" onclick="saveDraft()">💾 Enregistrer</button>
-      <button class="button is-link" onclick="showDrafts()">📂 Brouillons</button>
-      <button class="button is-success" onclick="submitForReview()">📤 Soumettre pour relecture</button>
-    </div>
+  <!-- Conteneur principal pour l'éditeur visuel -->
+  <div id="visual-editor-container">
+    <!-- Le contenu de page_projet.html sera injecté ici -->
   </div>
 
-  <!-- Fenêtre modale de gestion des brouillons (inchangée) -->
-  <div class="modal" id="draftModal">
-    <div class="modal-background" onclick="closeModal()"></div>
-    <div class="modal-card">
-      <header class="modal-card-head">
-        <p class="modal-card-title">📚 Mes brouillons</p>
-        <button class="delete" aria-label="close" onclick="closeModal()"></button>
-      </header>
-      <section class="modal-card-body" id="draftList">
-        <!-- Liste dynamique ici -->
-      </section>
-      <footer class="modal-card-foot">
-        <button class="button" onclick="closeModal()">Fermer</button>
-      </footer>
-    </div>
+  <!-- Boutons d'action flottants ou dans une barre fixe -->
+  <div class="floating-action-buttons">
+      <button class="button is-primary" onclick="saveDraft()">💾 Enregistrer et quitter</button>
+      <a href="brouillons.html" class="button is-link">📂 Voir mes brouillons</a>
   </div>
 
-  <!-- Scripts -->
-  <!-- Utilisation du CDN pour Notyf -->
   <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
-  <script src="../scripts/header.js"></script>
   <script src="./scripts/editor.js"></script>
 </body>
 </html>

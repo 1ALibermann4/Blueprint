@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mes Projets - BluePrint</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+  <link rel="stylesheet" href="../styles/styles.css">
+</head>
+<body>
+
+  <section class="section">
+    <div class="container">
+      <div class="is-flex is-justify-content-space-between is-align-items-center">
+        <h1 class="title">Mes Projets</h1>
+        <a href="editor.html" class="button is-primary">Nouveau Projet</a>
+      </div>
+
+      <div class="box mt-5">
+        <h2 class="subtitle">Brouillons</h2>
+        <div id="draftList">
+          <!-- La liste des brouillons sera injectée ici par le script -->
+          <p>Chargement des brouillons...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+  <script src="./scripts/brouillons.js"></script>
+</body>
+</html>
