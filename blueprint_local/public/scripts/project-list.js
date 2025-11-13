@@ -1,49 +1,70 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const projectGrid = document.getElementById('project-grid');
+    // Charger les projets par défaut (triés par date)
+    loadProjects('date');
+});
 
+/**
+ * Charge et affiche les projets publiés.
+ * @param {string} sortBy - Le critère de tri ('date' ou 'title').
+ * @param {string} tag - Le tag par lequel filtrer.
+ */
+async function loadProjects(sortBy = 'date', tag = '') {
+    const projectGrid = document.getElementById('project-grid');
     if (!projectGrid) {
         console.error('Project grid container not found!');
         return;
     }
 
-    fetch('/api/projects/published')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch published projects.');
-            }
-            return response.json();
-        })
-        .then(projects => {
-            if (projects.length === 0) {
-                projectGrid.innerHTML = '<p>Aucun projet publié pour le moment.</p>';
-                return;
-            }
+    projectGrid.innerHTML = '<p>Chargement des projets...</p>';
 
-            projects.forEach(projectFile => {
-                const projectCard = document.createElement('div');
-                projectCard.className = 'project-card';
+    try {
+        let apiUrl = `/api/projects/published?sortBy=${sortBy}`;
+        if (tag) {
+            apiUrl += `&tag=${encodeURIComponent(tag)}`;
+        }
 
-                // Le titre est dérivé du nom de fichier
-                const title = projectFile.replace('.html', '').replace(/_/g, ' ');
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error('Failed to fetch published projects.');
+        }
 
-                // Créer un lien vers la page du projet
-                const projectLink = document.createElement('a');
-                projectLink.href = `/public/projects/published/${projectFile}`; // Lien direct vers le fichier HTML
+        const projects = await response.json();
 
-                projectCard.innerHTML = `
-                    <img src="/public/images/project-placeholder.png" alt="Image du projet">
-                    <div class="project-card-content">
-                        <h2>${title}</h2>
-                        <p>Cliquez pour voir les détails du projet.</p>
-                    </div>
-                `;
+        projectGrid.innerHTML = ''; // Vider la grille avant d'ajouter les nouveaux éléments
 
-                projectLink.appendChild(projectCard);
-                projectGrid.appendChild(projectLink);
-            });
-        })
-        .catch(error => {
-            console.error('Error fetching project list:', error);
-            projectGrid.innerHTML = '<p>Erreur lors du chargement des projets.</p>';
+        if (projects.length === 0) {
+            projectGrid.innerHTML = '<p>Aucun projet publié correspondant aux critères.</p>';
+            return;
+        }
+
+        projects.forEach(project => {
+            const projectCard = document.createElement('div');
+            projectCard.className = 'project-card';
+
+            const projectLink = document.createElement('a');
+            projectLink.href = `/public/projects/published/${project.fileName}`;
+
+            projectCard.innerHTML = `
+                <img src="/public/images/project-placeholder.png" alt="Image du projet">
+                <div class="project-card-content">
+                    <h2>${project.titre}</h2>
+                    <p>Tags: ${project.tags.join(', ') || 'aucun'}</p>
+                </div>
+            `;
+
+            projectLink.appendChild(projectCard);
+            projectGrid.appendChild(projectLink);
         });
-});
+    } catch (error) {
+        console.error('Error fetching project list:', error);
+        projectGrid.innerHTML = '<p>Erreur lors du chargement des projets.</p>';
+    }
+}
+
+/**
+ * Applique le filtre par tag en rechargeant la liste.
+ */
+function applyTagFilter() {
+    const tag = document.getElementById('tag-filter-input').value.trim();
+    loadProjects('date', tag); // Garder le tri par date par défaut lors du filtrage
+}
