@@ -16,10 +16,20 @@
     <!-- Le contenu de page_projet.html sera injecté ici -->
   </div>
 
-  <!-- Boutons d'action flottants ou dans une barre fixe -->
-  <div class="floating-action-buttons">
-      <button class="button is-primary" onclick="saveDraft()">💾 Enregistrer et quitter</button>
-      <a href="brouillons.html" class="button is-link">📂 Voir mes brouillons</a>
+  <div class="editor-controls-container" style="padding: 20px; background-color: #f5f5f5; border-top: 1px solid #dbdbdb;">
+    <!-- Champ pour les tags -->
+    <div class="field">
+      <label class="label">Tags (séparés par des virgules)</label>
+      <div class="control">
+        <input id="project-tags" class="input" type="text" placeholder="Ex: web, design, ux">
+      </div>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="buttons mt-4">
+        <button class="button is-primary" onclick="saveDraft()">💾 Enregistrer et quitter</button>
+        <a href="brouillons.html" class="button is-link">📂 Voir mes brouillons</a>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
