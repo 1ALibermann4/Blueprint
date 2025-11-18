@@ -36,8 +36,8 @@ const DRAFTS_DIR = path.join(__dirname, 'blueprint_local', 'intranet', 'projects
 const PUBLISHED_DIR = path.join(__dirname, 'blueprint_local', 'public', 'projects', 'published');
 const PUBLISHED_MD_DIR = path.join(__dirname, 'blueprint_local', 'intranet', 'projects', 'published_md');
 
-/*
-// API route for simulated login (DISABLED)
+
+// API route for simulated login
 app.post('/api/login', async (req, res) => {
   try {
     const { username } = req.body;
@@ -49,7 +49,7 @@ app.post('/api/login', async (req, res) => {
     req.session.user = { name: username };
 
     // Log the login event
-    await logAction('USER_LOGIN', { user: username, result: 'success' });
+    await logAction('USER_LOGIN', { data: { user: username, result: 'success' } });
 
     res.status(200).json({ message: 'Login successful.' });
   } catch (error) {
@@ -57,7 +57,6 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ message: 'An internal error occurred.' });
   }
 });
-*/
 
 // Helper function to list project files in a directory
 const listProjects = async (dir) => {
@@ -86,13 +85,12 @@ app.get('/api/projects/drafts', checkAuth, async (req, res) => {
       const filePath = path.join(DRAFTS_DIR, file);
       const fileContent = await fs.readFile(filePath, 'utf8');
       const { data } = matter(fileContent);
-      return {
-        fileName: file,
-        titre: data.titre,
-        tags: data.tags || [],
-        dateModification: data.dateModification
-      };
+      // Retourner l'objet projet complet pour le filtrage
+      return { ...data, fileName: file };
     }));
+
+    // Filtrer pour ne garder que les projets en attente de relecture
+    projects = projects.filter(p => p.status === 'pending_review');
 
     // Filtering by tag
     if (tag) {
@@ -114,6 +112,32 @@ app.get('/api/projects/drafts', checkAuth, async (req, res) => {
     }
     console.error('Error listing draft projects:', error);
     res.status(500).json({ error: 'Failed to list draft projects' });
+  }
+});
+
+// API route for students to list all their drafts, regardless of status
+app.get('/api/projects/my_drafts', checkAuth, async (req, res) => {
+  try {
+    const files = await fs.readdir(DRAFTS_DIR);
+    const mdFiles = files.filter(file => file.endsWith('.md'));
+
+    let projects = await Promise.all(mdFiles.map(async file => {
+      const filePath = path.join(DRAFTS_DIR, file);
+      const fileContent = await fs.readFile(filePath, 'utf8');
+      const { data } = matter(fileContent);
+      return { ...data, fileName: file };
+    }));
+
+    // Sort by modification date by default
+    projects.sort((a, b) => new Date(b.dateModification) - new Date(a.dateModification));
+
+    res.json(projects);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return res.json([]);
+    }
+    console.error('Error listing student drafts:', error);
+    res.status(500).json({ error: 'Failed to list student drafts' });
   }
 });
 
@@ -173,6 +197,19 @@ app.get('/api/templates/project', checkAuth, async (req, res) => {
   } catch (error) {
     console.error('Error reading project template:', error);
     res.status(500).json({ error: 'Failed to read project template' });
+  }
+});
+
+// API route to get the full project template for review purposes
+app.get('/api/templates/project_full', checkAuth, async (req, res) => {
+  try {
+    const templatePath = path.join(__dirname, 'blueprint_local', 'public', 'templates', 'page_projet.html');
+    const templateContent = await fs.readFile(templatePath, 'utf8');
+    res.setHeader('Content-Type', 'text/html');
+    res.send(templateContent);
+  } catch (error) {
+    console.error('Error reading full project template:', error);
+    res.status(500).json({ error: 'Failed to read full project template' });
   }
 });
 
@@ -236,10 +273,11 @@ app.post('/api/drafts', checkAuth, async (req, res) => {
       }
     }
 
-    // Create front matter with dates and tags
+    // Create front matter with dates, tags, and status
     const frontMatter = {
       titre: titre,
       tags: tags || [],
+      status: 'draft', // Default status for new drafts
       dateCreation: dateCreation,
       dateModification: new Date().toISOString()
     };
@@ -256,6 +294,66 @@ app.post('/api/drafts', checkAuth, async (req, res) => {
   }
 });
 
+// API route to submit a draft for review
+app.post('/api/submit_for_review', checkAuth, async (req, res) => {
+  try {
+    const { file } = req.body;
+    if (!file) {
+      return res.status(400).json({ error: 'File name is required' });
+    }
+
+    const filePath = path.join(DRAFTS_DIR, file);
+
+    // Read the existing draft
+    const fileContent = await fs.readFile(filePath, 'utf8');
+    const { data: frontMatter, content } = matter(fileContent);
+
+    // Update the status
+    frontMatter.status = 'pending_review';
+    frontMatter.dateModification = new Date().toISOString();
+
+    // Write the updated content back to the file
+    const updatedFileContent = matter.stringify(content, frontMatter);
+    await fs.writeFile(filePath, updatedFileContent);
+
+    await logAction('SUBMIT_FOR_REVIEW', { file, result: 'success' });
+    res.status(200).json({ message: 'Draft submitted for review successfully' });
+
+  } catch (error) {
+    console.error('Error submitting draft for review:', error);
+    res.status(500).json({ error: 'Failed to submit draft for review' });
+  }
+});
+
+// API route to reject a draft
+app.post('/api/reject_draft', checkAuth, async (req, res) => {
+  try {
+    const { file } = req.body;
+    if (!file) {
+      return res.status(400).json({ error: 'File name is required' });
+    }
+
+    const filePath = path.join(DRAFTS_DIR, file);
+
+    // Read, update status, and write back
+    const fileContent = await fs.readFile(filePath, 'utf8');
+    const { data: frontMatter, content } = matter(fileContent);
+
+    frontMatter.status = 'rejected';
+    frontMatter.dateModification = new Date().toISOString();
+
+    const updatedFileContent = matter.stringify(content, frontMatter);
+    await fs.writeFile(filePath, updatedFileContent);
+
+    await logAction('REJECT_DRAFT', { file, result: 'success' });
+    res.status(200).json({ message: 'Draft rejected successfully' });
+
+  } catch (error) {
+    console.error('Error rejecting draft:', error);
+    res.status(500).json({ error: 'Failed to reject draft' });
+  }
+});
+
 // API route to publish a project
 app.post('/api/publish', checkAuth, async (req, res) => {
   try {
@@ -266,19 +364,28 @@ app.post('/api/publish', checkAuth, async (req, res) => {
 
     const sourceMdPath = path.join(DRAFTS_DIR, file);
 
-    // 1. Read the Markdown file and extract its HTML content
+    // 1. Read the draft's Markdown file and extract its content and front matter
     const mdContent = await fs.readFile(sourceMdPath, 'utf8');
-    const { content: htmlContent } = matter(mdContent);
+    const { data: frontMatter, content: draftHtmlContent } = matter(mdContent);
 
-    // 2. Create the destination HTML file path
+    // 2. Read the project page template
+    const templatePath = path.join(__dirname, 'blueprint_local', 'public', 'templates', 'page_projet.html');
+    let templateContent = await fs.readFile(templatePath, 'utf8');
+
+    // 3. Replace the template's title and body content
+    let finalHtml = templateContent.replace(/<title>.*<\/title>/i, `<title>${frontMatter.titre} - BluePrint</title>`);
+    finalHtml = finalHtml.replace(/<body[^>]*>[\s\S]*<\/body>/i, `<body>${draftHtmlContent}</body>`);
+
+
+    // 4. Create the destination HTML file path
     const htmlFileName = file.replace('.md', '.html');
     const destHtmlPath = path.join(PUBLISHED_DIR, htmlFileName);
 
-    // 3. Write the extracted HTML to the new file
+    // 5. Write the final, complete HTML to the new file
     await fs.mkdir(PUBLISHED_DIR, { recursive: true });
-    await fs.writeFile(destHtmlPath, htmlContent);
+    await fs.writeFile(destHtmlPath, finalHtml);
 
-    // 4. Move the original Markdown file to the published_md directory
+    // 6. Move the original Markdown file to the published_md directory
     await fs.mkdir(PUBLISHED_MD_DIR, { recursive: true });
     const destMdPath = path.join(PUBLISHED_MD_DIR, file);
     await fs.rename(sourceMdPath, destMdPath);
