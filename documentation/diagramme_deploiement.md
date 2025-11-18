@@ -23,9 +23,9 @@ graph TD
         NodeApp[Application Node.js "BluePrint"]
 
         subgraph "Interfaces Servies par Node.js"
-            NodeApp_Public["Pages Publiques des Projets </br> (port 3000/public/)"]
-            NodeApp_Intranet["Intranet d'Édition </br> (port 3000/intranet/)"]
-            NodeApp_API["API REST </br> (port 3000/api/)"]
+            NodeApp_Public["Pages Publiques des Projets <br> (port 3000/public/)"]
+            NodeApp_Intranet["Intranet d'Édition <br> (port 3000/intranet/)"]
+            NodeApp_API["API REST <br> (port 3000/api/)"]
         end
 
         FileSystem[Système de Fichiers du Serveur]
