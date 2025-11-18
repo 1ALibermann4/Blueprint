@@ -6,55 +6,60 @@ L'hypothèse principale est que le serveur EnergyLab héberge l'application Node
 
 ```mermaid
 graph TD
-    subgraph "Internet (Visiteurs & Étudiants)"
+
+    %% --- Internet ----
+    subgraph Internet_Visiteurs_Etudiants
         Visiteur
         Etudiant
     end
 
-    subgraph "Serveur Web Principal de l'EPF (ex: Apache/Nginx)"
-        SiteWebEPF[Site Web Principal de l'EPF]
-        ReverseProxy[Reverse Proxy (Optionnel)]
+    %% --- Serveur Web Principal ----
+    subgraph Serveur_Web_Principal_EPF
+        SiteWebEPF[Site Web Principal EPF]
+        ReverseProxy[Reverse Proxy]
 
         SiteWebEPF -- "/projets/*" --> ReverseProxy
         ReverseProxy -- "redirige vers" --> NodeApp_Public
     end
 
-    subgraph "Serveur EnergyLab (Intranet)"
-        NodeApp[Application Node.js "BluePrint"]
+    %% --- Serveur EnergyLab ----
+    subgraph Serveur_EnergyLab_Intranet
+        NodeApp[Application Node.js BluePrint]
 
-        subgraph "Interfaces Servies par Node.js"
-            NodeApp_Public["Pages Publiques des Projets <br> (port 3000/public/)"]
-            NodeApp_Intranet["Intranet d'Édition <br> (port 3000/intranet/)"]
-            NodeApp_API["API REST <br> (port 3000/api/)"]
+        subgraph Interfaces_Node
+            NodeApp_Public["Pages Publiques\nport 3000/public"]
+            NodeApp_Intranet["Intranet Edition\nport 3000/intranet"]
+            NodeApp_API["API REST\nport 3000/api"]
         end
 
-        FileSystem[Système de Fichiers du Serveur]
+        FileSystem[Système de Fichiers]
 
         NodeApp -- "sert" --> NodeApp_Public
         NodeApp -- "sert" --> NodeApp_Intranet
         NodeApp -- "sert" --> NodeApp_API
 
-        NodeApp -- "lit/écrit" --> FileSystem
+        NodeApp -- "lit/ecrit" --> FileSystem
     end
 
-    subgraph "Système d'Authentification"
-        OpenID[Fournisseur OpenID de l'EPF]
+    %% --- Authentification ----
+    subgraph Systeme_Authentification
+        OpenID[OpenID EPF]
     end
 
     %% Interactions
-    Visiteur -- "HTTPS" --> SiteWebEPF
-    Etudiant -- "HTTPS" --> NodeApp_Intranet
+    Visiteur -- HTTPS --> SiteWebEPF
+    Etudiant -- HTTPS --> NodeApp_Intranet
 
-    NodeApp_Intranet -- "pour l'authentification" --> OpenID
-    Etudiant -- "via redirection" --> OpenID
+    NodeApp_Intranet -- "authentification" --> OpenID
+    Etudiant -- "redirection" --> OpenID
 
-    %% Flux de données du système de fichiers
-    subgraph "Organisation des Fichiers sur 'EnergyLab'"
+    %% Organisation des fichiers
+    subgraph Organisation_Fichiers_EnergyLab
         direction LR
-        FileSystem -- "contient" --> Projet_MD["/intranet/projects/drafts/*.md"]
-        FileSystem -- "contient" --> Projet_Published_MD["/intranet/projects/published_md/*.md"]
-        FileSystem -- "contient" --> Projet_Published_HTML["/public/projects/published/*.html"]
-        FileSystem -- "contient" --> Images["/public/uploads/*"]
+        FileSystem -- "contient" --> Projet_MD["drafts/*.md"]
+        FileSystem -- "contient" --> Projet_Published_MD["published_md/*.md"]
+        FileSystem -- "contient" --> Projet_Published_HTML["public_html/*.html"]
+        FileSystem -- "contient" --> Images["uploads/*"]
     end
 ```
 
