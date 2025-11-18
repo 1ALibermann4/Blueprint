@@ -49,8 +49,8 @@
                 });
 
                 if (response.ok) {
-                    // Rediriger vers la page d'administration après une connexion réussie
-                    window.location.href = '/admin/validate.html';
+                    // Rediriger vers la page des brouillons après une connexion réussie
+                    window.location.href = '/intranet/brouillons.html';
                 } else {
                     const data = await response.json();
                     errorMessage.textContent = data.message || 'Erreur de connexion.';

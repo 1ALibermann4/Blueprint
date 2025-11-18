@@ -1,8 +1,12 @@
 ---
-titre: Projet Final de Test Images
-tags: []
-dateCreation: '2025-11-13T21:43:00.090Z'
-dateModification: '2025-11-13T21:43:00.090Z'
+titre: Projet de Verification E2E
+tags:
+  - test
+  - e2e
+  - playwright
+status: pending_review
+dateCreation: '2025-11-18T10:43:53.009Z'
+dateModification: '2025-11-18T10:43:53.053Z'
 ---
 <header class="top-header">
         <div class="header-left-icons">
@@ -15,7 +19,7 @@ dateModification: '2025-11-13T21:43:00.090Z'
     </header>
 
     <div class="hero-section">
-        <h1 class="project-title" id="mce_0">Projet Final de Test Images</h1>
+        <h1 class="project-title" id="mce_0">Projet de Verification E2E</h1>
     </div>
 
     <nav class="category-filters">
@@ -31,19 +35,17 @@ dateModification: '2025-11-13T21:43:00.090Z'
     <main>
         <section class="content-section">
             <div class="intro-grid">
-                <div class="intro-image-container">
-                    <img src="/uploads/1763070179734-image1.jpg" alt="Image du projet Hydrogène (banc de test)" class="">
-                </div>
-                <div class="intro-text-block" id="mce_12"><p>Cliquez ici pour écrire un résumé de votre projet...</p>
+                <div class="intro-image-container" id="mce_12"><p><img src="https://via.placeholder.com/350x200?text=Cliquez+pour+changer" alt="Image du projet Hydrogène (banc de test)"></p></div>
+                <div class="intro-text-block" id="mce_13"><p>Cliquez ici pour écrire un résumé de votre projet...</p>
 <p>À travers des travaux pratiques dans une optique concret, accueillir et ludique, afin de permettre aux étudiants d'expérimenter concrètement la production et l'utilisation de l'hydrogène.</p>
 <div class="team-summary">
-<div class="team-member-sm"><img src="persona4.jpg" alt="Photo Test">
+<div class="team-member-sm"><img class="" src="persona4.jpg" alt="Photo Test">
 <div class="member-info">Test <small>Étudiant</small></div>
 </div>
-<div class="team-member-sm"><img src="persona1.jpeg" alt="Photo Étienne Giboud">
+<div class="team-member-sm"><img class="" src="persona1.jpeg" alt="Photo Étienne Giboud">
 <div class="member-info">Étienne Giboud <small>etienne.giboud@epf.fr</small></div>
 </div>
-<div class="team-member-sm"><img src="persona0.png" alt="Photo Gaël Alonso">
+<div class="team-member-sm"><img class="" src="persona0.png" alt="Photo Gaël Alonso">
 <div class="member-info">Gaël Alonso <small>gael.alonso@epf.fr</small></div>
 </div>
 </div></div>
@@ -55,13 +57,13 @@ dateModification: '2025-11-13T21:43:00.090Z'
                 <div class="objectifs-title">
                     <h2>Objectifs</h2>
                 </div>
-                <div class="objectif-block" id="mce_13"><p>Cliquez ici pour détailler les objectifs...</p></div>
+                <div class="objectif-block" id="mce_14"><p>Cliquez ici pour détailler les objectifs...</p></div>
             </div>
         </section>
 
         <section class="highlight-section resultats-section">
             <div class="resultats-content">
-                <div class="resultats-list" id="mce_14"><p>Cliquez ici pour décrire les résultats obtenus...</p></div>
+                <div class="resultats-list" id="mce_15"><p>Cliquez ici pour décrire les résultats obtenus...</p></div>
                 <div class="resultats-title">
                     <h2>Résultats</h2>
                 </div>
@@ -73,7 +75,7 @@ dateModification: '2025-11-13T21:43:00.090Z'
                 <div class="ressenti-title">
                     <h2>Ressenti de l'équipe</h2>
                 </div>
-                <div class="ressenti-text" id="mce_15"><p>Cliquez ici pour partager le ressenti de l'équipe...</p></div>
+                <div class="ressenti-text" id="mce_16"><p>Cliquez ici pour partager le ressenti de l'équipe...</p></div>
             </div>
         </section>
 
@@ -81,16 +83,16 @@ dateModification: '2025-11-13T21:43:00.090Z'
             <h2 class="etudiants-title">Noms des étudiants</h2>
             <div class="people-grid">
                 <div class="person-card" style="">
-                    <img src="/uploads/1763070179839-image2.png" alt="Photo Anthony Larharsen" class="">
-                    <span class="name" id="mce_16">Anthony Larharsen</span>
+                    <img src="persona0.png" alt="Photo Anthony Larharsen" class="">
+                    <span class="name" id="mce_17">Anthony Larharsen</span>
                 </div>
                 <div class="person-card" style="">
                     <img src="persona3.png" alt="Photo Lou Batereau" class="">
-                    <span class="name" id="mce_17">Lou Batereau</span>
+                    <span class="name" id="mce_18">Lou Batereau</span>
                 </div>
                 <div class="person-card" style="">
                     <img src="persona1.jpeg" alt="Photo Mathis Solier" class="">
-                    <span class="name" id="mce_18">Mathis Solier</span>
+                    <span class="name" id="mce_19">Mathis Solier</span>
                 </div>
             </div>
 
@@ -98,20 +100,20 @@ dateModification: '2025-11-13T21:43:00.090Z'
             <div class="people-grid encadrants-grid">
                 <div class="person-card" style="">
                     <img src="persona0.png" alt="Photo Étienne Giboud" class="">
-                    <span class="name" id="mce_19">Étienne Giboud</span>
-                    <span class="role" id="mce_20">etienne.giboud@epf.fr</span>
+                    <span class="name" id="mce_20">Étienne Giboud</span>
+                    <span class="role" id="mce_21">etienne.giboud@epf.fr</span>
                 </div>
                 <div class="person-card" style="">
                     <img src="persona1.jpeg" alt="Photo Gaël Alonso" class="">
-                    <span class="name" id="mce_21">Gaël Alonso</span>
-                    <span class="role" id="mce_22">gael.alonso@epf.fr</span>
+                    <span class="name" id="mce_22">Gaël Alonso</span>
+                    <span class="role" id="mce_23">gael.alonso@epf.fr</span>
                 </div>
             </div>
         </section>
 
         <section class="highlight-section multimedia-section">
             <h2 class="etudiants-title">Multimédias</h2>
-            <img src="image-multimedia.jpeg" alt="Image du modèle de banc de test">
+            <div class="multimedia-content" id="mce_24"><p>Ajoutez ici vos images, vidéos, et autres contenus multimédias.</p></div>
         </section>
 
     </main>

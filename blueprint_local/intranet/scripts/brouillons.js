@@ -9,11 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Charge et affiche la liste des brouillons.
+ * Charge et affiche la liste de tous les brouillons de l'étudiant.
  */
 async function loadDrafts() {
   try {
-    const response = await fetch('/api/projects/drafts');
+    const response = await fetch('/api/projects/my_drafts');
     if (!response.ok) throw new Error('La récupération des brouillons a échoué');
 
     const drafts = await response.json();
@@ -31,6 +31,7 @@ async function loadDrafts() {
       <thead>
         <tr>
           <th>Titre du Projet</th>
+          <th>Statut</th>
           <th>Dernière modification</th>
           <th>Actions</th>
         </tr>
@@ -42,13 +43,22 @@ async function loadDrafts() {
 
     for (const draft of drafts) {
       const tr = document.createElement('tr');
+      const statusInfo = getStatusInfo(draft.status);
+
+      let actionButtons = '';
+      if (draft.status === 'draft' || draft.status === 'rejected') {
+        actionButtons = `<a href="editor.html?file=${draft.fileName}" class="button is-small is-link">Modifier</a>`;
+      } else if (draft.status === 'pending_review') {
+        actionButtons = `<button class="button is-small is-link" disabled>En relecture</button>`;
+      }
+
       tr.innerHTML = `
         <td>${draft.titre}</td>
+        <td><span class="tag ${statusInfo.color}">${statusInfo.text}</span></td>
         <td>${new Date(draft.dateModification).toLocaleString('fr-FR')}</td>
         <td>
           <div class="buttons">
-            <a href="editor.html?file=${draft.fileName}" class="button is-small is-link">Modifier</a>
-            <button class="button is-small is-success" onclick="submitForReview('${draft.fileName}')">Soumettre</button>
+            ${actionButtons}
             <button class="button is-small is-danger" onclick="deleteDraft('${draft.fileName}', this)">Supprimer</button>
           </div>
         </td>
@@ -65,31 +75,20 @@ async function loadDrafts() {
 }
 
 /**
- * Soumet un brouillon pour relecture (publication).
- * @param {string} fileName - Le nom du fichier à publier.
+ * Retourne le texte et la couleur associés à un statut.
+ * @param {string} status - Le statut du brouillon.
+ * @returns {{text: string, color: string}}
  */
-async function submitForReview(fileName) {
-  if (!confirm(`Êtes-vous sûr de vouloir soumettre le projet "${fileName}" pour relecture ? Cette action le publiera.`)) {
-    return;
-  }
-
-  try {
-    const response = await fetch('/api/publish', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ file: fileName })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'La publication du projet a échoué');
+function getStatusInfo(status) {
+    switch (status) {
+        case 'pending_review':
+            return { text: 'En attente de relecture', color: 'is-warning' };
+        case 'rejected':
+            return { text: 'Rejeté', color: 'is-danger' };
+        case 'draft':
+        default:
+            return { text: 'Brouillon', color: 'is-info' };
     }
-
-    notyf.success(`Projet "${fileName}" soumis avec succès !`);
-    loadDrafts(); // Recharger la liste
-  } catch (error) {
-    notyf.error('Erreur lors de la soumission : ' + error.message);
-  }
 }
 
 /**
@@ -103,7 +102,6 @@ async function deleteDraft(fileName, button) {
   }
 
   try {
-    // Désactiver le bouton pour éviter les clics multiples
     button.classList.add('is-loading');
 
     const response = await fetch(`/api/drafts/${fileName}`, {
@@ -117,13 +115,11 @@ async function deleteDraft(fileName, button) {
 
     notyf.success(`Brouillon "${fileName}" supprimé.`);
 
-    // Supprimer la ligne du tableau
     const row = button.closest('tr');
     row.parentNode.removeChild(row);
 
   } catch (error) {
     notyf.error('Erreur : ' + error.message);
-    // Réactiver le bouton en cas d'erreur
     button.classList.remove('is-loading');
   }
 }

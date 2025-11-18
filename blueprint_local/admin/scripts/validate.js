@@ -73,7 +73,8 @@ async function loadLoginHistory() {
         let html = '<ul>';
         loginEvents.forEach(event => {
             const timestamp = new Date(event.timestamp).toLocaleString('fr-FR');
-            html += `<li><strong>${event.details.user}</strong> s'est connecté(e) le ${timestamp}</li>`;
+            // La structure correcte du log est event.data.user
+            html += `<li><strong>${event.data.user}</strong> s'est connecté(e) le ${timestamp}</li>`;
         });
         html += '</ul>';
 
@@ -137,7 +138,7 @@ async function validateProject(fileName) {
         const response = await fetch('/api/publish', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fileName: fileName.replace('.md', '') }) // L'API attend le nom sans extension
+            body: JSON.stringify({ file: fileName }) // L'API attend la clé 'file' avec le nom de fichier complet
         });
 
         if (!response.ok) {
@@ -157,22 +158,23 @@ async function validateProject(fileName) {
 }
 
 async function rejectProject(fileName) {
-    if (!confirm(`Êtes-vous sûr de vouloir rejeter et supprimer définitivement le projet "${fileName}" ?`)) {
+    if (!confirm(`Êtes-vous sûr de vouloir rejeter le projet "${fileName}" ? L'étudiant pourra le voir et le modifier.`)) {
         return;
     }
 
     try {
-        // Note: L'API attend le nom de fichier complet, y compris l'extension .md
-        const response = await fetch(`/api/drafts/${fileName}`, {
-            method: 'DELETE'
+        const response = await fetch('/api/reject_draft', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ file: fileName })
         });
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || 'Failed to delete project draft.');
+            throw new Error(errorData.error || 'Failed to reject project draft.');
         }
 
-        alert('Projet rejeté et supprimé avec succès.');
+        alert('Projet rejeté avec succès.');
         // Rafraîchir la liste des projets en attente
         loadPendingProjects();
 

@@ -96,13 +96,17 @@ function makeContentEditable(container) {
     container.querySelector('.objectif-block').classList.add('editable-text');
     container.querySelector('.resultats-list').classList.add('editable-text');
     container.querySelector('.ressenti-text').classList.add('editable-text');
+    container.querySelector('.multimedia-content').classList.add('editable-text');
     container.querySelectorAll('.person-card .name').forEach(el => el.classList.add('editable-text'));
     container.querySelectorAll('.person-card .role').forEach(el => el.classList.add('editable-text'));
 
-    // --- Ajout des classes pour l'édition d'images ---
-    const mainImage = container.querySelector('.intro-image-container img');
-    if (mainImage) mainImage.classList.add('editable-image');
-    container.querySelectorAll('.person-card img').forEach(el => el.classList.add('editable-image'));
+    // --- Zone d'accueil (image ou vidéo) ---
+    const mainMediaContainer = container.querySelector('.intro-image-container');
+    if (mainMediaContainer) mainMediaContainer.classList.add('editable-text'); // Rendre tout le conteneur éditable
+
+    // --- Autres images éditables ---
+    // Cible les images dans la section d'accueil et dans la section des participants
+    container.querySelectorAll('.person-card img, .team-member-sm img').forEach(el => el.classList.add('editable-image'));
 
     // --- Ajout des contrôles pour les participants ---
     container.querySelectorAll('.people-section').forEach(section => {
@@ -154,9 +158,10 @@ function initializeEditor() {
 
     console.log("Éditeur en mode 'inline' initialisé.");
 
-    // --- Gestionnaire pour le changement d'image ---
+    // --- Gestionnaire pour les actions non-TinyMCE ---
     document.getElementById('visual-editor-container').addEventListener('click', function(event) {
-        if (event.target.classList.contains('editable-image')) {
+        // Gérer le changement d'image uniquement si l'image n'est PAS dans une zone éditable par TinyMCE
+        if (event.target.classList.contains('editable-image') && !event.target.closest('.editable-text')) {
             handleImageUpload(event.target);
         }
         if (event.target.classList.contains('add-person-button')) {
@@ -197,7 +202,8 @@ function handleImageUpload(imageElement) {
             }
 
             const result = await response.json();
-            imageElement.src = result.location;
+            // Ajouter un timestamp pour forcer le rechargement de l'image et éviter les problèmes de cache
+            imageElement.src = result.location + '?t=' + new Date().getTime();
             notyf.success('Image mise à jour avec succès.');
 
         } catch (error) {
@@ -252,34 +258,32 @@ function removePerson(cardElement) {
 
 /**
  * Enregistre le projet actuel comme brouillon.
+ * @param {boolean} redirectOnSuccess - Si true, redirige vers la page des brouillons après la sauvegarde.
+ * @returns {string|null} - Le nom du fichier sauvegardé en cas de succès, sinon null.
  */
-async function saveDraft() {
+async function saveDraft(redirectOnSuccess = true) {
     // Détruire les instances de l'éditeur pour nettoyer le HTML
     tinymce.remove('.editable-text');
 
     const editorContainer = document.getElementById('visual-editor-container');
-    // Cloner pour éviter de modifier le DOM en direct avant d'avoir fini
     const contentClone = editorContainer.cloneNode(true);
 
-    // Nettoyage complet du HTML pour la sauvegarde
-    contentClone.querySelectorAll('.editable-text').forEach(el => el.classList.remove('editable-text'));
-    contentClone.querySelectorAll('.editable-image').forEach(el => el.classList.remove('editable-image'));
-    contentClone.querySelectorAll('.add-person-button').forEach(el => el.remove());
-    contentClone.querySelectorAll('.delete-person-button').forEach(el => el.remove());
+    // Nettoyage du HTML pour la sauvegarde
+    contentClone.querySelectorAll('.editable-text, .editable-image, .add-person-button, .delete-person-button').forEach(el => {
+        el.classList.remove('editable-text', 'editable-image');
+        if (el.matches('.add-person-button, .delete-person-button')) el.remove();
+    });
     contentClone.querySelectorAll('[style*="position: relative"]').forEach(el => el.style.position = '');
 
-
     const content = contentClone.innerHTML;
-
     const titleElement = editorContainer.querySelector('.project-title');
     const titre = titleElement ? titleElement.innerText.trim() : 'Sans Titre';
 
     if (!titre || titre === 'Titre de votre projet') {
         notyf.error("Veuillez donner un titre à votre projet.");
-        return;
+        return null;
     }
 
-    // Récupérer et parser les tags
     const tagsInput = document.getElementById('project-tags').value;
     const tags = tagsInput.split(',').map(tag => tag.trim()).filter(Boolean);
 
@@ -301,13 +305,59 @@ async function saveDraft() {
 
         const result = await response.json();
         currentFile = result.file;
-        notyf.success(`Brouillon "${titre}" enregistré ! Redirection...`);
+        notyf.success(`Brouillon "${titre}" enregistré !`);
 
+        if (redirectOnSuccess) {
+            setTimeout(() => {
+                window.location.href = 'brouillons.html';
+            }, 1500);
+        }
+
+        return result.file; // Retourne le nom du fichier
+
+    } catch (error) {
+        notyf.error('Erreur lors de la sauvegarde: ' + error.message);
+        return null;
+    }
+}
+
+/**
+ * Saves the current draft and then submits it for review.
+ */
+async function submitForReview() {
+    // First, save the draft to ensure all content is up-to-date.
+    // The saveDraft function already handles content extraction and validation.
+    // We need to modify it slightly to prevent redirection.
+
+    // Step 1: Save the content without redirecting.
+    const savedFile = await saveDraft(false); // Pass false to prevent redirection
+
+    if (!savedFile) {
+        notyf.error("La soumission a échoué car la sauvegarde a échoué.");
+        return;
+    }
+
+    // Step 2: Call the submit API.
+    try {
+        const response = await fetch('/api/submit_for_review', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ file: savedFile })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "La soumission a échoué.");
+        }
+
+        notyf.success("Projet soumis pour relecture avec succès ! Redirection...");
+
+        // Redirect after successful submission
         setTimeout(() => {
             window.location.href = 'brouillons.html';
         }, 1500);
 
     } catch (error) {
-        notyf.error('Erreur lors de la sauvegarde: ' + error.message);
+        notyf.error('Erreur lors de la soumission: ' + error.message);
     }
 }
