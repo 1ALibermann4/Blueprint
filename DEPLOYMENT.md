@@ -65,3 +65,11 @@ npm install pm2 -g
 # Démarrer l'application avec PM2
 pm2 start server.js --name "blueprint-app"
 ```
+
+## 5. Configuration en Production (Reverse Proxy)
+
+Pour une intégration transparente avec le site principal de l'école (ou de l'entreprise), il est recommandé de configurer un **reverse proxy** (avec Nginx ou Apache, par exemple) sur le serveur web principal.
+
+Le reverse proxy doit être configuré pour rediriger les requêtes publiques (ex: `https://votre-domaine.com/projets/*`) vers l'application Node.js sur le port où elle est exécutée (ex: `http://localhost:3000/public/*`).
+
+L'intranet d'édition (`/intranet`) peut rester accessible directement via l'adresse IP et le port du serveur EnergyLab, car il est destiné à un usage interne.
