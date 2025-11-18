@@ -56,7 +56,6 @@ graph TD
         FileSystem -- "contient" --> Projet_Published_HTML["/public/projects/published/*.html"]
         FileSystem -- "contient" --> Images["/public/uploads/*"]
     end
-
 ```
 
 ### Description de l'architecture
