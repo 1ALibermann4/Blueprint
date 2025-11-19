@@ -51,6 +51,21 @@ async function loadDraft(fileName) {
 
         const container = document.getElementById('visual-editor-container');
         container.innerHTML = project.content;
+
+        // Ensure the media gallery exists, even in older drafts
+        if (!container.querySelector('.multimedia-section')) {
+            const multimediaSection = document.createElement('section');
+            multimediaSection.className = 'highlight-section multimedia-section';
+            multimediaSection.innerHTML = `
+                <h2 class="etudiants-title">Multimédias</h2>
+                <div class="multimedia-gallery-container">
+                    <div class="multimedia-grid"></div>
+                    <button class="button is-primary add-media-button">Ajouter un média</button>
+                </div>
+            `;
+            container.appendChild(multimediaSection);
+        }
+
         makeContentEditable(container);
 
         // Remplir le champ des tags
@@ -82,6 +97,20 @@ function prepareTemplateForEditing(html) {
     doc.querySelector('.resultats-list').innerHTML = '<p>Cliquez ici pour décrire les résultats obtenus...</p>';
     doc.querySelector('.ressenti-text').innerHTML = '<p>Cliquez ici pour partager le ressenti de l\'équipe...</p>';
 
+    // --- Initialiser la section multimédia ---
+    const multimediaSection = doc.querySelector('.multimedia-section');
+    if (multimediaSection) {
+        multimediaSection.innerHTML = `
+            <h2 class="etudiants-title">Multimédias</h2>
+            <div class="multimedia-gallery-container">
+                <div class="multimedia-grid">
+                    <!-- Les vignettes des médias seront ajoutées ici dynamiquement -->
+                </div>
+                <button class="button is-primary add-media-button">Ajouter un média</button>
+            </div>
+        `;
+    }
+
     return doc.body.innerHTML;
 }
 
@@ -98,15 +127,20 @@ function makeContentEditable(container) {
     container.querySelector('.ressenti-text').classList.add('editable-text');
     container.querySelector('.multimedia-content').classList.add('editable-text');
     container.querySelectorAll('.person-card .name').forEach(el => el.classList.add('editable-text'));
-    container.querySelectorAll('.person-card .role').forEach(el => el.classList.add('editable-text'));
+    container.querySelectorAll('.person-card .role, .person-card .email').forEach(el => el.classList.add('editable-text'));
 
     // --- Zone d'accueil (image ou vidéo) ---
     const mainMediaContainer = container.querySelector('.intro-image-container');
-    if (mainMediaContainer) mainMediaContainer.classList.add('editable-text'); // Rendre tout le conteneur éditable
+    if (mainMediaContainer) {
+        mainMediaContainer.classList.add('editable-media');
+        mainMediaContainer.title = "Cliquez pour changer l'image ou la vidéo";
+    }
 
     // --- Autres images éditables ---
-    // Cible les images dans la section d'accueil et dans la section des participants
-    container.querySelectorAll('.person-card img, .team-member-sm img').forEach(el => el.classList.add('editable-image'));
+    container.querySelectorAll('.person-card img, .team-member-sm img').forEach(el => {
+        el.classList.add('editable-image');
+        el.title = "Cliquez pour changer l'image";
+    });
 
     // --- Ajout des contrôles pour les participants ---
     container.querySelectorAll('.people-section').forEach(section => {
@@ -160,33 +194,65 @@ function initializeEditor() {
 
     // --- Gestionnaire pour les actions non-TinyMCE ---
     document.getElementById('visual-editor-container').addEventListener('click', function(event) {
-        // Gérer le changement d'image uniquement si l'image n'est PAS dans une zone éditable par TinyMCE
-        if (event.target.classList.contains('editable-image') && !event.target.closest('.editable-text')) {
-            handleImageUpload(event.target);
+        const target = event.target;
+
+        // Gérer le clic sur une image éditable (pour la remplacer)
+        if (target.classList.contains('editable-image') && !target.closest('.editable-text')) {
+            handleMediaUpload(target.parentElement); // Envoyer le conteneur, pas l'image elle-même
         }
-        if (event.target.classList.contains('add-person-button')) {
-            addPerson(event.target.closest('.people-section'));
+        // Gérer le clic sur le conteneur de média principal
+        else if (target.closest('.editable-media')) {
+            handleMediaUpload(target.closest('.editable-media'));
         }
-        if (event.target.classList.contains('delete-person-button')) {
-            removePerson(event.target.closest('.person-card'));
+        // Gérer le bouton pour ajouter une personne
+        else if (target.classList.contains('add-person-button')) {
+            addPerson(target.closest('.people-section'));
+        }
+        // Gérer le bouton pour supprimer une personne
+        else if (target.classList.contains('delete-person-button')) {
+            removePerson(target.closest('.person-card'));
+        }
+        // Gérer l'ajout de média dans la galerie
+        else if (target.classList.contains('add-media-button')) {
+            handleAddMedia(target.closest('.multimedia-gallery-container'));
+        }
+        // Gérer la suppression de média de la galerie
+        else if (target.classList.contains('delete-media-button')) {
+            removeMedia(target.closest('.media-thumbnail'));
+        }
+        // Gérer l'ouverture du modal vidéo
+        else if (target.closest('.video-thumbnail')) {
+            openVideoModal(target.closest('.video-thumbnail').dataset.videoUrl);
         }
     });
+
+    // Gestionnaires pour fermer le modal vidéo
+    const modal = document.getElementById('video-modal');
+    const modalCloseButton = modal.querySelector('.modal-close');
+    const modalBackground = modal.querySelector('.modal-background');
+
+    const closeModal = () => {
+        modal.classList.remove('is-active');
+        document.getElementById('modal-video-player').pause();
+    };
+
+    modalCloseButton.addEventListener('click', closeModal);
+    modalBackground.addEventListener('click', closeModal);
 }
 
 /**
- * Gère le processus de téléversement d'une nouvelle image.
- * @param {HTMLImageElement} imageElement - L'élément <img> à mettre à jour.
+ * Gère le processus de téléversement d'un nouveau média (image ou vidéo).
+ * @param {HTMLElement} mediaContainer - Le conteneur du média à mettre à jour.
  */
-function handleImageUpload(imageElement) {
+function handleMediaUpload(mediaContainer) {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
-    fileInput.accept = 'image/*';
+    fileInput.accept = 'image/*,video/*'; // Accepte images et vidéos
     fileInput.style.display = 'none';
 
     fileInput.onchange = async () => {
-        if (fileInput.files.length === 0) {
-            return; // Pas de fichier sélectionné
-        }
+        if (fileInput.files.length === 0) return;
+
         const file = fileInput.files[0];
         const formData = new FormData();
         formData.append('file', file);
@@ -197,19 +263,37 @@ function handleImageUpload(imageElement) {
                 body: formData
             });
 
-            if (!response.ok) {
-                throw new Error('Le téléversement a échoué.');
-            }
+            if (!response.ok) throw new Error('Le téléversement a échoué.');
 
             const result = await response.json();
-            // Ajouter un timestamp pour forcer le rechargement de l'image et éviter les problèmes de cache
-            imageElement.src = result.location + '?t=' + new Date().getTime();
-            notyf.success('Image mise à jour avec succès.');
+            const mediaUrl = result.location + '?t=' + new Date().getTime();
+
+            // Vider le conteneur et y insérer le nouveau média
+            mediaContainer.innerHTML = '';
+            let newMediaElement;
+
+            if (file.type.startsWith('image/')) {
+                newMediaElement = document.createElement('img');
+                newMediaElement.src = mediaUrl;
+                newMediaElement.alt = "Média du projet";
+            } else if (file.type.startsWith('video/')) {
+                newMediaElement = document.createElement('video');
+                newMediaElement.src = mediaUrl;
+                newMediaElement.controls = true;
+                newMediaElement.autoplay = true;
+                newMediaElement.muted = true; // Important pour l'autoplay dans de nombreux navigateurs
+                newMediaElement.loop = true;
+            }
+
+            if (newMediaElement) {
+                mediaContainer.appendChild(newMediaElement);
+            }
+
+            notyf.success('Média mis à jour avec succès.');
 
         } catch (error) {
             notyf.error('Erreur: ' + error.message);
         } finally {
-            // Nettoyer en supprimant l'input de fichier
             document.body.removeChild(fileInput);
         }
     };
@@ -230,19 +314,19 @@ function addPerson(sectionElement) {
     newPersonCard.className = 'person-card';
     newPersonCard.style.position = 'relative';
     newPersonCard.innerHTML = `
-        <img src="https://via.placeholder.com/130" alt="Nouvelle personne" class="editable-image">
+        <img src="https://via.placeholder.com/130" alt="Nouvelle personne" class="editable-image" title="Cliquez pour changer l'image">
         <span class="name editable-text">Nom Prénom</span>
-        <span class="role editable-text">Rôle ou e-mail</span>
+        <span class="email editable-text">email@epf.fr</span>
         <span class="delete-person-button">&times;</span>
     `;
 
     grid.appendChild(newPersonCard);
 
-    // Réinitialiser TinyMCE pour inclure les nouveaux champs éditables
-    tinymce.remove('.editable-text');
-    initializeEditor(); // Ceci va réappliquer TinyMCE à tous les .editable-text, y compris les nouveaux
+    // Rendre les nouveaux champs éditables par TinyMCE
+    // Il est plus efficace de cibler uniquement les nouveaux éléments que de tout réinitialiser
+    tinymce.init({ selector: `#${newPersonCard.id} .editable-text`, inline: true, plugins: 'link', toolbar: 'bold italic underline | link' });
 
-    notyf.success('Nouvelle personne ajoutée. Vous pouvez maintenant éditer les informations.');
+    notyf.success('Nouvelle personne ajoutée.');
 }
 
 /**
@@ -254,6 +338,104 @@ function removePerson(cardElement) {
         cardElement.remove();
         notyf.success('Personne supprimée.');
     }
+}
+
+/**
+ * Gère l'ajout d'un nouveau média à la galerie multimédia.
+ * @param {HTMLElement} galleryContainer - Le conteneur de la galerie.
+ */
+function handleAddMedia(galleryContainer) {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*,video/*,application/pdf';
+    fileInput.style.display = 'none';
+
+    fileInput.onchange = async () => {
+        if (fileInput.files.length === 0) return;
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+            if (!response.ok) throw new Error('Le téléversement a échoué.');
+
+            const result = await response.json();
+            const mediaUrl = result.location;
+
+            const grid = galleryContainer.querySelector('.multimedia-grid');
+            const thumbnail = createMediaThumbnail(file.type, mediaUrl);
+            grid.appendChild(thumbnail);
+
+            notyf.success('Média ajouté à la galerie.');
+
+        } catch (error) {
+            notyf.error('Erreur: ' + error.message);
+        } finally {
+            document.body.removeChild(fileInput);
+        }
+    };
+
+    document.body.appendChild(fileInput);
+    fileInput.click();
+}
+
+/**
+ * Crée une vignette pour un média dans la galerie.
+ * @param {string} mediaType - Le type MIME du média.
+ * @param {string} mediaUrl - L'URL du média.
+ * @returns {HTMLElement} - L'élément de la vignette.
+ */
+function createMediaThumbnail(mediaType, mediaUrl) {
+    const thumbnail = document.createElement('div');
+    thumbnail.className = 'media-thumbnail';
+    thumbnail.style.position = 'relative';
+
+    let mediaElement;
+    if (mediaType.startsWith('image/')) {
+        mediaElement = `<img src="${mediaUrl}" alt="Média">`;
+    } else if (mediaType.startsWith('video/')) {
+        // Pour les vidéos, on affiche un caractère "play" et on attache un événement pour ouvrir le modal
+        mediaElement = `<div class="video-thumbnail" data-video-url="${mediaUrl}" style="cursor: pointer; font-size: 50px; text-align: center; line-height: 100px;">▶</div>`;
+    } else if (mediaType === 'application/pdf') {
+        mediaElement = `<a href="${mediaUrl}" target="_blank"><img src="/images/pdf-icon.png" alt="PDF Icon" class="pdf-icon"></a>`;
+    } else {
+        mediaElement = `<p>Type de média non supporté</p>`;
+    }
+
+    thumbnail.innerHTML = `
+        ${mediaElement}
+        <span class="delete-media-button">&times;</span>
+    `;
+
+    return thumbnail;
+}
+
+/**
+ * Supprime une vignette de média de la galerie.
+ * @param {HTMLElement} thumbnailElement - L'élément de la vignette à supprimer.
+ */
+function removeMedia(thumbnailElement) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce média ?')) {
+        thumbnailElement.remove();
+        notyf.success('Média supprimé.');
+    }
+}
+
+/**
+ * Ouvre le modal vidéo et y charge la vidéo spécifiée.
+ * @param {string} videoUrl - L'URL de la vidéo à lire.
+ */
+function openVideoModal(videoUrl) {
+    const modal = document.getElementById('video-modal');
+    const videoPlayer = document.getElementById('modal-video-player');
+
+    videoPlayer.src = videoUrl;
+    modal.classList.add('is-active');
+    videoPlayer.play();
 }
 
 /**

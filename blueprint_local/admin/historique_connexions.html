@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Historique des Connexions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="../styles/styles.css">
+</head>
+<body>
+
+    <section class="hero is-primary">
+        <div class="hero-body">
+            <p class="title">
+                Panneau d'Administration
+            </p>
+            <p class="subtitle">
+                Historique des connexions
+            </p>
+        </div>
+    </section>
+
+    <div class="container section">
+        <a href="validate.html" class="button mb-4">&larr; Retour</a>
+        <div class="box">
+            <h2 class="title is-4">Historique des 20 dernières connexions</h2>
+            <div id="login-history-list">
+                <!-- L'historique sera chargé ici -->
+                <p>Chargement...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/admin/scripts/historique.js"></script>
+
+</body>
+</html>

@@ -144,7 +144,16 @@ app.get('/api/projects/my_drafts', checkAuth, async (req, res) => {
 // API route to list published projects with sorting and filtering
 app.get('/api/projects/published', async (req, res) => {
   try {
-    const { sortBy, tag } = req.query;
+    const { sortBy, tag, include_featured } = req.query;
+
+    const featuredConfigPath = path.join(__dirname, 'featured_projects.json');
+    let featuredConfig = { featured: [] };
+    try {
+      featuredConfig = JSON.parse(await fs.readFile(featuredConfigPath, 'utf8'));
+    } catch (error) {
+      // Le fichier n'existe pas encore, c'est normal
+    }
+    const featuredMap = new Map(featuredConfig.featured.map(p => [p.fileName, p.position]));
 
     // We now read from the directory containing the Markdown files of published projects
     const files = await fs.readdir(PUBLISHED_MD_DIR);
@@ -154,13 +163,20 @@ app.get('/api/projects/published', async (req, res) => {
       const filePath = path.join(PUBLISHED_MD_DIR, file);
       const fileContent = await fs.readFile(filePath, 'utf8');
       const { data } = matter(fileContent);
-      return {
-        // We return the .html version of the file for the link
-        fileName: file.replace('.md', '.html'),
+      const htmlFileName = file.replace('.md', '.html');
+      const projectData = {
+        fileName: htmlFileName,
         titre: data.titre,
         tags: data.tags || [],
         dateModification: data.dateModification
       };
+
+      if (include_featured === 'true') {
+        projectData.isFeatured = featuredMap.has(htmlFileName);
+        projectData.featuredPosition = featuredMap.get(htmlFileName) || null;
+      }
+
+      return projectData;
     }));
 
     // Filtering by tag
@@ -177,6 +193,9 @@ app.get('/api/projects/published', async (req, res) => {
 
     res.json(projects);
   } catch (error) {
+    if (error.code === 'ENOENT') {
+      return res.json([]); // The directory doesn't exist yet, which is fine.
+    }
     console.error('Error listing published projects:', error);
     res.status(500).json({ error: 'Failed to list published projects' });
   }
@@ -273,11 +292,27 @@ app.post('/api/drafts', checkAuth, async (req, res) => {
       }
     }
 
+    let status = 'draft'; // Default for new files
+
+    // If updating, preserve the existing status, unless it's 'pending_review'.
+    // Saving a draft should never result in a 'pending_review' status.
+    if (currentFile) {
+        try {
+            const oldContent = await fs.readFile(oldFilePath, 'utf8');
+            const oldFrontMatter = matter(oldContent).data;
+            if (oldFrontMatter.status && oldFrontMatter.status !== 'pending_review') {
+                status = oldFrontMatter.status;
+            }
+        } catch (error) {
+            // It's a new draft, status remains 'draft'
+        }
+    }
+
     // Create front matter with dates, tags, and status
     const frontMatter = {
       titre: titre,
       tags: tags || [],
-      status: 'draft', // Default status for new drafts
+      status: status, // Use preserved or default status
       dateCreation: dateCreation,
       dateModification: new Date().toISOString()
     };
@@ -372,9 +407,12 @@ app.post('/api/publish', checkAuth, async (req, res) => {
     const templatePath = path.join(__dirname, 'blueprint_local', 'public', 'templates', 'page_projet.html');
     let templateContent = await fs.readFile(templatePath, 'utf8');
 
-    // 3. Replace the template's title and body content
+    // 3. Replace the template's title and inject the draft's HTML content into the main container
     let finalHtml = templateContent.replace(/<title>.*<\/title>/i, `<title>${frontMatter.titre} - BluePrint</title>`);
-    finalHtml = finalHtml.replace(/<body[^>]*>[\s\S]*<\/body>/i, `<body>${draftHtmlContent}</body>`);
+    finalHtml = finalHtml.replace(
+        /(<main class="container">)[\s\S]*(<\/main>)/i,
+        `<main class="container">${draftHtmlContent}</main>`
+    );
 
 
     // 4. Create the destination HTML file path
@@ -448,7 +486,8 @@ app.post('/api/upload', checkAuth, upload.single('file'), async (req, res) => {
     return res.status(400).json({ error: 'No file uploaded.' });
   }
   // TinyMCE expects a JSON response with a 'location' property.
-  const filePath = `/uploads/${req.file.filename}`;
+  // The path must be relative to the 'blueprint_local' static root.
+  const filePath = `/public/uploads/${req.file.filename}`;
   await logAction('FILE_UPLOAD', { file: req.file.filename, path: filePath, result: 'success' });
   res.json({ location: filePath });
 });
@@ -475,6 +514,27 @@ app.get('/api/logs/logins', checkAuth, async (req, res) => {
   }
 });
 
+
+// API route to save the featured projects configuration
+app.post('/api/projects/featured', checkAuth, async (req, res) => {
+  try {
+    const { featured } = req.body;
+    if (!Array.isArray(featured)) {
+      return res.status(400).json({ error: 'Invalid data format.' });
+    }
+
+    const featuredConfigPath = path.join(__dirname, 'featured_projects.json');
+    const config = { featured: featured };
+
+    await fs.writeFile(featuredConfigPath, JSON.stringify(config, null, 2));
+
+    await logAction('UPDATE_FEATURED', { result: 'success' });
+    res.status(200).json({ message: 'Featured projects configuration saved.' });
+  } catch (error) {
+    console.error('Error saving featured projects config:', error);
+    res.status(500).json({ error: 'Failed to save configuration.' });
+  }
+});
 
 // A simple test route to confirm the server is running.
 app.get('/api/status', (req, res) => {

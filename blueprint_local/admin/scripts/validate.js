@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadPendingProjects();
-    loadPublishedProjects();
-    loadLoginHistory();
+    loadFeaturedProjects();
 });
 
 /**
@@ -53,48 +52,14 @@ async function loadPendingProjects(sortBy = 'date', tag = '') {
 }
 
 /**
- * Charge et affiche l'historique des connexions.
+ * Charge les projets publiés pour la gestion de la mise en avant.
  */
-async function loadLoginHistory() {
-    const container = document.getElementById('login-history');
+async function loadFeaturedProjects() {
+    const container = document.getElementById('featured-projects-list');
     container.innerHTML = '<p>Chargement...</p>';
 
     try {
-        const response = await fetch('/api/logs/logins');
-        if (!response.ok) throw new Error('Failed to fetch login history.');
-
-        const loginEvents = await response.json();
-
-        if (loginEvents.length === 0) {
-            container.innerHTML = '<p>Aucune activité de connexion enregistrée.</p>';
-            return;
-        }
-
-        let html = '<ul>';
-        loginEvents.forEach(event => {
-            const timestamp = new Date(event.timestamp).toLocaleString('fr-FR');
-            // La structure correcte du log est event.data.user
-            html += `<li><strong>${event.data.user}</strong> s'est connecté(e) le ${timestamp}</li>`;
-        });
-        html += '</ul>';
-
-        container.innerHTML = html;
-
-    } catch (error) {
-        container.innerHTML = '<p class="has-text-danger">Erreur lors du chargement de l\'historique.</p>';
-        console.error(error);
-    }
-}
-
-/**
- * Charge et affiche les projets déjà publiés.
- */
-async function loadPublishedProjects() {
-    const container = document.getElementById('published-projects-list');
-    container.innerHTML = '<p>Chargement...</p>';
-
-    try {
-        const response = await fetch('/api/projects/published');
+        const response = await fetch('/api/projects/published?include_featured=true');
         if (!response.ok) throw new Error('Failed to fetch published projects.');
 
         const projects = await response.json();
@@ -104,15 +69,68 @@ async function loadPublishedProjects() {
             return;
         }
 
-        container.innerHTML = ''; // Vider le conteneur
-        projects.forEach(file => {
-            const projectItem = document.createElement('div');
-            projectItem.className = 'project-item';
-            projectItem.innerHTML = `<span>${file}</span>`;
-            container.appendChild(projectItem);
+        let html = '';
+        projects.forEach(project => {
+            html += `
+                <div class="field">
+                    <label class="checkbox">
+                        <input type="checkbox" name="featuredProject" value="${project.fileName}" ${project.isFeatured ? 'checked' : ''}>
+                        ${project.titre} (Position: <input type="number" class="input is-small" style="width: 60px;" name="featuredPosition" data-file="${project.fileName}" value="${project.featuredPosition || ''}" min="1" max="4">)
+                    </label>
+                </div>
+            `;
         });
+        container.innerHTML = html;
+
     } catch (error) {
         container.innerHTML = '<p class="has-text-danger">Erreur lors du chargement des projets.</p>';
+        console.error(error);
+    }
+}
+
+/**
+ * Enregistre les projets sélectionnés pour la mise en avant.
+ */
+async function saveFeaturedProjects() {
+    const featuredProjects = [];
+    document.querySelectorAll('input[name="featuredProject"]:checked').forEach(checkbox => {
+        const fileName = checkbox.value;
+        const positionInput = document.querySelector(`input[name="featuredPosition"][data-file="${fileName}"]`);
+        const position = positionInput ? parseInt(positionInput.value, 10) : 0;
+
+        if (position >= 1 && position <= 4) {
+            featuredProjects.push({ fileName, position });
+        }
+    });
+
+    // Simple validation côté client
+    const positions = featuredProjects.map(p => p.position);
+    if (new Set(positions).size !== positions.length) {
+        alert("Erreur : Chaque projet mis en avant doit avoir une position unique (1, 2, 3, ou 4).");
+        return;
+    }
+    if (featuredProjects.length > 4) {
+        alert("Erreur : Vous ne pouvez pas mettre plus de 4 projets en avant.");
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/projects/featured', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ featured: featuredProjects })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'La sauvegarde a échoué.');
+        }
+
+        alert('La sélection des projets à la une a été enregistrée !');
+        loadFeaturedProjects();
+
+    } catch (error) {
+        alert(`Erreur lors de la sauvegarde : ${error.message}`);
         console.error(error);
     }
 }
