@@ -100,6 +100,7 @@ function prepareTemplateForEditing(html) {
     // --- Initialiser la section multimédia ---
     const multimediaSection = doc.querySelector('.multimedia-section');
     if (multimediaSection) {
+        // On reconstruit le contenu en s'assurant de préserver .multimedia-content
         multimediaSection.innerHTML = `
             <h2 class="etudiants-title">Multimédias</h2>
             <div class="multimedia-gallery-container">
@@ -107,6 +108,9 @@ function prepareTemplateForEditing(html) {
                     <!-- Les vignettes des médias seront ajoutées ici dynamiquement -->
                 </div>
                 <button class="button is-primary add-media-button">Ajouter un média</button>
+            </div>
+            <div class="multimedia-content">
+                <p>Cliquez ici pour décrire les multimédias...</p>
             </div>
         `;
     }
