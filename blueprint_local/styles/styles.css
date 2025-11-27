@@ -1,54 +1,481 @@
-/* General layout for split view */
-.container-split {
+/* ============================================================
+   styles.css
+   Styles pour la page "Liste des projets" — BluePrintLab
+   Commentaires en français pour faciliter la maintenance.
+   ============================================================ */
+
+/* Importation de la police Montserrat (EPF charte) */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+/* Appliquer Montserrat à TOUT le site */
+* {
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* --------------------------
+   Variables de couleurs (charte EPF approximative)
+   Ajuste les valeurs si vous avez la palette exacte.
+   -------------------------- */
+:root{
+  --epf-blue: #cc140bdf;       /* rouge principal EPF (ajuster si nécessaire) */
+  --epf-dark: #05204a;       /* bleu sombre pour titres */
+  --muted: #6c757d;          /* gris neutre */
+  --bg: #ffffff;             /* fond */
+  --card-bg: #f8fafc;        /* fond léger des cartes */
+  --accent: #e9f2ff;         /* accent clair */
+  --radius: 10px;
+  --max-width: 1200px;
+  --gap: 20px;
+  --box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+}
+
+/* --------------------------
+   Reset léger et typographie
+   -------------------------- */
+* { box-sizing: border-box; }
+html,body { height:100%; margin:0; font-family: "Segoe UI", Roboto, Arial, sans-serif; background:var(--bg); color:var(--epf-dark); }
+a { color:var(--epf-blue); text-decoration:none; }
+.container { max-width:var(--max-width); margin:0 auto; padding:40px 20px; }
+
+/* --------------------------
+   Introduction / titre
+   -------------------------- */
+.intro { margin-bottom: 28px; }
+.intro h1 { margin:0; font-size:28px; color:var(--epf-dark); }
+.intro .sous-titre { margin-top:8px; color:var(--muted); }
+
+/* Controls : recherche + filtre */
+.controls {
+  margin-top:16px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.controls input[type="search"]{
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid #e0e6ef;
+  min-width:240px;
+}
+.controls select{
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid #e0e6ef;
+}
+/* Titre de la page placé au-dessus de la barre de recherche */
+.page-title {
+  margin: 0 0 8px 0;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--epf-dark);
+}
+
+/* Description courte sous le titre */
+.page-desc {
+  margin: 0 0 14px 0;
+  color: var(--muted);
+  font-size: 16px;
+  max-width: 1050px;
+  line-height: 1.55;
+}
+ 
+/* espace autour des controls */
+.controls {
+  margin-top: 18px;          /* ajuste espace après la description */
+  align-items: center;
+}
+
+/* pour rendre le champ recherche plus large sur desktop */
+.controls #searchInput { min-width: 360px; }
+
+/* rendre la petite zone "Ajouter tag" moins dominante sur mobile */
+@media (max-width: 640px){
+  
+  .controls { gap:10px; }
+}
+
+
+/* --------------------------
+   Grille des projets
+   -------------------------- */
+.projects-grid {
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap);
+  margin-top: 24px;
+}
+
+/* Carte projet */
+.project-card{
+  display:flex;
+  flex-direction:column;
+  background:var(--card-bg);
+  border-radius: var(--radius);
+  overflow:hidden;
+  box-shadow: var(--box-shadow);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+/* effet au survol */
+.project-card:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(2,6,23,0.08);
+}
+
+/* zone media (image) */
+.project-media{
+  width:100%;
+  height:200px; /* hauteur fixe pour l'aperçu : cohérence visuelle */
+  background: linear-gradient(180deg, #ffffff 0%, #f2f6fb 100%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.project-media img{
+  width:100%;
+  height:100%;
+  object-fit:cover; /* couvrira l'espace en respectant le ratio */
+  display:block;
+}
+
+/* Carousel pour les images multimédias dans project-media */
+.project-media .carousel-inner {
   display: flex;
-  height: 100vh;
+  transition: transform 0.5s ease;
+  width: 100%;
+  height: 100%;
 }
 
-.editor-pane {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-  border-right: 1px solid #dbdbdb;
+.project-media .carousel-inner > div {
+  width: 100%;
+  flex-shrink: 0;
+  height: 100%;
 }
 
-.preview-pane {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
+/* corps texte */
+.project-body{
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
-.notyf__buttons {
+/* méta : tag + date */
+.project-meta{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  color:var(--muted);
+  font-size:13px;
+}
+.tag{
+  background:var(--accent);
+  color:var(--epf-dark);
+  padding:6px 10px;
+  border-radius:8px;
+  font-weight:600;
+  font-size:13px;
+}
+
+/* titre et description */
+.project-title{
+  margin:0;
+  font-size:18px;
+  color:var(--epf-dark);
+}
+.project-desc{
+  margin:0;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.35;
+}
+
+/* footer de la carte : bouton + indicateur */
+.project-footer{
+  margin-top:auto; /* pousse vers le bas pour égaliser les cartes */
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+/* Bouton "Voir le projet" : fond transparent, bordure noire, texte en gras */
+.project-footer .btn {
+  background: transparent;       /* fond transparent */
+  color: #000;                   /* texte noir */
+  border: 1px solid #000;        /* bordure noire */
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;              /* texte en gras */
+  display: inline-block;
+  transition: background .12s ease, color .12s ease, transform .08s ease;
+}
+/* léger hover pour retour visuel */
+.project-footer .btn:hover {
+  background: rgba(0,0,0,0.06);
+  transform: translateY(-2px);
+}
+
+.media-indicator{
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* --------------------------
+   Responsive : ajustements
+   -------------------------- */
+@media (max-width: 1000px){
+  .projects-grid { grid-template-columns: repeat(2, 1fr); }
+  .project-media { height:160px; }
+}
+
+@media (max-width: 640px){
+  .container { padding:20px 14px; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .project-media { height:220px; } /* images plus hautes sur mobile */
+  .intro h1 { font-size:22px; }
+}
+
+/* --------------------------
+   Accessibility helpers (petits ajustements)
+   -------------------------- */
+a.btn:focus, input:focus, select:focus {
+  outline:3px solid rgba(13,110,253,0.15);
+  outline-offset:2px;
+}
+
+
+
+/* =========================
+   Styles pour les tags / pills et contrôle d'ajout
+   Ajouter à la fin de css/styles.css
+   ========================= */
+
+/* conteneur des tags */
+.tags-bar {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-left:4px;
+}
+
+/* style des "pills" */
+.tag-pill {
+  padding:8px 16px;
+  border-radius:999px;
+  border:1px solid rgba(2,6,23,0.06);
+  background: transparent;
+  color:var(--epf-dark);
+  font-weight:600;
+  font-size:14px;
+  cursor:pointer;
+  transition: background .15s ease, color .15s ease, transform .08s ease;
+}
+
+.tag-pill:hover { transform: translateY(-2px); }
+
+/* état actif (sélectionné) : couleur remplie */
+.tag-pill.active {
+  background: var(--epf-blue);      /* couleur primaire EPF */
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(13,110,253,0.12);
+}
+
+
+
+
+/* adapté sur mobile : empilement */
+@media (max-width: 640px){
+  .tags-bar { order: 3; width:100%; }
+
+}
+
+/* Couleurs par thématique (à ajuster si vous avez la palette exacte) */
+.tag.color-informatique { background: #2b6cff; color: #fff; }      /* bleu */
+.tag.color-ia           { background: #3817a6; color: #fff; }      /* violet foncé */
+.tag.color-robotique    { background: #0ab39c; color: #fff; }      /* turquoise */
+.tag.color-web          { background: #ff7a59; color: #fff; }      /* orange */
+.tag.color-eco          { background: #47a048; color: #fff; }      /* vert */
+.tag.color-design       { background: #9b6bff; color: #fff; }      /* mauve */
+.tag.color-data         { background: #f59e0b; color: #fff; }      /* ambre */
+.tag.color-ml           { background: #d9480f; color: #fff; }      /* rouille */
+.tag.color-environnement{ background: #16a34a; color: #fff; }      /* vert foncé */
+.tag.color-electronique { background: #0ea5a4; color: #fff; }      /* cyan */
+.tag.color-energie      { background: #f97316; color: #fff; }      /* orange foncé */
+/* fallback (si tag inconnu) */
+.tag.color-default      { background: var(--accent); color: var(--epf-dark); }
+
+
+
+/* ----------------------- BANNIÈRE ----------------------- */
+/* ----------------------- BANNIÈRE ----------------------- */
+/* :root ou variables déjà présentes plus haut dans ton fichier */
+#bandeau{
+  /* position relative pour que les enfants en absolute se positionnent par rapport à ce conteneur */
+  position: relative;
+
+  width: 100%;
+  min-height: 180px;              /* hauteur minimale adaptée */
+  padding: 28px 20px;             /* espacement interne pour mobile/desktop */
+  background-image: url('/images/capture.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
+  align-items: center;            /* centre verticalement le contenu */
+  justify-content: flex-start;    /* alignement horizontal */
+  overflow: hidden;               /* évite débordements */
 }
 
-.notyf__button {
-  border: none;
-  background: #eee;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-left: 0.5rem;
+/* Texte de la bannière : utiliser clamp pour être responsive */
+.bandeau-texte{
+  margin: 0;
+  margin-top: 100px;
+  z-index: 10;                    /* s'assurer que le texte soit au-dessus du fond */
+  color: #000;                    /* si tu veux texte noir, sinon #fff pour blanc */
+  font-weight: 700;
+  /* taille responsive : min 20px -> preferred 2.4rem -> max 42px */
+  font-size: clamp(20px, 2.5vw + 1rem, 42px);
+  line-height: 1.05;
+  /* Déplacer le texte à gauche avec un petit décalage */
+  margin-left: 10px;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.35);
 }
 
-.notyf__button--confirm {
-  background: #3e8ed0;
-  color: white;
+/* Logos : mieux utiliser des dimensions en max-height et position absolute */
+.logo-epf {
+  position: absolute;
+  top: 18px;        /* distance depuis le haut de la bannière */
+  right: 20px;
+  max-height: 60px; /* dimension maxi : conserver le ratio */
+  width: auto;
+  z-index: 12;
 }
 
-body {
-  background-color: #f5f5f5;
+.logo-barre {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  max-height: 60px;
+  width: auto;
+  z-index: 12;
 }
 
-.title {
-  color: #363636;
+/* Si tu veux que le texte soit centré verticalement dans une hauteur plus grande */
+@media (min-width: 1000px) {
+  #bandeau { min-height: 220px; }
+  .bandeau-texte { margin-left: 6%; }
 }
 
-.box {
-  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
+/* Adaptation mobile : réduire le padding et les logos */
+@media (max-width: 640px) {
+  #bandeau { padding: 18px 12px; min-height: 160px; }
+  .logo-epf, .logo-barre { max-height: 46px; top: 12px; }
+  .bandeau-texte { font-size: clamp(18px, 4vw, 28px); margin-left: 6%; }
 }
 
-.button {
-  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+
+
+
+/* ====== FOOTER STRUCTURE ====== */
+ 
+footer {
+    background: #F7F7F7;
+    padding: 50px 5%;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+}
+ 
+/* -------- PREFOOTER (logo + réseaux) -------- */
+.prefooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 50px;
+}
+ 
+.prefooter img {
+    height: 120px;
+}
+ 
+.social-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    padding: 0;
+}
+ 
+.social-links a {
+    color: #333;
+    text-decoration: none;
+}
+ 
+.social-links a:hover {
+    opacity: 0.6;
+}
+ 
+
+ 
+/* -------- BOTTOM -------- */
+.footer-bottom {
+    text-align: center;
+    margin-top: 40px;
+}
+ 
+.footer-links {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+}
+ 
+.footer-links a {
+    text-decoration: none;
+    color: #333;
+}
+ 
+.footer-links a:hover {
+    color: #000;
+}
+ 
+/* -------- LOGOS PARTENAIRES -------- */
+.partner-logos {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+    margin-top: 30px;
+}
+ 
+.partner-logos img {
+    height: 45px;
+    opacity: 0.9;
+}
+ 
+/* -------- RESPONSIVE -------- */
+@media (max-width: 900px) {
+    .footer-main {
+        grid-template-columns: repeat(2, 1fr); /* 2 colonnes */
+    }
+}
+ 
+@media (max-width: 600px) {
+    .footer-main {
+        grid-template-columns: 1fr;  /* 1 colonne */
+        text-align: center;
+    }
+ 
+    .footer-links {
+        flex-direction: column;
+        gap: 15px;
+    }
+ 
+    .partner-logos img {
+        height: 35px;
+    }
 }

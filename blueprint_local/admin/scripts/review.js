@@ -28,15 +28,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         const projectTitle = projectData.frontMatter.titre || fileName;
         projectTitleElement.textContent = `Relecture : ${projectTitle}`;
 
-        // Préparer le HTML final en injectant le contenu et le titre dans le modèle
-        let finalHtml = templateHtml.replace(
-            /<title>.*<\/title>/i,
-            `<title>${projectTitle} - Aperçu</title>`
-        );
-        finalHtml = finalHtml.replace(
-            /<body[^>]*>[\s\S]*<\/body>/i,
-            `<body>${projectData.content}</body>`
-        );
+        // Parser le template et le contenu du brouillon
+        const parser = new DOMParser();
+        const templateDoc = parser.parseFromString(templateHtml, 'text/html');
+        const draftDoc = parser.parseFromString(projectData.content, 'text/html');
+        
+        // Mettre à jour le titre dans le template
+        const titleTag = templateDoc.querySelector('title');
+        if (titleTag) {
+            titleTag.textContent = `${projectTitle} - Aperçu`;
+        }
+        
+        // Mettre à jour le titre dans le bandeau
+        const bandeauTexte = templateDoc.querySelector('.bandeau-texte');
+        if (bandeauTexte) {
+            bandeauTexte.textContent = projectTitle;
+        }
+        
+        // Injecter le contenu du brouillon dans le main du template
+        const main = templateDoc.querySelector('main');
+        const draftMain = draftDoc.querySelector('main');
+        
+        if (main) {
+            if (draftMain) {
+                // Si le contenu du brouillon a un main, utiliser son contenu
+                main.innerHTML = draftMain.innerHTML;
+            } else {
+                // Sinon, utiliser le contenu directement
+                main.innerHTML = projectData.content;
+            }
+        }
+        
+        // Obtenir le HTML final
+        let finalHtml = '<!DOCTYPE html>\n' + templateDoc.documentElement.outerHTML;
 
         // Créer un Iframe pour isoler l'aperçu et ses styles
         const iframe = document.createElement('iframe');

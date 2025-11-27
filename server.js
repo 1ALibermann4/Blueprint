@@ -19,7 +19,14 @@ app.use(session({
   cookie: { secure: false } // In production, set to true and use HTTPS
 }));
 
-// Middleware to protect routes
+/**
+ * Middleware d'authentification pour protéger les routes.
+ * Actuellement désactivé : toutes les requêtes sont autorisées.
+ * @param {express.Request} req - L'objet requête Express
+ * @param {express.Response} res - L'objet réponse Express
+ * @param {Function} next - Fonction pour passer au middleware suivant
+ * @returns {void}
+ */
 const checkAuth = (req, res, next) => {
   // AUTHENTICATION DISABLED: No check, all requests are allowed.
   next();
@@ -27,6 +34,11 @@ const checkAuth = (req, res, next) => {
 
 // Serve static files from the 'blueprint_local' directory
 app.use(express.static(path.join(__dirname, 'blueprint_local')));
+
+// Alias /images to /public/images for convenience
+app.use('/images', express.static(path.join(__dirname, 'blueprint_local', 'public', 'images')));
+app.use('/styles', express.static(path.join(__dirname, 'blueprint_local', 'styles')));
+app.use('/scripts', express.static(path.join(__dirname, 'blueprint_local', 'public', 'scripts')));
 
 // Protect the 'intranet' and 'admin' directories
 app.use('/intranet', checkAuth);
@@ -37,7 +49,14 @@ const PUBLISHED_DIR = path.join(__dirname, 'blueprint_local', 'public', 'project
 const PUBLISHED_MD_DIR = path.join(__dirname, 'blueprint_local', 'intranet', 'projects', 'published_md');
 
 
-// API route for simulated login
+/**
+ * Route API pour la connexion simulée (développement uniquement).
+ * Crée une session utilisateur avec le nom d'utilisateur fourni.
+ * @route POST /api/login
+ * @param {express.Request} req - L'objet requête Express contenant { username: string } dans le body
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec un message de succès ou d'erreur
+ */
 app.post('/api/login', async (req, res) => {
   try {
     const { username } = req.body;
@@ -58,7 +77,13 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Helper function to list project files in a directory
+/**
+ * Fonction utilitaire pour lister les fichiers de projet dans un répertoire.
+ * Filtre les fichiers pour ne retourner que les fichiers .md (brouillons) ou .html (projets publiés).
+ * @param {string} dir - Le chemin du répertoire à lister
+ * @returns {Promise<string[]>} Tableau des noms de fichiers de projet (.md ou .html)
+ * @throws {Error} Si une erreur survient (sauf si le répertoire n'existe pas, auquel cas retourne [])
+ */
 const listProjects = async (dir) => {
   try {
     const files = await fs.readdir(dir);
@@ -73,7 +98,14 @@ const listProjects = async (dir) => {
   }
 };
 
-// API route to list draft projects with sorting and filtering
+/**
+ * Route API pour lister les projets en attente de relecture (admin uniquement).
+ * Filtre les projets par statut 'pending_review' et permet le tri et le filtrage par tag.
+ * @route GET /api/projects/drafts
+ * @param {express.Request} req - L'objet requête Express avec query params : sortBy (date|title), tag (optionnel)
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec un tableau des projets en attente
+ */
 app.get('/api/projects/drafts', checkAuth, async (req, res) => {
   try {
     const { sortBy, tag } = req.query;
@@ -115,7 +147,14 @@ app.get('/api/projects/drafts', checkAuth, async (req, res) => {
   }
 });
 
-// API route for students to list all their drafts, regardless of status
+/**
+ * Route API pour que les étudiants listent tous leurs brouillons, quel que soit leur statut.
+ * Retourne tous les brouillons de l'utilisateur, triés par date de modification (plus récent en premier).
+ * @route GET /api/projects/my_drafts
+ * @param {express.Request} req - L'objet requête Express
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec un tableau de tous les brouillons de l'utilisateur
+ */
 app.get('/api/projects/my_drafts', checkAuth, async (req, res) => {
   try {
     const files = await fs.readdir(DRAFTS_DIR);
@@ -141,7 +180,14 @@ app.get('/api/projects/my_drafts', checkAuth, async (req, res) => {
   }
 });
 
-// API route to list published projects with sorting and filtering
+/**
+ * Route API pour lister les projets publiés avec tri et filtrage.
+ * Permet de filtrer par tag et de trier par date ou titre. Peut inclure les informations de mise en avant.
+ * @route GET /api/projects/published
+ * @param {express.Request} req - L'objet requête Express avec query params : sortBy (date|title), tag (optionnel), include_featured (true|false)
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec un tableau des projets publiés
+ */
 app.get('/api/projects/published', async (req, res) => {
   try {
     const { sortBy, tag, include_featured } = req.query;
@@ -201,15 +247,22 @@ app.get('/api/projects/published', async (req, res) => {
   }
 });
 
-// API route to get the project template
+/**
+ * Route API pour récupérer le template de projet (contenu principal uniquement).
+ * Extrait uniquement le contenu de la balise <main>, sans le header ni le footer.
+ * @route GET /api/templates/project
+ * @param {express.Request} req - L'objet requête Express
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse HTML avec le contenu de la balise <main>
+ */
 app.get('/api/templates/project', checkAuth, async (req, res) => {
   try {
     const templatePath = path.join(__dirname, 'blueprint_local', 'public', 'templates', 'page_projet.html');
     const templateContent = await fs.readFile(templatePath, 'utf8');
 
-    // Extract only the content within the <body> tag
-    const bodyContentMatch = templateContent.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-    const extractedContent = bodyContentMatch ? bodyContentMatch[1] : '';
+    // Extract only the content within the <main> tag (not header/footer)
+    const mainContentMatch = templateContent.match(/<main[^>]*>([\s\S]*)<\/main>/i);
+    const extractedContent = mainContentMatch ? mainContentMatch[1] : '';
 
     res.setHeader('Content-Type', 'text/html');
     res.send(extractedContent);
@@ -219,7 +272,14 @@ app.get('/api/templates/project', checkAuth, async (req, res) => {
   }
 });
 
-// API route to get the full project template for review purposes
+/**
+ * Route API pour récupérer le template complet de projet (avec header et footer).
+ * Utilisé pour l'aperçu dans l'éditeur et la page de relecture admin.
+ * @route GET /api/templates/project_full
+ * @param {express.Request} req - L'objet requête Express
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse HTML avec le template complet
+ */
 app.get('/api/templates/project_full', checkAuth, async (req, res) => {
   try {
     const templatePath = path.join(__dirname, 'blueprint_local', 'public', 'templates', 'page_projet.html');
@@ -232,7 +292,14 @@ app.get('/api/templates/project_full', checkAuth, async (req, res) => {
   }
 });
 
-// API route to get a single project's content (Markdown container version)
+/**
+ * Route API pour récupérer le contenu d'un projet unique.
+ * Lit un fichier Markdown et retourne le front matter et le contenu HTML.
+ * @route GET /api/project
+ * @param {express.Request} req - L'objet requête Express avec query params : file (nom du fichier), type (draft|published)
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec { frontMatter: object, content: string }
+ */
 app.get('/api/project', async (req, res) => {
   const { file, type } = req.query;
   if (!file || !type) {
@@ -254,7 +321,14 @@ app.get('/api/project', async (req, res) => {
   }
 });
 
-// API route to create or update a draft project (Markdown container version)
+/**
+ * Route API pour créer ou mettre à jour un brouillon de projet.
+ * Génère un nom de fichier unique à partir du titre, préserve la date de création et le statut existant.
+ * @route POST /api/drafts
+ * @param {express.Request} req - L'objet requête Express avec body : { titre: string, content: string, tags: string[], currentFile?: string }
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec { message: string, file: string } (nom du fichier créé/modifié)
+ */
 app.post('/api/drafts', checkAuth, async (req, res) => {
   try {
     const { titre, content, tags, currentFile } = req.body;
@@ -263,8 +337,9 @@ app.post('/api/drafts', checkAuth, async (req, res) => {
       return res.status(400).json({ error: 'Title is required' });
     }
 
-    // Sanitize the title to create a safe filename with .md extension.
-    const newFileName = `${titre.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
+    // Sanitize the title and create a unique filename
+    const { createUniqueFilename } = require('./utils/filename-sanitizer');
+    const newFileName = await createUniqueFilename(titre, DRAFTS_DIR, '.md', currentFile);
     const newFilePath = path.join(DRAFTS_DIR, newFileName);
 
     const oldFilePath = currentFile ? path.join(DRAFTS_DIR, currentFile) : null;
@@ -329,7 +404,14 @@ app.post('/api/drafts', checkAuth, async (req, res) => {
   }
 });
 
-// API route to submit a draft for review
+/**
+ * Route API pour soumettre un brouillon pour relecture.
+ * Met à jour le statut du projet à 'pending_review' et la date de modification.
+ * @route POST /api/submit_for_review
+ * @param {express.Request} req - L'objet requête Express avec body : { file: string } (nom du fichier)
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec un message de succès
+ */
 app.post('/api/submit_for_review', checkAuth, async (req, res) => {
   try {
     const { file } = req.body;
@@ -360,7 +442,14 @@ app.post('/api/submit_for_review', checkAuth, async (req, res) => {
   }
 });
 
-// API route to reject a draft
+/**
+ * Route API pour rejeter un brouillon (admin uniquement).
+ * Met à jour le statut du projet à 'rejected' et la date de modification.
+ * @route POST /api/reject_draft
+ * @param {express.Request} req - L'objet requête Express avec body : { file: string } (nom du fichier)
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec un message de succès
+ */
 app.post('/api/reject_draft', checkAuth, async (req, res) => {
   try {
     const { file } = req.body;
@@ -389,7 +478,15 @@ app.post('/api/reject_draft', checkAuth, async (req, res) => {
   }
 });
 
-// API route to publish a project
+/**
+ * Route API pour publier un projet (admin uniquement).
+ * Génère un fichier HTML à partir du template et du contenu du brouillon, déplace le Markdown vers published_md,
+ * et ajoute automatiquement les nouveaux tags à available_tags.json.
+ * @route POST /api/publish
+ * @param {express.Request} req - L'objet requête Express avec body : { file: string } (nom du fichier .md)
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec un message de succès et le nom du fichier HTML créé
+ */
 app.post('/api/publish', checkAuth, async (req, res) => {
   try {
     const { file } = req.body;
@@ -409,9 +506,17 @@ app.post('/api/publish', checkAuth, async (req, res) => {
 
     // 3. Replace the template's title and inject the draft's HTML content into the main container
     let finalHtml = templateContent.replace(/<title>.*<\/title>/i, `<title>${frontMatter.titre} - BluePrint</title>`);
+    
+    // Mettre à jour le titre dans le bandeau
     finalHtml = finalHtml.replace(
-        /(<main class="container">)[\s\S]*(<\/main>)/i,
-        `<main class="container">${draftHtmlContent}</main>`
+        /(<div class="bandeau-texte[^"]*">)[^<]*(<\/div>)/i,
+        `$1${frontMatter.titre}$2`
+    );
+    
+    // Injecter le contenu dans le main (peut être class="section" ou class="container")
+    finalHtml = finalHtml.replace(
+        /(<main[^>]*>)[\s\S]*(<\/main>)/i,
+        `$1${draftHtmlContent}$2`
     );
 
 
@@ -428,6 +533,33 @@ app.post('/api/publish', checkAuth, async (req, res) => {
     const destMdPath = path.join(PUBLISHED_MD_DIR, file);
     await fs.rename(sourceMdPath, destMdPath);
 
+    // 7. Ajouter les nouveaux tags au fichier available_tags.json
+    if (frontMatter.tags && Array.isArray(frontMatter.tags) && frontMatter.tags.length > 0) {
+      const tagsFilePath = path.join(__dirname, 'available_tags.json');
+      let tagsData = { tags: [] };
+      try {
+        const tagsContent = await fs.readFile(tagsFilePath, 'utf8');
+        tagsData = JSON.parse(tagsContent);
+      } catch (error) {
+        // Le fichier n'existe pas encore, on le créera
+      }
+      
+      // Ajouter les nouveaux tags qui n'existent pas déjà
+      const existingTags = new Set(tagsData.tags.map(t => t.toLowerCase()));
+      frontMatter.tags.forEach(tag => {
+        if (tag && !existingTags.has(tag.toLowerCase())) {
+          tagsData.tags.push(tag);
+          existingTags.add(tag.toLowerCase());
+        }
+      });
+      
+      // Trier les tags par ordre alphabétique
+      tagsData.tags.sort();
+      
+      // Sauvegarder le fichier
+      await fs.writeFile(tagsFilePath, JSON.stringify(tagsData, null, 2));
+    }
+
     await logAction('PUBLISH_PROJECT', { file: htmlFileName, result: 'success' });
     res.json({ message: `Project ${htmlFileName} published successfully` });
   } catch (error) {
@@ -436,7 +568,85 @@ app.post('/api/publish', checkAuth, async (req, res) => {
   }
 });
 
-// API route for deleting a draft
+/**
+ * Route API pour récupérer tous les tags disponibles.
+ * Lit le fichier available_tags.json et retourne la liste des tags.
+ * @route GET /api/tags
+ * @param {express.Request} req - L'objet requête Express
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec un tableau de tags
+ */
+app.get('/api/tags', async (req, res) => {
+  try {
+    const tagsFilePath = path.join(__dirname, 'available_tags.json');
+    let tagsData = { tags: [] };
+    try {
+      const tagsContent = await fs.readFile(tagsFilePath, 'utf8');
+      tagsData = JSON.parse(tagsContent);
+    } catch (error) {
+      // Le fichier n'existe pas encore, retourner une liste vide
+    }
+    res.json(tagsData.tags || []);
+  } catch (error) {
+    console.error('Error reading tags:', error);
+    res.status(500).json({ error: 'Failed to read tags' });
+  }
+});
+
+/**
+ * Route API pour ajouter de nouveaux tags (admin uniquement).
+ * Ajoute les tags fournis à available_tags.json s'ils n'existent pas déjà (comparaison insensible à la casse).
+ * @route POST /api/tags
+ * @param {express.Request} req - L'objet requête Express avec body : { tags: string[] }
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec un message de succès et la liste complète des tags
+ */
+app.post('/api/tags', checkAuth, async (req, res) => {
+  try {
+    const { tags } = req.body;
+    if (!tags || !Array.isArray(tags)) {
+      return res.status(400).json({ error: 'Tags array is required' });
+    }
+
+    const tagsFilePath = path.join(__dirname, 'available_tags.json');
+    let tagsData = { tags: [] };
+    try {
+      const tagsContent = await fs.readFile(tagsFilePath, 'utf8');
+      tagsData = JSON.parse(tagsContent);
+    } catch (error) {
+      // Le fichier n'existe pas encore, on le créera
+    }
+
+    // Ajouter les nouveaux tags qui n'existent pas déjà
+    const existingTags = new Set(tagsData.tags.map(t => t.toLowerCase()));
+    tags.forEach(tag => {
+      if (tag && typeof tag === 'string' && !existingTags.has(tag.toLowerCase())) {
+        tagsData.tags.push(tag);
+        existingTags.add(tag.toLowerCase());
+      }
+    });
+
+    // Trier les tags par ordre alphabétique
+    tagsData.tags.sort();
+
+    // Sauvegarder le fichier
+    await fs.writeFile(tagsFilePath, JSON.stringify(tagsData, null, 2));
+
+    res.json({ message: 'Tags added successfully', tags: tagsData.tags });
+  } catch (error) {
+    console.error('Error adding tags:', error);
+    res.status(500).json({ error: 'Failed to add tags' });
+  }
+});
+
+/**
+ * Route API pour supprimer un brouillon.
+ * Vérifie que le chemin est sécurisé (dans le répertoire drafts) avant de supprimer le fichier.
+ * @route DELETE /api/drafts/:fileName
+ * @param {express.Request} req - L'objet requête Express avec param : fileName (nom du fichier à supprimer)
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec un message de succès ou d'erreur
+ */
 app.delete('/api/drafts/:fileName', checkAuth, async (req, res) => {
   try {
     const { fileName } = req.params;
@@ -480,7 +690,14 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// API route for file uploads
+/**
+ * Route API pour téléverser un fichier (image, vidéo, PDF).
+ * Utilise multer pour gérer l'upload et retourne le chemin relatif du fichier pour TinyMCE.
+ * @route POST /api/upload
+ * @param {express.Request} req - L'objet requête Express avec un fichier dans le body (multipart/form-data)
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec { location: string } (chemin relatif du fichier)
+ */
 app.post('/api/upload', checkAuth, upload.single('file'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded.' });
@@ -492,7 +709,14 @@ app.post('/api/upload', checkAuth, upload.single('file'), async (req, res) => {
   res.json({ location: filePath });
 });
 
-// API route to get login history
+/**
+ * Route API pour récupérer l'historique des connexions (admin uniquement).
+ * Filtre les logs pour ne retourner que les événements USER_LOGIN, triés du plus récent au plus ancien.
+ * @route GET /api/logs/logins
+ * @param {express.Request} req - L'objet requête Express
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec un tableau des événements de connexion
+ */
 app.get('/api/logs/logins', checkAuth, async (req, res) => {
   try {
     const logFilePath = path.join(__dirname, 'logs', 'backend-actions.json');
@@ -515,7 +739,14 @@ app.get('/api/logs/logins', checkAuth, async (req, res) => {
 });
 
 
-// API route to save the featured projects configuration
+/**
+ * Route API pour sauvegarder la configuration des projets à la une (admin uniquement).
+ * Écrit la configuration dans featured_projects.json.
+ * @route POST /api/projects/featured
+ * @param {express.Request} req - L'objet requête Express avec body : { featured: Array<{fileName: string, position: number}> }
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {Promise<void>} Réponse JSON avec un message de succès
+ */
 app.post('/api/projects/featured', checkAuth, async (req, res) => {
   try {
     const { featured } = req.body;
@@ -536,7 +767,13 @@ app.post('/api/projects/featured', checkAuth, async (req, res) => {
   }
 });
 
-// A simple test route to confirm the server is running.
+/**
+ * Route API de test pour vérifier que le serveur fonctionne.
+ * @route GET /api/status
+ * @param {express.Request} req - L'objet requête Express
+ * @param {express.Response} res - L'objet réponse Express
+ * @returns {void} Réponse JSON avec { status: 'ok', message: string }
+ */
 app.get('/api/status', (req, res) => {
   res.json({ status: 'ok', message: 'Welcome to the BluePrint API' });
 });
@@ -640,7 +877,11 @@ app.get('/logout', (req, res) => {
 // =================================================================
 */
 
-// --- Server Startup ---
+/**
+ * Fonction de démarrage du serveur Express.
+ * Initialise le serveur sur le port configuré (défaut: 3000).
+ * @returns {Promise<void>}
+ */
 async function startServer() {
   // Uncomment the line below to enable OpenID initialization
   // await initializeOpenID();

@@ -33,10 +33,11 @@ async function loadPendingProjects(sortBy = 'date', tag = '') {
             const projectItem = document.createElement('div');
             projectItem.className = 'project-item';
             projectItem.innerHTML = `
-                <span>
-                    <strong>${project.titre}</strong><br>
-                    <small>Tags: ${project.tags.join(', ') || 'aucun'}</small>
-                </span>
+                <div style="flex: 1;">
+                    <h3 style="margin: 0 0 5px 0; font-size: 1.1em; font-weight: 600;">${project.titre || 'Sans titre'}</h3>
+                    <small style="color: #666;">Tags: ${project.tags && project.tags.length > 0 ? project.tags.join(', ') : 'aucun'}</small>
+                    ${project.fileName ? `<br><small style="color: #999;">Fichier: ${project.fileName}</small>` : ''}
+                </div>
                 <div class="buttons">
                     <button class="button is-info is-small" onclick="reviewProject('${project.fileName}')">Relire</button>
                     <button class="button is-success is-small" onclick="validateProject('${project.fileName}')">Valider</button>
@@ -167,7 +168,7 @@ async function validateProject(fileName) {
         alert('Projet validé et publié avec succès !');
         // Rafraîchir les deux listes pour voir le changement
         loadPendingProjects();
-        loadPublishedProjects();
+        loadFeaturedProjects();
 
     } catch (error) {
         alert(`Erreur lors de la validation : ${error.message}`);

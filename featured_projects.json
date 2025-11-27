@@ -1,8 +1,12 @@
 {
   "featured": [
     {
-      "fileName": "projet_robotique.html",
+      "fileName": "test_1.html",
       "position": 1
+    },
+    {
+      "fileName": "sans_titre.html",
+      "position": 2
     }
   ]
 }

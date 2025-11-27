@@ -1,105 +1,119 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des Projets - BluePrint</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/styles/styles.css"> <!-- Assumant que le style général est ici -->
-    <style>
-        /* Copier/coller le CSS de page_accueil.html pour la cohérence */
-        :root {
-            --color-black: #c5c5c5;
-            --color-dark-bg: #f0f0f0;
-            --color-text-light: #000000;
-            --color-text-gray: #000000;
-            --color-accent-red: #C00040;
-            --color-accent-purple: #8A3D9E;
-        }
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--color-dark-bg);
-            color: var(--color-text-light);
-            margin: 0;
-            padding: 0;
-        }
-        header, footer {
-            background-color: var(--color-black);
-            padding: 15px 5%;
-        }
-        /* ... (styles de l'en-tête et du pied de page de index.html) ... */
-
-        /* Styles pour la grille de projets, inspirés par l'exemple externe */
-        .projects-container {
-            padding: 40px 5%;
-        }
-        .project-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-        }
-        .project-card {
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: transform 0.2s;
-        }
-        .project-card:hover {
-            transform: translateY(-5px);
-        }
-        .project-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .project-card-content {
-            padding: 15px;
-        }
-        .project-card h2 {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-        }
-        .project-card p {
-            font-size: 0.9em;
-            color: #555;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="/styles/styles.css" /> 
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- En-tête (copié de index.html) -->
-    <header>
-        <div class="header-left">
-            <div class="menu-icon" style="color: var(--color-text-light);">☰</div>
-            <a href="index.html" class="header-title">Accueil</a>
+   <!-- ---------------------------
+       BANNIÈRE 
+       --------------------------- -->
+  <header id="bandeau" role="banner" aria-label="Bannière BluePrintLab">
+    <!-- texte : utiliser h1 pour le titre de la page (meilleure sémantique + SEO) -->
+    
+    <h1 class="bandeau-texte">
+      <span id="platformName">BluePrintLab</span> <br> 
+    </h1>
+
+
+    <!-- logos : images positionnées dans la bannière -->
+    <img src="/images/barre.png" alt="Barre EPF" class="logo-barre" />
+    <img src="/images/epf-logo-right.png" alt="Logo EPF" class="logo-epf" />
+  </header>
+
+
+  <main class="container">
+    <!-- Bande d'introduction / titre de la page -->
+    <section class="intro">
+
+       <!-- =========================
+     Controls : recherche + tags
+     ========================= -->
+     <!-- Titre de page (placé avant la barre de recherche) -->
+    <h2 class="page-title">Liste des projets</h2>
+
+    <!-- Description courte de la page (placée avant la barre de recherche) -->
+    <p class="page-desc">
+      Découvrez les projets réalisés par les étudiants de l'EPF Montpellier. Cette page centralise les réalisations par thématique et année.
+      <br>Utilisez la recherche et les filtres thématiques pour trouver un projet.
+    </p>
+
+    <div class="controls">
+      <!-- Recherche instantanée -->
+      <input id="searchInput" type="search" placeholder="Recherche de projets ..." aria-label="Rechercher un projet" />
+
+      <!-- Boîte qui contient les tags visibles (pills) - sera remplie dynamiquement -->
+      <div class="tags-bar" id="tagsBar" role="list">
+        <!-- Bouton 'Tous les projets' -->
+        <button class="tag-pill active" data-tag="__all__" aria-pressed="true">Tous les projets</button>
+        <!-- Les tags seront chargés dynamiquement depuis l'API -->
+      </div>
+
+      <!-- Formulaire pour ajouter un nouveau tag dynamiquement -->
+
+    </div>
+
+
+
+    </section>
+
+    <!-- Grille des cartes projets -->
+    <section class="projects-grid" id="projectsContainer" aria-label="Liste des projets">
+      <!-- Les projets seront injectés ici par JavaScript -->
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+ 
+    <!-- PRE-FOOTER (Logo + Réseaux sociaux) -->
+    <div class="prefooter">
+        <div class="prefooter-left">
+            <img src="/images/epf-100ans-couleur-crop.png" alt="EPF Logo">
         </div>
-        <div class="header-logo">
-            <img src="/public/images/epf-logo-header.png" alt="EPF Logo Header">
+ 
+        <div class="prefooter-right">
+            <h4>Suivez-nous</h4>
+            <ul class="social-links">
+                <li><a href="https://www.facebook.com/EPF.engineering.school" target="_blank">Facebook</a></li>
+                <li><a href="https://www.tiktok.com/@epf_ingenieur" target="_blank">TikTok</a></li>
+                <li><a href="https://www.instagram.com/epfengineeringschool" target="_blank">Instagram</a></li>
+                <li><a href="https://www.linkedin.com/school/epf-ecole-d-ingénieur-e-s/" target="_blank">LinkedIn</a></li>
+                <li><a href="https://www.youtube.com/user/epfingenieurs" target="_blank">YouTube</a></li>
+            </ul>
         </div>
-    </header>
+    </div>
 
-    <main class="projects-container">
-        <h1>Tous les Projets</h1>
+ 
+    <!-- MENTIONS + LIENS -->
+    <div class="footer-bottom">
+        <p>@ 2024 EPF</p>
+        <ul class="footer-links">
+            <li><a href="/contactez-nous">Contact</a></li>
+            <li><a href="/mentions-legales">Mentions légales</a></li>
+            <li><a href="/donnees-personnelles">Données personnelles</a></li>
+            <li><a href="/presse">Presse</a></li>
+        </ul>
+    </div>
+ 
+    <!-- LOGOS PARTENAIRES -->
+    <div class="partner-logos">
+        <img src="/images/cge.png" alt="CGE">
+        <img src="/images/cti-logo-cmjn.png" alt="CTI">
+        <img src="/images/eespig.jpeg" alt="EESPIG">
+        <img src="/images/eur-ace-0.png" alt="EUR-ACE">
+        <img src="/images/logo-qualiopi.jpeg" alt="Qualiopi">
+        <img src="/images/concours-avenir-logo.jpeg" alt="Concours Avenir">
+        <img src="/images/label-campusfrance-bienv.jpg" alt="Bienvenue en France">
+    </div>
+ 
+</footer>
 
-        <!-- Contrôles de tri et de filtre -->
-        <div class="filter-controls" style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
-            <button onclick="loadProjects('date')">Trier par date</button>
-            <button onclick="loadProjects('title')">Trier par titre</button>
-            <input type="text" id="tag-filter-input" placeholder="Filtrer par tag..." style="flex-grow: 1; padding: 5px;">
-            <button onclick="applyTagFilter()">Filtrer</button>
-        </div>
+  <!-- Scripts -->
+  <script src="/scripts/project-list.js"></script>
 
-        <div id="project-grid" class="project-grid">
-            <!-- Les projets seront injectés ici par JavaScript -->
-        </div>
-    </main>
-
-    <!-- Pied de page (copié de index.html) -->
-    <footer>
-        <!-- ... (Contenu du pied de page de index.html) ... -->
-    </footer>
-
-    <script src="/public/scripts/project-list.js"></script>
 </body>
 </html>

@@ -5,7 +5,16 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "jest"
+    "dev": "node server.js",
+    "test": "jest",
+    "pm2:start": "pm2 start server.js --name blueprint-app",
+    "pm2:stop": "pm2 stop blueprint-app",
+    "pm2:restart": "pm2 restart blueprint-app",
+    "pm2:logs": "pm2 logs blueprint-app",
+    "deps:check": "node scripts/update-dependencies.js check",
+    "deps:update": "node scripts/update-dependencies.js update",
+    "deps:audit": "node scripts/update-dependencies.js audit-fix",
+    "maintenance": "node scripts/maintenance.js"
   },
   "repository": {
     "type": "git",
