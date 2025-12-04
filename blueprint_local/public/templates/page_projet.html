@@ -1,143 +1,282 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Titre du Projet - BluePrint</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/styles/page_projet.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Lightbox2 -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<!-- CSS de ton projet -->
+<link rel="stylesheet" href="/styles/visuel_bulma.css">
+<link rel="stylesheet" href="/styles/page_projet.css">
+<title>Titre du Projet - BluePrint</title>
+
+<!-- Bulma CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+
 </head>
 <body>
 
-    <header class="top-header">
-        <div class="header-left-icons">
-            <a href="/page_accueil.html"><img src="/images/epf-logo-left.png" alt="Logo EPF Gauche"></a>
-            <a href="/page_accueil.html">🏠</a>
-        </div>
-        <div class="logo-epf-right">
-             <img src="/images/epf-logo-right.png" alt="Logo EPF Droit">
-        </div>
-    </header>
+<!-- MENU MOBILE -->
+<input type="checkbox" id="menu-toggle">
+<label for="menu-toggle" class="menu-btn">☰ Menu</label>
 
-    <main class="container">
-        <section class="hero-section">
-            <h1>Titre du Projet</h1>
-        </section>
-        <section class="intro-section">
-            <div class="intro-text-block">
-                <p>Cliquez ici pour écrire un résumé de votre projet...</p>
-            </div>
-            <div class="intro-image-container">
-                <img src="https://via.placeholder.com/350x200?text=Image+principale" alt="Image principale du projet">
-            </div>
-        </section>
-        <section class="details-section">
-            <div class="objectif-block">
-                <h2>Objectifs</h2>
-                <p>Cliquez ici pour détailler les objectifs...</p>
-            </div>
-            <div class="resultats-block">
-                <h2>Résultats</h2>
-                <div class="resultats-list">
-                    <p>Cliquez ici pour décrire les résultats obtenus...</p>
-                </div>
-            </div>
-        </section>
-        <section class="team-section">
-            <h2>L'équipe</h2>
-            <div class="ressenti-text">
-                <p>Cliquez ici pour partager le ressenti de l'équipe...</p>
-            </div>
-            <div class="people-section">
-                <h3>Participants</h3>
-                <div class="people-grid">
-                    <div class="person-card">
-                        <img src="https://via.placeholder.com/130" alt="Photo de participant">
-                        <span class="name">Nom Prénom</span>
-                        <span class="email">email@epf.fr</span>
-                    </div>
-                </div>
-            </div>
-            <div class="people-section">
-                <h3>Tuteurs</h3>
-                <div class="people-grid">
-                    <div class="person-card">
-                        <img src="https://via.placeholder.com/130" alt="Photo de tuteur">
-                        <span class="name">Nom Prénom</span>
-                        <span class="email">email.tuteur@epf.fr</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="highlight-section multimedia-section">
-            <h2 class="etudiants-title">Multimédias</h2>
-            <div class="multimedia-gallery-container">
-                <div class="multimedia-grid"></div>
-                <button class="button is-primary add-media-button">Ajouter un média</button>
-            </div>
-             <div class="multimedia-content">
-                <p>Description des multimédias...</p>
-            </div>
-        </section>
-    </main>
+<nav class="mobile-sidebar">
+    <ul>
+        <li><a href="#Accueil">Accueil</a></li>
+        <li><a href="#Synthese">Objectifs - Résultats - Ressenti</a></li>
+        <li><a href="#Multimedia">Multimédias</a></li>
+        <li><a href="#Encadrants">Encadrants</a></li>
+        <li><a href="#Étudiants">Étudiants</a></li>
+    </ul>
+</nav>
 
-    <footer>
-        <div class="footer-top">
-            <div class="footer-logo-block">
-                 <img class="epf-logo" src="/images/epf-logo-footer.png" alt="EPF Logo">
-                <img class="epf-years" src="/images/epf-1925-2025.png" alt="1925-2025">
+
+<!-- Bandeau -->
+<div id="bandeau">
+    <div class="bandeau-texte editable-text">Titre du Projet</div>
+    <div class="bandeau-blanc"></div>
+    <a href="/public/page_accueil.html" class="logo-maison">
+        <i class="fas fa-house"></i>
+    </a>
+    <img src="/images/epf-logo-right.png" alt="Logo EPF" class="logo-epf">
+</div>
+
+<!-- Filtres -->
+<nav class="category-filters">
+    <a href="#Accueil" class="active">Accueil</a>
+    <a href="#Synthese">Objectifs - Résultats - Ressenti</a>
+    <a href="#Étudiants">Étudiants</a>
+    <a href="#Encadrants">Encadrants</a>
+    <a href="#Multimédias">Multimédias</a>
+</nav>
+
+<main class="section">
+
+<!-- Accueil -->
+<section id="Accueil">
+    <div class="intro-grid container columns is-vcentered is-variable is-8">
+    <!-- Vidéo d'introduction -->
+    <div class="column video-column">
+      <div class="video-container editable-media">
+        <video controls loop style="display: none;">
+          Votre navigateur ne supporte pas la lecture vidéo.
+        </video>
+        <p style="text-align: center; padding: 20px; border: 2px dashed #ccc; color: #666;">Cliquez ici pour ajouter une vidéo</p>
+      </div>
+    </div>
+
+
+        <!-- Texte -->
+        <div class="column intro-text-block">
+            <p class="editable-text">Cliquez ici pour écrire un résumé de votre projet...</p>
+
+            <div class="team-summary mt-4" style="display: flex; gap: 40px; flex-wrap: wrap;">
+
+    <!-- Colonne Étudiants -->
+    <div class="team-column">
+        <h3 style="margin-bottom: 15px; font-weight: 600;">Étudiants</h3>
+        <div class="team-member is-flex is-align-items-center mb-3">
+            <img src="/images/photo-test-etudiant.png" alt="Étudiant" class="editable-image" style="width:60px; height:60px; border-radius:50%; margin-right:10px; cursor: pointer;">
+            <div>
+                <span class="has-text-weight-semibold editable-text">Nom Prénom</span><br>
+                <small class="editable-text">Étudiant</small>
             </div>
-            <div class="footer-social">
-                <span>Follow us</span>
-                <div class="footer-social-icons">
-                    <a href="#">f</a><a href="#">d</a><a href="#">i</a><a href="#">l</a><a href="#">y</a>
-                </div>
-            </div>
+            <span class="delete-person-button" style="margin-left: 10px; cursor: pointer; color: red; font-weight: bold;">&times;</span>
         </div>
+        <button class="button is-small is-primary add-person-button" data-role="etudiant" style="margin-top: 10px;">+ Ajouter un étudiant</button>
+    </div>
 
-        <div class="footer-links-grid">
-            <div class="footer-column">
-                <h4>ABOUT EPF</h4>
-                <p>A unique institution</p>
-                <p>Inclusive and socially committed campuses</p>
-                <p>Accreditations, labels & rankings</p>
+    <!-- Colonne Encadrants -->
+    <div class="team-column">
+        <h3 style="margin-bottom: 15px; font-weight: 600;">Encadrants</h3>
+        <div class="team-member is-flex is-align-items-center mb-3">
+            <img src="/images/photo-etienne-giboud.png" alt="Encadrant" class="editable-image" style="width:60px; height:60px; border-radius:50%; margin-right:10px; cursor: pointer;">
+            <div>
+                <span class="has-text-weight-semibold editable-text">Nom Prénom</span><br>
+                <small class="editable-text">Encadrant</small>
             </div>
-            <div class="footer-column">
-                <h4>PROGRAMS</h4>
-                <p>General engineering degree</p>
-                <p>French for engineers programs</p>
-                <p>French foundation Semester</p>
+            <span class="delete-person-button" style="margin-left: 10px; cursor: pointer; color: red; font-weight: bold;">&times;</span>
+        </div>
+        <button class="button is-small is-primary add-person-button" data-role="encadrant" style="margin-top: 10px;">+ Ajouter un encadrant</button>
+    </div>
+
+    <!-- Colonne Fichiers -->
+    <div class="team-column">
+        <h3 style="margin-bottom: 15px; font-weight: 600;">Fichiers</h3>
+        <a href="#" target="_blank" class="pdf-item">
+            <div class="pdf-preview-1">
+                <span class="pdf-icon-1">📁</span>
+                <p>Télécharger la documentation</p>
             </div>
-            <div class="footer-column">
-                <h4>HOW TO ENROLL</h4>
-                <p>French speaking students</p>
-                <p>Exchange students</p>
-                <p>Non-French speaking students</p>
-            </div>
-            <div class="footer-column">
-                <h4>CAREER</h4>
-                <p>Prepare your career</p>
-                <p>Internships and work experiences</p>
-            </div>
+        </a>
+        <button class="button is-small is-primary add-person-button" data-role="fichier" style="margin-top: 20px;">
+            + Ajouter un dossier
+        </button>
+    </div>
+
+</div>
+
         </div>
 
-        <div class="footer-bottom-bar">
-            <span>© 2024 EPF</span>
-            <div class="footer-logos">
-                <img src="/images/logo-partner-1.png" alt="Partner Logo 1">
-                <img src="/images/logo-partner-2.png" alt="Partner Logo 2">
-                <img src="/images/logo-partner-3.png" alt="Partner Logo 3">
-                <img src="/images/logo-partner-4.png" alt="Partner Logo 4">
-                <img src="/images/logo-partner-5.png" alt="Partner Logo 5">
-            </div>
-            <div class="footer-links-bottom">
-                <a href="#">Contact</a>
-                <a href="#">Legal Information</a>
-                <a href="#">Données personnelles</a>
-                <a href="#">Press</a>
+    </div>
+</section>
+
+
+<!-- tableau  -->
+<section id="Synthese" class="container">
+
+    <h2 class="title is-3 has-text-centered">Objectif – Résultat – Ressenti</h2>
+    <div style="overflow-x: auto;">
+    <table class="table is-striped is-fullwidth synthese-table">
+        <thead>
+            <tr>
+                <th style="text-align:center;">Profil</th>
+                <th style="text-align:center;">Objectif</th>
+                <th style="text-align:center;">Résultat</th>
+                <th style="text-align:center;">Ressenti</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <th style="text-align:center;">Encadrant</th>
+                <td class="editable-text">Cliquez ici...</td>
+                <td class="editable-text">Cliquez ici...</td>
+                <td class="editable-text">Cliquez ici...</td>
+            </tr>
+
+            <tr>
+                <th style="text-align:center;">Étudiant</th>
+                <td class="editable-text">Cliquez ici...</td>
+                <td class="editable-text">Cliquez ici...</td>
+                <td class="editable-text">Cliquez ici...</td>
+            </tr>
+        </tbody>
+
+    </table>
+</div>
+</section>
+
+
+<!-- Étudiants -->
+<section id="Étudiants" class="people-section">
+    <h2 class="people-title">Étudiants</h2>
+    <div class="people-grid">
+        <div class="person-card">
+            <img src="/images/photo-test-etudiant.png" alt="Étudiant" class="editable-image" style="cursor: pointer;">
+            <div class="name editable-text">Nom Prénom</div>
+            <span class="delete-person-button" style="position: absolute; top: 5px; right: 5px; cursor: pointer; color: red; font-weight: bold; background: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;">&times;</span>
+        </div>
+    </div>
+    <div style="text-align: center; margin-top: 20px;">
+        <button class="button is-primary add-person-button" data-role="etudiant">+ Ajouter un étudiant</button>
+    </div>
+</section>
+
+<!-- Encadrants -->
+<section id="Encadrants" class="people-section-E">
+    <h2 style="text-align:center;">Encadrants</h2>
+    <div class="people-grid">
+        <div class="person-card">
+            <img src="/images/photo-etienne-giboud.png" alt="Encadrant" class="editable-image" style="cursor: pointer;">
+            <div class="name editable-text">Nom Prénom</div>
+            <div class="role editable-text">email@epf.fr</div>
+            <span class="delete-person-button" style="position: absolute; top: 5px; right: 5px; cursor: pointer; color: red; font-weight: bold; background: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;">&times;</span>
+        </div>
+    </div>
+    <div style="text-align: center; margin-top: 20px;">
+        <button class="button is-primary add-person-button" data-role="encadrant">+ Ajouter un encadrant</button>
+    </div>
+</section>
+
+<!-- Multimédias -->
+<section id="multimedia" class="section multimedia-section">
+  <div class="container">
+    <h2 class="title has-text-centered">Galerie Photos & Vidéos</h2>
+
+    <div class="carousel-wrapper">
+        <div class="scroll-area">
+            <div class="carousel-grid multimedia-grid">
+                <!-- Les médias seront ajoutés dynamiquement ici -->
             </div>
         </div>
-    </footer>
+    </div>
+    <div style="text-align: center; margin-top: 20px;">
+        <button class="button is-primary add-media-button">Ajouter un média</button>
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox personnalisé -->
+<div id="lightbox" class="lightbox">
+    <span class="close">&times;</span>
+    <!-- Image -->
+    <img class="lightbox-content" id="lightbox-img" style="display:none;">
+    <!-- Vidéo -->
+    <video class="lightbox-video" id="lightbox-video" controls style="display:none; max-width:85%; max-height:80%; border-radius:12px;"></video>
+    <!-- Navigation -->
+    <div class="lightbox-prev">&#10094;</div>
+    <div class="lightbox-next">&#10095;</div>
+</div>
+
+</main>
+
+<!-- ======================= -->
+<!--         FOOTER          -->
+<!-- ======================= -->
+<footer class="footer epf-footer">
+
+    <!-- Pré-footer : logo + réseaux -->
+    <div class="prefooter container">
+        <div class="prefooter-left">
+            <img src="/images/epf-100ans-couleur-crop.png" alt="EPF Logo">
+        </div>
+
+        <div class="prefooter-right">
+            <h4>Suivez-nous</h4>
+            <ul class="social-links">
+                <li><a href="https://www.facebook.com/EPF.engineering.school" target="_blank">Facebook</a></li>
+                <li><a href="https://www.tiktok.com/@epf_ingenieur" target="_blank">TikTok</a></li>
+                <li><a href="https://www.instagram.com/epfengineeringschool" target="_blank">Instagram</a></li>
+                <li><a href="https://www.linkedin.com/school/epf-ecole-d'ingénieur-e-s/" target="_blank">LinkedIn</a></li>
+                <li><a href="https://www.youtube.com/user/epfingenieurs" target="_blank">YouTube</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Mentions -->
+    <div class="footer-bottom container">
+        <p>@ 2025 EPF</p>
+
+        <ul class="footer-links">
+            <li><a href="/contactez-nous">Contact</a></li>
+            <li><a href="/mentions-legales">Mentions légales</a></li>
+            <li><a href="/donnees-personnelles">Données personnelles</a></li>
+            <li><a href="/presse">Presse</a></li>
+        </ul>
+    </div>
+
+    <!-- Logos partenaires -->
+    <div class="partner-logos container">
+        <img src="/images/cge.png" alt="CGE">
+        <img src="/images/cti-logo-cmjn.png" alt="CTI">
+        <img src="/images/eespig.jpeg" alt="EESPIG">
+        <img src="/images/eur-ace-0.png" alt="EUR-ACE">
+        <img src="/images/logo-qualiopi.jpeg" alt="Qualiopi">
+        <img src="/images/concours-avenir-logo.jpeg" alt="Concours Avenir">
+        <img src="/images/label-campusfrance-bienv.jpg" alt="Bienvenue en France">
+    </div>
+
+</footer>
+
+  <!-- Scripts -->
+  <script src="/scripts/lightbox.js"></script>
+  <script src="/scripts/mobile-menu.js"></script>
 
 </body>
 </html>

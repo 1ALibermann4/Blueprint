@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Import du style Lightbox2 (pour la galerie d’images) -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
+
+<!-- Import des icônes Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- CSS personnalisé du projet -->
+<link rel="stylesheet" href="PageProjetVF.css">
+
+<title>Titre du Projet - BluePrint</title>
+
+<!-- Framework CSS Bulma -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+
+<!-- ======================= -->
+<!--       BANDEAU HEADER     -->
+<!-- ======================= -->
+<div id="bandeau">
+    <!-- Titre éditable -->
+    <div class="bandeau-texte editable-text">Titre du Projet</div>
+
+    <!-- Bandeau graphique blanc -->
+    <div class="bandeau-blanc"></div>
+
+    <!-- Logo EPF -->
+    <img src="EPF_blanc_RVB.png" alt="Logo EPF" class="logo-epf">
+</div>
+
+
+<!-- ======================= -->
+<!--          FILTRES        -->
+<!-- ======================= -->
+<nav class="category-filters">
+    <a href="">Portail d'Accueil</a>
+    <a href="">Liste des Projets</a>
+    <a href="#Accueil" class="active editable-text">Page Projet</a>
+</nav>
+
+
+<main class="section">
+
+<!-- ======================= -->
+<!--         ACCUEIL         -->
+<!-- ======================= -->
+<section id="Accueil">
+
+    <div class="intro-grid container columns is-vcentered is-variable is-8">
+
+        <!-- Vidéo d'introduction -->
+        <div class="column video-column">
+            <div class="video-container editable-media">
+                <!-- L'élément vidéo caché par défaut -->
+                <video controls loop style="display: none;">
+                  Votre navigateur ne supporte pas la lecture vidéo.
+                </video>
+
+                <!-- Zone d’ajout de vidéo -->
+                <p style="text-align: center; padding: 20px; border: 2px dashed #ccc; color: #666;">
+                    Cliquez ici pour ajouter une vidéo
+                </p>
+            </div>
+        </div>
+
+        <!-- Bloc texte introduction -->
+        <div class="column intro-text-block">
+            <p class="editable-text">Cliquez ici pour écrire un résumé de votre projet...</p>
+
+            <!-- Grille Étudiants / Encadrants / Fichiers -->
+            <div class="team-summary mt-4" style="display: flex; gap: 40px;">
+
+
+<!-- ======================= -->
+<!--   COLONNE ÉTUDIANTS     -->
+<!-- ======================= -->
+<div class="team-column">
+    <h3 style="margin-bottom: 15px; font-weight: 600;">Étudiants</h3>
+
+    <!-- Carte étudiant -->
+    <div class="team-member is-flex is-align-items-center">
+        <!-- Image editable -->
+        <img src="/images/photo-test-etudiant.png" alt="Étudiant" class="editable-image"
+             style="width:60px; height:60px; border-radius:50%; margin-right:10px; cursor: pointer;">
+
+        <!-- Nom + rôle -->
+        <div>
+            <span class="has-text-weight-semibold editable-text">Nom Prénom</span><br>
+            <small class="editable-text">Étudiant</small>
+        </div>
+
+        <!-- Bouton suppression -->
+        <span class="delete-person-button"
+              style="margin-left: 10px; cursor: pointer; color: red; font-weight: bold;">&times;</span>
+    </div>
+
+    <!-- Ajouter un étudiant -->
+    <button class="button is-small is-primary add-person-button" data-role="etudiant"
+            style="margin-top: 20px;">+ Ajouter un étudiant</button>
+</div>
+
+
+
+<!-- ======================= -->
+<!--   COLONNE ENCADRANTS    -->
+<!-- ======================= -->
+<div class="team-column">
+    <h3 style="margin-bottom: 15px; font-weight: 600;">Encadrants</h3>
+    <div class="team-member is-flex is-align-items-center">
+        <img src="/images/photo-etienne-giboud.png" alt="Encadrant" class="editable-image"
+             style="width:60px; height:60px; border-radius:50%; margin-right:10px; cursor: pointer;">
+
+        <div>
+            <span class="has-text-weight-semibold editable-text">Nom Prénom</span><br>
+            <small class="editable-text">Encadrant</small>
+        </div>
+
+        <span class="delete-person-button"
+              style="margin-left: 10px; cursor: pointer; color: red; font-weight: bold;">&times;</span>
+    </div>
+
+    <button class="button is-small is-primary add-person-button" data-role="encadrant"
+            style="margin-top: 20px;">+ Ajouter un encadrant</button>
+</div>
+
+
+<!-- ======================= -->
+<!--      COLONNE FICHIERS    -->
+<!-- ======================= -->
+<div class="team-column">
+
+    <a href="Classeur1.xlsx" target="_blank" class="pdf-item">
+        <div class="pdf-preview-1">
+            <span class="pdf-icon-1">📁</span>
+            <p>Télécharger la documentation</p>
+        </div>
+    </a>
+
+    <button class="button is-small is-primary add-person-button" data-role="fichier">
+        + Ajouter un dossier
+    </button>
+</div>
+
+
+</div>
+
+</div>
+</section>
+
+
+
+<!-- ======================= -->
+<!--   TABLEAU SYNTHESE     -->
+<!-- ======================= -->
+<section id="Synthese" class="container">
+
+    <h2 class="title is-3 has-text-centered">Objectif – Résultat – Ressenti</h2>
+
+    <!-- Scroll horizontal si trop grand -->
+    <div style="overflow-x: auto;">
+
+    <table class="table is-striped is-fullwidth synthese-table">
+
+        <thead>
+            <tr>
+                <th style="text-align:center;">Profil</th>
+                <th style="text-align:center;">Objectif</th>
+                <th style="text-align:center;">Résultat</th>
+                <th style="text-align:center;">Ressenti</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <th style="text-align:center;">Encadrant</th>
+                <td class="editable-text">Cliquez ici...</td>
+                <td class="editable-text">Cliquez ici...</td>
+                <td class="editable-text">Cliquez ici...</td>
+            </tr>
+
+            <tr>
+                <th style="text-align:center;">Étudiant</th>
+                <td class="editable-text">Cliquez ici...</td>
+                <td class="editable-text">Cliquez ici...</td>
+                <td class="editable-text">Cliquez ici...</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</section>
+
+
+
+<!-- ======================= -->
+<!--     SECTION ÉTUDIANTS    -->
+<!-- ======================= -->
+<section id="Étudiants" class="people-section">
+    <h2 class="people-title">Étudiants</h2>
+
+    <div class="people-grid">
+        <div class="person-card">
+
+            <!-- Photo -->
+            <img src="/images/photo-test-etudiant.png" alt="Étudiant" class="editable-image" style="cursor: pointer;">
+
+            <!-- Nom -->
+            <div class="name editable-text">Nom Prénom</div>
+
+            <!-- Bouton suppression -->
+            <span class="delete-person-button"
+                style="position: absolute; top: 5px; right: 5px; cursor: pointer;
+                       color: red; font-weight: bold; background: white; 
+                       border-radius: 50%; width: 25px; height: 25px;
+                       display: flex; align-items: center; justify-content: center;">
+                &times;
+            </span>
+        </div>
+    </div>
+
+    <!-- Ajouter -->
+    <div style="text-align: center; margin-top: 20px;">
+        <button class="button is-primary add-person-button" data-role="etudiant">+ Ajouter un étudiant</button>
+    </div>
+</section>
+
+
+
+<!-- ======================= -->
+<!--     SECTION ENCADRANTS  -->
+<!-- ======================= -->
+<section id="Encadrants" class="people-section-E">
+    <h2 style="text-align:center;">Encadrants</h2>
+
+    <div class="people-grid">
+        <div class="person-card">
+
+            <img src="/images/photo-etienne-giboud.png" alt="Encadrant" class="editable-image">
+            <div class="name editable-text">Nom Prénom</div>
+            <div class="role editable-text">email@epf.fr</div>
+
+            <!-- Supprimer -->
+            <span class="delete-person-button"
+                style="position: absolute; top: 5px; right: 5px; cursor: pointer; 
+                       color: red; font-weight: bold; background: white; 
+                       border-radius: 50%; width: 25px; height: 25px;
+                       display: flex; align-items: center; justify-content: center;">
+                &times;
+            </span>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <button class="button is-primary add-person-button" data-role="encadrant">+ Ajouter un encadrant</button>
+    </div>
+</section>
+
+
+
+<!-- ======================= -->
+<!--   GALERIE MULTIMEDIAS    -->
+<!-- ======================= -->
+<section id="multimedia" class="section multimedia-section">
+  <div class="container">
+    <h2 class="title has-text-centered">Galerie Photos & Vidéos</h2>
+
+    <!-- Wrapper scroll horizontal -->
+    <div class="carousel-wrapper">
+        <div class="scroll-area">
+
+            <!-- Grille des éléments -->
+            <div class="carousel-grid multimedia-grid">
+
+                <!-- ⚠️ Beaucoup d’images répétées -->
+                <img src="banc essai réalisé.png" class="carousel-item" alt="Photo 1">
+                <img src="Banc essai.png" class="carousel-item" alt="Photo 2">
+                <img src="banc essai réalisé.png" class="carousel-item" alt="Photo 1">
+                <img src="Banc essai.png" class="carousel-item" alt="Photo 2">
+                <img src="banc essai réalisé.png" class="carousel-item" alt="Photo 1">
+                <img src="Banc essai.png" class="carousel-item" alt="Photo 2">
+                <img src="banc essai réalisé.png" class="carousel-item" alt="Photo 1">
+                <img src="Banc essai.png" class="carousel-item" alt="Photo 2">
+                <img src="banc essai réalisé.png" class="carousel-item" alt="Photo 1">
+                <img src="Banc essai.png" class="carousel-item" alt="Photo 2">
+                <img src="banc essai réalisé.png" class="carousel-item" alt="Photo 1">
+                <img src="Banc essai.png" class="carousel-item" alt="Photo 2">
+                <img src="banc essai réalisé.png" class="carousel-item" alt="Photo 1">
+                <img src="Banc essai.png" class="carousel-item" alt="Photo 2">
+                <img src="banc essai réalisé.png" class="carousel-item" alt="Photo 1">
+                <img src="Banc essai.png" class="carousel-item" alt="Photo 2">
+                <img src="banc essai réalisé.png" class="carousel-item" alt="Photo 1">
+                <img src="Banc essai.png" class="carousel-item" alt="Photo 2">
+                <img src="banc essai réalisé.png" class="carousel-item" alt="Photo 1">
+                <img src="Banc essai.png" class="carousel-item" alt="Photo 2">
+                <img src="banc essai réalisé.png" class="carousel-item" alt="Photo 1">
+                <img src="Banc essai.png" class="carousel-item" alt="Photo 2">
+                <img src="banc essai réalisé.png" class="carousel-item" alt="Photo 1">
+                <img src="Banc essai.png" class="carousel-item" alt="Photo 2">
+                <!-- ... -->
+
+                <!-- Vidéo -->
+                <video class="carousel-item" controls>
+                    <source src="PC2025_HYDROGENE (1).mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ajouter média -->
+    <div style="text-align: center; margin-top: 20px;">
+        <button class="button is-primary add-media-button">Ajouter un média</button>
+    </div>
+
+  </div>
+</section>
+
+
+
+<!-- ======================= -->
+<!--      LIGHTBOX CUSTOM     -->
+<!-- ======================= -->
+<div id="lightbox" class="lightbox">
+    <span class="close">&times;</span>
+
+    <!-- Image -->
+    <img class="lightbox-content" id="lightbox-img" style="display:none;">
+
+    <!-- Vidéo -->
+    <video class="lightbox-video" id="lightbox-video" controls
+           style="display:none; max-width:85%; max-height:80%; border-radius:12px;"></video>
+
+    <!-- Navigation -->
+    <div class="lightbox-prev">&#10094;</div>
+    <div class="lightbox-next">&#10095;</div>
+</div>
+
+
+
+</main>
+
+
+
+<!-- ======================= -->
+<!--         FOOTER          -->
+<!-- ======================= -->
+<footer class="footer epf-footer">
+
+    <!-- Pré-footer : logo + réseaux -->
+    <div class="prefooter container">
+        <div class="prefooter-left">
+            <img src="EPF_100ans_couleur-crop.png" alt="EPF Logo">
+        </div>
+
+        <div class="prefooter-right">
+            <h4>Suivez-nous</h4>
+            <ul class="social-links">
+                <li><a href="https://www.facebook.com/EPF.engineering.school" target="_blank">Facebook</a></li>
+                <li><a href="https://www.tiktok.com/@epf_ingenieur" target="_blank">TikTok</a></li>
+                <li><a href="https://www.instagram.com/epfengineeringschool" target="_blank">Instagram</a></li>
+                <li><a href="https://www.linkedin.com/school/epf-ecole-d'ingénieur-e-s/" target="_blank">LinkedIn</a></li>
+                <li><a href="https://www.youtube.com/user/epfingenieurs" target="_blank">YouTube</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Mentions -->
+    <div class="footer-bottom container">
+        <p>@ 2025 EPF</p>
+
+        <ul class="footer-links">
+            <li><a href="/contactez-nous">Contact</a></li>
+            <li><a href="/mentions-legales">Mentions légales</a></li>
+            <li><a href="/donnees-personnelles">Données personnelles</a></li>
+            <li><a href="/presse">Presse</a></li>
+        </ul>
+    </div>
+
+    <!-- Logos partenaires -->
+    <div class="partner-logos container">
+        <img src="CGE.png" alt="CGE">
+        <img src="cti-logo-cmjn.png" alt="CTI">
+        <img src="EESPIG.jpeg" alt="EESPIG">
+        <img src="eur-ace_0.png" alt="EUR-ACE">
+        <img src="logo-qualiopi.jpeg" alt="Qualiopi">
+        <img src="concours_avenir_logo.jpeg" alt="Concours Avenir">
+        <img src="Label_CampusFrance_Bienv.jpg" alt="Bienvenue en France">
+    </div>
+
+</footer>
+
+
+
+<!-- ======================= -->
+<!--     SCRIPTS JS           -->
+<!-- ======================= -->
+
+<!-- Lightbox2 (librairie externe) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+
+
+<!-- Script Lightbox personnalisé -->
+<script>
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxVideo = document.getElementById('lightbox-video');
+const carouselItems = document.querySelectorAll('.carousel-item');
+let currentIndex = 0;
+
+// -------------------------
+// OUVERTURE DU LIGHTBOX
+// -------------------------
+carouselItems.forEach((item, index) => {
+  item.addEventListener('click', () => {
+
+    // Met à jour l’index courant
+    currentIndex = index;
+    lightbox.style.display = 'flex';
+
+    // Cache tous les contenus
+    lightboxImg.style.display = 'none';
+    lightboxVideo.style.display = 'none';
+    lightboxVideo.pause();
+    lightboxVideo.currentTime = 0;
+
+    // Si c'est une IMAGE
+    if(item.tagName.toLowerCase() === 'img') {
+      lightboxImg.src = item.src;
+      lightboxImg.style.display = 'block';
+
+    // Si c'est une VIDÉO
+    } else if(item.tagName.toLowerCase() === 'video') {
+      lightboxVideo.src = item.querySelector('source').src;
+      lightboxVideo.style.display = 'block';
+      lightboxVideo.play(); // Lecture vidéo
+    }
+  });
+});
+
+
+// -------------------------
+// FERMETURE DU LIGHTBOX
+// -------------------------
+document.querySelector('.close').addEventListener('click', () => {
+  lightbox.style.display = 'none';
+  lightboxVideo.pause();
+});
+
+
+// -------------------------
+// NAVIGATION GAUCHE
+// -------------------------
+document.querySelector('.lightbox-prev').addEventListener('click', () => {
+  currentIndex = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
+  carouselItems[currentIndex].click();
+});
+
+
+// -------------------------
+// NAVIGATION DROITE
+// -------------------------
+document.querySelector('.lightbox-next').addEventListener('click', () => {
+  currentIndex = (currentIndex + 1) % carouselItems.length;
+  carouselItems[currentIndex].click();
+});
+</script>
+
+<!-- Menu mobile -->
+<script src="/scripts/mobile-menu.js"></script>
+
+</body>
+</html>

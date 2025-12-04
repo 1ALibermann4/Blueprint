@@ -2,26 +2,108 @@
 
 BluePrint est un outil de gestion de projets basé sur des fichiers, conçu pour permettre aux étudiants de créer, soumettre et publier facilement des pages de projet sans avoir à écrire de code.
 
+> 📖 **Documentation complète** : Voir [DOCUMENTATION.md](./DOCUMENTATION.md) pour une documentation exhaustive du projet.
+
 ## Fonctionnalités Clés
 
-- **Éditeur Visuel Intuitif (WYSIWYG)** : Un éditeur de texte riche qui permet aux utilisateurs de modifier la page du projet directement, en voyant le résultat final au fur et à mesure de la frappe.
+### Interface Utilisateur
+- **Éditeur Visuel Intuitif (WYSIWYG)** : Un éditeur de texte riche basé sur TinyMCE qui permet aux utilisateurs de modifier la page du projet directement, en voyant le résultat final au fur et à mesure de la frappe.
 - **Support de Contenu Riche** : Prise en charge complète du formatage de texte (gras, listes, tableaux), des hyperliens et de l'intégration d'images et de vidéos.
-- **Gestion Dynamique des Participants** : Ajoutez ou supprimez facilement des membres du projet (étudiants, encadrants) directement depuis l'interface visuelle.
-- **Connexion Simulée** : Un système de connexion simulé est en place pour le développement, permettant de contourner la configuration OpenID.
+- **Gestion Dynamique des Participants** : Ajoutez ou supprimez facilement des membres du projet (étudiants, encadrants) directement depuis l'interface visuelle avec photos et informations.
+- **Galerie Multimédia** : Téléversement et gestion d'images, vidéos et PDFs dans une galerie dédiée.
+
+### Pages Publiques
+- **Page d'Accueil** : Affichage des projets mis en avant avec système de positions (1 pour le projet principal, 2-3-4 pour les projets secondaires).
+- **Liste des Projets** : Affichage de tous les projets publiés avec filtrage par tags/thèmes.
+- **Images de Présentation** : Chargement automatique des images de présentation des projets, avec carousel automatique des images multimédias en fallback.
+
+### Système de Tags
+- **Tags Dynamiques** : Les tags sont gérés de manière centralisée et s'ajoutent automatiquement lors de la publication de projets.
+- **Filtrage par Tags** : Filtrage des projets par thèmes/tags sur la page d'accueil et la liste des projets.
+
+### Workflow de Publication
 - **Workflow de Relecture Robuste** :
     - Les étudiants créent et gèrent leurs `brouillons`.
     - Les brouillons sont `soumis pour relecture` et passent au statut `en attente de relecture`.
     - Les administrateurs examinent les soumissions, puis les `publient` ou les `rejettent`.
     - Les projets `rejetés` peuvent être modifiés et soumis à nouveau par les étudiants.
-- **Téléversement d'Images** : Un processus fluide pour téléverser et intégrer des médias dans les rapports de projet.
+- **Projets à la Une** : Système de mise en avant des projets avec positions numérotées (1-4) pour l'affichage sur la page d'accueil.
+
+### Authentification
+- **Connexion Simulée** : Un système de connexion simulé est en place pour le développement, permettant de contourner la configuration OpenID.
+- **OpenID Connect** : Support pour l'authentification OpenID Connect (configuration optionnelle).
+
+## Déploiement
+
+### Déploiement rapide avec Podman
+
+BluePrint peut être déployé facilement avec Podman :
+
+```bash
+# 1. Configurer l'environnement
+cp .env.example .env
+nano .env  # Modifier les variables (notamment SESSION_SECRET)
+
+# 2. Rendre les scripts exécutables
+chmod +x deploy/*.sh
+
+# 3. Vérifier l'environnement
+./deploy/check.sh
+
+# 4. Construire et déployer
+./deploy/build.sh
+./deploy/deploy.sh
+```
+
+📖 **Guide complet** : Voir [documentation/deployment/QUICK_START.md](./documentation/deployment/QUICK_START.md) pour un guide de démarrage rapide ou [documentation/deployment/DEPLOYMENT_PODMAN.md](./documentation/deployment/DEPLOYMENT_PODMAN.md) pour la documentation complète.
+
+### Autres méthodes de déploiement
+
+- **Sans conteneur** : Voir [documentation/deployment/DEPLOYMENT.md](./documentation/deployment/DEPLOYMENT.md)
+- **Avec PM2** : Voir [documentation/deployment/DEPLOYMENT.md](./documentation/deployment/DEPLOYMENT.md#5-production-avec-pm2)
 
 ## Structure du Projet
 
 Le projet est une application Node.js utilisant le framework Express.
 
-- `server.js` : Le fichier serveur principal qui gère le routage, l'authentification simulée et la logique des API.
-- `blueprint_local/` : Contient tous les fichiers frontend (`intranet`, `public`, `admin`).
-- `documentation/` : Contient les diagrammes techniques et les descriptions du workflow.
+```
+Blueprint/
+├── server.js                    # Serveur principal Express
+├── package.json                  # Dépendances et scripts
+├── available_tags.json          # Tags/thèmes disponibles
+├── featured_projects.json       # Projets mis en avant
+├── blueprint_local/
+│   ├── intranet/               # Interface d'édition (étudiants)
+│   │   ├── editor.html         # Éditeur WYSIWYG
+│   │   ├── brouillons.html     # Gestion des brouillons
+│   │   ├── projects/
+│   │   │   ├── drafts/         # Brouillons (Markdown)
+│   │   │   └── published_md/   # Projets publiés (Markdown)
+│   │   └── scripts/
+│   ├── admin/                  # Interface d'administration
+│   │   ├── validate.html      # Validation des projets
+│   │   └── review.html        # Aperçu des projets
+│   ├── public/                 # Pages publiques
+│   │   ├── page_accueil.html   # Page d'accueil
+│   │   ├── project_list.html   # Liste des projets
+│   │   ├── projects/
+│   │   │   └── published/     # Projets publiés (HTML)
+│   │   ├── templates/
+│   │   │   └── page_projet.html # Template de projet
+│   │   ├── scripts/            # Scripts JavaScript frontend
+│   │   ├── images/             # Images statiques
+│   │   └── uploads/           # Médias téléversés
+│   └── styles/                 # Fichiers CSS
+├── documentation/              # Documentation technique (voir documentation/README.md)
+│   ├── deployment/            # Guides de déploiement
+│   ├── security/              # Documentation sécurité
+│   ├── architecture/          # Architecture technique
+│   ├── development/           # Guides développeur
+│   ├── maintenance/           # Maintenance
+│   ├── performance/            # Performance
+│   └── workflows/             # Workflows métier
+└── temp/                      # Fichiers temporaires (dev)
+```
 
 ## Pour Commencer
 
@@ -50,11 +132,29 @@ Le projet est une application Node.js utilisant le framework Express.
     Le serveur fonctionnera à l'adresse `http://localhost:3000`.
 
 4.  **Accéder à l'Application** :
-    - **Page de connexion (simulée)** : Accédez à `http://localhost:3000/login.html` et entrez n'importe quel nom d'utilisateur pour vous "connecter".
+    - **Page d'accueil publique** : `http://localhost:3000/page_accueil.html`
+    - **Liste des projets** : `http://localhost:3000/public/project_list.html`
+    - **Page de connexion (simulée)** : `http://localhost:3000/login.html` - Entrez n'importe quel nom d'utilisateur pour vous "connecter".
     - **Gérer vos projets** : Après la connexion, vous arriverez sur la page de gestion des brouillons à `http://localhost:3000/intranet/brouillons.html`.
     - **Créer ou modifier un projet** : Depuis la page des brouillons, cliquez sur "Nouveau Projet" ou "Modifier" pour accéder à l'éditeur visuel.
     - **Panneau d'administration** : Visitez `http://localhost:3000/admin/validate.html` pour examiner et valider les projets en attente.
-    - **Voir les projets publiés** : Visitez `http://localhost:3000/public/projects.html`.
+
+## Documentation Complète
+
+📚 **Toute la documentation est organisée dans le dossier [`documentation/`](./documentation/README.md)**
+
+### Documentation principale
+- **[documentation/README.md](./documentation/README.md)** - Index de toute la documentation
+- **[DOCUMENTATION.md](./DOCUMENTATION.md)** - Vue d'ensemble du projet
+
+### Par thème
+- **🚀 [Déploiement](./documentation/deployment/)** - Guides de déploiement (Podman, PM2, etc.)
+- **🔒 [Sécurité](./documentation/security/)** - Sécurité et améliorations
+- **🏗️ [Architecture](./documentation/architecture/)** - Architecture technique
+- **💻 [Développement](./documentation/development/)** - Guides développeur et API
+- **🔧 [Maintenance](./documentation/maintenance/)** - Maintenance et exploitation
+- **⚡ [Performance](./documentation/performance/)** - Optimisations
+- **🔄 [Workflows](./documentation/workflows/)** - Flux de travail métier
 
 ## Fonctionnement du Workflow
 

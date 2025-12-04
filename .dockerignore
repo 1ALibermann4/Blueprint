@@ -1,0 +1,67 @@
+# Dépendances
+node_modules
+npm-debug.log
+package-lock.json
+
+# Fichiers de configuration sensibles
+.env
+.env.local
+.env.production
+openid-config.js
+
+# Fichiers de log
+logs/
+*.log
+server.log
+
+# Fichiers Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# Fichiers de test
+test/
+tests/
+*.test.js
+*.spec.js
+coverage/
+.nyc_output/
+
+# Fichiers d'éditeur
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Fichiers système
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+Thumbs.db
+
+# Fichiers temporaires
+temp/
+tmp/
+*.tmp
+*.temp
+
+# Fichiers de build
+dist/
+build/
+*.map
+
+# Fichiers Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+

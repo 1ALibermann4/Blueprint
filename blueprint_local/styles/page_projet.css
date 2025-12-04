@@ -1,536 +1,964 @@
-/* Variables de couleur uniformisées sur le Code 1 */
-:root {
-    --color-black: #c5c5c5; /* Gris très clair (fond header/footer) */
-    --color-dark-bg: #f0f0f0; /* Gris très, très clair (fond par défaut, non utilisé pour l'alternance violette) */
-    --color-text-light: #000000; /* Noir (texte principal) */
-    --color-text-gray: #000000; /* Noir (texte secondaire) */
-    --color-accent-red: #C00040; /* Rouge/Magenta du dégradé et logo */
-    --color-accent-purple: #8A3D9E; /* Violet du dégradé (violet foncé) */
-    --color-filter-bg: #adadad; /* Fond des boutons inactifs (gris moyen) */
-    --color-filter-active: #7c7c7c; /* Fond du bouton actif (gris foncé) */
-    --color-footer-text: #000000; /* Noir (texte de pied de page) */
-    --color-footer-link: #2d2d2d; /* Gris très foncé (liens/titres de pied de page) */
+/* ============================================================
+   PageProjetVF.css
+   Styles pour la page projet individuel
+   Version intégrée depuis PageProjetVF.css
+   ============================================================ */
 
-    /* NOUVELLES VARIABLES POUR L'ALTERNANCE VIOLETTE */
-    --color-light-purple-1: #F8F0FA; /* Violet très, très clair */
-    --color-light-purple-2: #F0E4F5; /* Violet légèrement moins clair */
+html { 
+    scroll-behavior: smooth; 
+} 
+
+/* Corps */ 
+body { 
+  font-family: 'Montserrat', sans-serif; 
+  text-align: justify; 
+  background-color: white; 
+  color: black; 
+} 
+
+/* Container vidéo */ 
+.video-container { 
+  position: relative; 
+  width: 100%; 
+  padding-top: 56.25%; /* ratio 16/9 */ 
+  overflow: hidden; 
+  border-radius: 12px; 
+  background: #000; 
+} 
+
+/* Vidéo responsive */ 
+.video-container video { 
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+} 
+
+.pdf-preview-1 { 
+  background: #ffffff; 
+  border-radius: 5px; 
+  padding: 15px; 
+  text-align: center; 
+  margin-bottom: 15px; 
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+  width: 200px;   /* rectangle horizontal */
+  height: 80px;  /* hauteur définie */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 30px;
 }
 
-* {
+.pdf-preview-1 p,
+.pdf-preview-1 h3,
+.pdf-preview-1 span {
     margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
 }
 
-body {
-    line-height: 1.6;
-    color: var(--color-text-light); /* Utilisé pour le texte général */
-    background-color: var(--color-dark-bg); /* Utilisé pour le fond général du body et sections non alternées */
-    font-size: 14px;
-}
-a { text-decoration: none; color: var(--color-text-light); }
-h1, h2 { font-weight: 700; }
+.team-summary { 
+  display: flex; 
+  flex-wrap: wrap;      /* permet aux éléments de passer à la ligne */ 
+  gap: 20px;            /* espace entre les membres */ 
+} 
 
-/* ---------------------- HEADER TOP ---------------------- */
-header.top-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 5%;
-    background-color: var(--color-black);
-}
-.header-left-icons {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-.header-left-icons a {
-    font-size: 20px;
-    color: var(--color-text-light);
-}
-.logo-epf-right img, .header-left-icons img {
-    height: 25px;
-    width: auto;
-}
+/* chaque membre prend 50% de largeur pour créer deux colonnes */ 
+.team-member { 
+  flex: 0 0 50%; 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  position: relative; 
+} 
 
-/* ---------------------- SECTION TITRE & DEGRADE ---------------------- */
-.hero-section {
-    padding: 40px 5%;
-    background-color: var(--color-dark-bg); /* Garde le gris très clair */
-    position: relative;
-    overflow: hidden;
-    border-bottom: 2px solid var(--color-dark-bg);
-}
-/* Simulation du dégradé graphique */
-.hero-section::after {
-    content: '';
+/* ======= FIX POUR LES SECTIONS "PEOPLE" ======= */ 
+
+/* Sections personnes */
+.people-section, .people-section-E, .multimedia-section { 
+  background-color: unset;
+  padding-top: 50px; 
+} 
+
+/* Titre des sections people */
+.people-section .people-title, 
+.people-section-E .people-title, 
+.people-section h2, 
+.people-section-E h2, 
+.multimedia-section h2{ 
+  width: 100%; 
+  text-align: center; 
+  margin: 0 0 30px 0; 
+  font-size: 1.75rem; 
+  font-weight: 700; 
+} 
+
+/* Grille des personnes */
+.people-grid { 
+  display: flex; 
+  justify-content: center; 
+  flex-wrap: wrap; 
+  gap: 40px; 
+  padding: 10px 20px; 
+  box-sizing: border-box; 
+} 
+
+/* Cartes personnes */
+.person-card { 
+  text-align: center; 
+  width: 180px; 
+  position: relative; 
+} 
+
+.person-card img { 
+  width: 130px; 
+  height: 130px; 
+  border-radius: 50%; 
+  border: 4px solid #fff; 
+  object-fit: cover; 
+  margin-bottom: 10px; 
+} 
+
+.person-card .name { 
+    font-weight: 500; 
+} 
+
+.person-card .role { 
+    color: #666; 
+} 
+
+/* ----------- BANDEAU FIXE ----------- */ 
+#bandeau { 
+    position: fixed; 
+    width: 100%; 
+    height: 150px; 
+    background-image: url('/images/capture.jpg');
+    background-size: cover; 
+    background-position: center; 
+    z-index: 1000; 
+} 
+
+/* Rectangle blanc derrière les logos */ 
+.bandeau-blanc { 
+    display: none; 
+    top: -150px; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    margin: auto; 
+    height: 90px; 
+    width: calc(100% - 0px); 
+    background-color: white; 
+    z-index: 0; 
+} 
+
+.bandeau-texte { 
+    position: absolute; 
+    top: 65%; 
+    left: 7%; 
+    transform: translateY(-50%); 
+    font-size: 2.5rem; 
+    font-weight: 700; 
+    color: white; 
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.5); 
+} 
+
+.logo-epf, .logo-barre { 
+    position: absolute; 
+    top: 25px; 
+    height: 60px; 
+} 
+
+.logo-epf { 
+    right: 20px; 
+} 
+
+.logo-maison { 
     position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    /* Dégradé rouge/violet angulaire pour imiter l'image */
-    background: linear-gradient(135deg, transparent 55%, var(--color-accent-purple) 75%, var(--color-accent-red) 90%);
-    clip-path: polygon(50% 0, 100% 0, 100% 100%, 70% 100%);
-    opacity: 0.8;
-    z-index: 1;
+    top: 25px;
+    left: 20px;
+    color: white;
+    font-size: 1.5rem;
+    z-index: 1001;
+    transition: transform 0.2s;
 }
 
-.hero-section h1 {
-    font-size: 2.5em;
-    font-weight: 900;
-    color: var(--color-text-light);
-    position: relative;
-    z-index: 2;
-    padding-bottom: 5px;
-    display: inline-block;
-    /* La ligne bleue foncée de l'image est codée en dur dans le Code 1 */
-    border-bottom: 5px solid #005080;
+.logo-maison:hover {
+    transform: scale(1.2);
 }
 
-/* ---------------------- NAVIGATION (Filtres) ---------------------- */
-.category-filters {
+.logo-maison i { 
+    font-size: 3rem; 
+    transition: transform 0.2s; 
+} 
+
+.logo-maison:hover i { 
+    transform: scale(1.2); 
+} 
+
+/* ----------- NAVIGATION FILTRES ----------- */ 
+.category-filters { 
+    position: fixed; 
+    top: 150px; 
+    left: 0; 
+    width: 100%; 
+    display: flex; 
+    overflow-x: auto; 
+    padding: 10px 5%; 
+    background-color: #EDE5F2; 
+    border-bottom: 1px solid #D1C4E9; 
+    z-index: 999; 
+} 
+
+.category-filters a { 
+    margin-right: 15px; 
+    padding: 8px 15px; 
+    font-weight: 500; 
+    color: #333; 
+    border-bottom: 2px solid transparent; 
+    text-decoration: none; 
+} 
+
+.category-filters a.active { 
+    border-bottom-color: #B2002D; 
+    font-weight: 700; 
+} 
+
+.category-filters a:hover { 
+    color: #B2002D; 
+} 
+
+/* ----------- SECTIONS ----------- */ 
+section { 
+    padding-top: 225px; /* bandeau + filtres */ 
+    padding-bottom: 5px; 
+    scroll-margin-top: 320px; /* évite que l'ancre soit cachée */ 
+} 
+
+/* ----------- INTRO GRID ACCUEIL ----------- */ 
+.intro-grid { 
+    display: flex; 
+    gap: 40px; 
+    flex-wrap: wrap; 
+    align-items: flex-start; 
+} 
+
+.intro-grid img { 
+    width: 400px; 
+    border-radius: 8px; 
+} 
+
+.intro-text-block p { 
+    margin-bottom: 15px; 
+} 
+
+/* Team summary */ 
+.team-summary { 
+    display: flex; 
+    gap: 20px; 
+    margin-top: 20px; 
+    flex-wrap: wrap; 
+} 
+
+.team-member { 
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
+} 
+
+.team-member img { 
+    width: 60px; 
+    height: 60px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    border: 2px solid black; 
+} 
+
+.team-member span { 
+    font-weight: 500; 
+} 
+
+.team-member small { 
+    color: #666; 
+} 
+
+.team-column {
     display: flex;
-    justify-content: flex-start;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 10px 5%;
-    background-color: var(--color-dark-bg); /* Garde le gris très clair */
-    border-bottom: 1px solid var(--color-filter-bg);
-}
-
-.filter-btn {
-    white-space: nowrap;
-    padding: 8px 15px;
-    font-size: 0.9em;
-    color: var(--color-text-light);
-    font-weight: 500;
-    border-bottom: 2px solid transparent;
-    transition: border-color 0.3s;
-}
-
-.filter-btn:hover {
-    color: var(--color-accent-red);
-}
-
-.filter-btn.active {
-    border-bottom: 2px solid var(--color-accent-red);
-    font-weight: 700;
-}
-
-/* ---------------------- SECTION PRINCIPALE - ACCUEIL ---------------------- */
-.content-section {
-    padding: 40px 5%;
-    background-color: var(--color-dark-bg); /* Garde le gris très clair */
-}
-
-.intro-grid {
-    display: flex;
-    gap: 40px;
-}
-
-.intro-image-container {
-    flex: 0 0 350px;
-}
-.intro-image-container img {
-    width: 100%;
-    height: auto;
-    border-radius: 4px;
-}
-
-.intro-text-block {
-    flex: 1;
-}
-.intro-text-block p {
-    margin-bottom: 15px;
-    font-size: 1em;
-    line-height: 1.5;
-}
-
-.team-summary {
-    display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: flex-start;
-    padding-top: 20px;
-    margin-top: 20px;
-    border-top: 1px solid var(--color-filter-bg);
+    height: 100%;
 }
 
-.team-member-sm {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    width: 30%;
+.team-column.students {
+    max-height: 400px;
+    overflow-y: auto;
 }
 
-.team-member-sm img {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--color-accent-red);
-}
-.team-member-sm:nth-child(1) img {
-    border-color: var(--color-text-light);
-}
-
-.member-info span {
-    display: block;
-    font-weight: 500;
-}
-.member-info small {
-    color: var(--color-text-gray);
-    font-size: 0.8em;
-    display: block;
-}
-
-/* ---------------------- SECTIONS VIOLETTES ALTERNÉES ---------------------- */
-
-.highlight-section {
-    padding: 50px 5%;
+.team-member {
     margin: 0;
 }
 
-/* RÈGLE GLOBALE POUR LES TITRES DES SECTIONS : TOUS EN ROUGE */
-.highlight-section h2 {
-    font-size: 2em;
+/* ----------- OBJECTIFS / RÉSULTATS / RESSENTI ----------- */ 
+
+/* Section container */ 
+.synthese-section{ 
+  padding-bottom: 40px; 
+  box-sizing: border-box; 
+} 
+
+#Synthese { 
+    padding-top: 100px; 
+    padding-bottom: 40px; 
+} 
+
+/* Titre */ 
+.synthese-section .synthese-title{ 
+  text-align: center; 
+  font-weight: 700; 
+  margin-bottom: 20px; 
+} 
+
+/* Table styling */
+.synthese-table { 
+  border: none; 
+  border-collapse: separate; 
+  border-spacing: 0 20px; 
+  width: 100%; 
+  background: white;
+  border-radius: 12px; 
+} 
+
+/* Thead */ 
+.synthese-table thead th{ 
+  text-align: center; 
+  font-weight: 700; 
+  padding: 16px; 
+  border-bottom: 2px solid; 
+} 
+
+/* Body cells */ 
+.synthese-table tbody td, 
+.synthese-table tbody th{ 
+  padding: 14px 16px; 
+  vertical-align: top; 
+} 
+
+.synthese-table tbody tr.professeur td, 
+.synthese-table tbody tr.professeur th{ 
+  font-weight: 600; 
+} 
+
+/* Petite colonne profil centrée */ 
+.synthese-table tbody th{ 
+  width: 140px; 
+  text-align: center; 
+} 
+
+.synthese-table tbody tr.row-etudiant { 
+    height: 25px; 
+} 
+
+.synthese-table tbody tr.row-etudiant td, 
+.synthese-table tbody tr.row-etudiant th { 
+    padding-top: 28px; 
+} 
+
+/* Team / people sections */ 
+.people-section { 
+    background-color: #DCDCDC; 
+    padding-top: 50px; 
+} 
+
+.people-section-E { 
+    background-color: #FFFFFF; 
+    padding-top: 50px; 
+} 
+
+.person-card { 
+    text-align: center; 
+} 
+
+.person-card img { 
+    width: 130px; 
+    height: 130px; 
+    border-radius: 50%; 
+    border: 4px solid #fff; 
+    object-fit: cover; 
+    margin-bottom: 10px; 
+} 
+
+.person-card .name { 
+    font-weight: 500; 
+} 
+
+.person-card .role { 
+    color: #666; 
+} 
+
+/* Section background */ 
+.multimedia-section { 
+  background: #DCDCDC; 
+  padding-top: 80px; 
+  padding-bottom: 60px; 
+} 
+
+/* Carousel wrapper pour scroll horizontal */ 
+.carousel-wrapper { 
+  overflow-x: auto; 
+  overflow-y: hidden; 
+  padding-bottom: 10px; 
+} 
+
+/* Carousel grid : Masonry horizontal avec 2 lignes */ 
+.carousel-grid { 
+  display: flex; 
+  flex-wrap: wrap; 
+  align-items: flex-start; 
+  gap: 10px; 
+  height: 420px; 
+} 
+
+.carousel-item { 
+  flex: 0 0 auto; 
+  width: 200px;   
+  height: 200px;  
+  object-fit: cover; 
+  border-radius: 12px; 
+  cursor: pointer; 
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+  transition: transform 0.25s ease, box-shadow 0.25s ease; 
+} 
+
+.carousel-item:hover { 
+  transform: scale(1.03); 
+  box-shadow: 0 12px 26px rgba(0,0,0,0.25); 
+} 
+
+/* Vidéos */ 
+.carousel-item[type="video"], 
+video.carousel-item { 
+  width: 200px; 
+  display: block; 
+  border-radius: 10px; 
+  break-inside: avoid; 
+  margin-bottom: 15px; 
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+} 
+
+/* Carte PDF ou documents */ 
+.pdf-item { 
+  display: block; 
+  text-decoration: none; 
+  break-inside: avoid; 
+} 
+
+.pdf-preview { 
+  background: #ffffff; 
+  border-radius: 10px; 
+  padding: 20px; 
+  text-align: center; 
+  margin-bottom: 15px; 
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+  transition: transform 0.25s ease, box-shadow 0.25s ease; 
+} 
+
+.pdf-preview:hover { 
+  transform: scale(1.03); 
+  box-shadow: 0 12px 26px rgba(0,0,0,0.25); 
+} 
+
+.pdf-icon { 
+  font-size: 50px; 
+  display: block; 
+  margin-bottom: 10px; 
+  color: #d9534f; 
+} 
+
+/* Lightbox personnalisé */
+.lightbox {  
+    display:none;  
+    position:fixed;  
+    z-index:9999;  
+    padding-top:40px;  
+    left:0;  
+    top:0;  
+    width:100%;  
+    height:100%;  
+    background-color:rgba(0,0,0,0.9); 
+    justify-content: center;  
+    align-items: center;      
+    padding: 20px;            
+} 
+
+.lightbox-content { 
+    margin:auto; 
+    display:block; 
+    max-width:85%; 
+    max-height:80%; 
+} 
+
+.close { 
+    position:absolute; 
+    top:20px; 
+    right:40px; 
+    font-size:40px; 
+    color:white; 
+    cursor:pointer; 
+} 
+
+.lightbox-prev, .lightbox-next { 
+    cursor:pointer; 
+    position:absolute; 
+    top:50%; 
+    font-size:60px; 
+    color:white; 
+    padding:10px; 
+    user-select:none; 
+} 
+
+.lightbox-prev { 
+    left:20px; 
+} 
+
+.lightbox-next { 
+    right:20px; 
+} 
+
+.lightbox-video { 
+    display: none; 
+    border-radius: 12px; 
+    max-width: 85%; 
+    max-height: 80%; 
+} 
+
+.scroll-area { 
+  max-height: 450px;      
+  overflow-y: auto;       
+  overflow-x: hidden;     
+  padding-right: 10px;    
+} 
+
+/* Scrollbar moderne */ 
+.scroll-area::-webkit-scrollbar { 
+  width: 8px; 
+} 
+
+.scroll-area::-webkit-scrollbar-track { 
+  background: #e5e5e5; 
+  border-radius: 10px; 
+} 
+
+.scroll-area::-webkit-scrollbar-thumb { 
+  background: #acacac; 
+  border-radius: 10px; 
+} 
+
+.scroll-area::-webkit-scrollbar-thumb:hover { 
+  background: #888; 
+} 
+
+/*---------------footer-----------*/ 
+.partner-logo { 
+    height: 45px; 
+    width: auto; 
+    object-fit: contain; 
+} 
+
+.epf-footer {
+  background: #f5f5f5;
+  padding: 40px 0;
+  margin-top: 60px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.prefooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.prefooter-left img {
+  height: 90px;
+}
+
+.prefooter-right h4 {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* Réseaux sociaux en ligne */
+.social-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;              /* Alignement horizontal */
+  align-items: center;
+  gap: 16px;                  /* Espace entre Facebook / TikTok / etc. */
+  flex-wrap: wrap;            /* Permet de passer à la ligne sur petits écrans */
+}
+
+.social-links li {
+  margin: 0;                  /* On annule le margin vertical */
+}
+
+.social-links a {
+  white-space: nowrap;        /* Empêche les mots de se couper */
+  font-weight: 500;
+  color: var(--epf-dark);
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.social-links a:hover {
+  color: var(--epf-blue);
+}
+
+/* Footer bottom */
+.footer-bottom {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.footer-links a {
+  color: var(--epf-dark);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.footer-links a:hover {
+  color: var(--epf-blue);
+}
+
+/* Partner logos */
+.partner-logos {
+  margin-top: 30px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.partner-logos img {
+  height: 50px;
+  object-fit: contain;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .prefooter {
+    flex-direction: column;
     text-align: center;
-    margin-bottom: 30px;
-    font-weight: 900;
-    color: var(--color-accent-red) !important; /* Force la couleur rouge sur tous les titres de section */
-}
-/* Règle spécifique pour le titre H2 dans l'encadré Objectifs, car il est le seul à ne pas être centré */
-.objectifs-title h2 {
-    margin-bottom: 0;
-}
+  }
 
-
-/* Objectifs - COULEUR DE FOND 1 (Violet très clair) */
-.objectifs-section {
-    background-color: var(--color-light-purple-1); /* #F8F0FA */
-}
-.objectifs-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 50px;
-    max-width: 1000px;
-    width: 100%;
-    margin: 0 auto;
-}
-.objectifs-title {
-    flex-basis: 300px;
-    text-align: right;
-    padding-right: 30px;
-    border-right: 2px solid var(--color-accent-red);
-}
-
-.objectif-block {
-    flex: 1;
-    font-size: 1em;
-    padding-left: 0;
-    border-left: none;
-}
-.objectif-block p {
-    margin-bottom: 15px;
-}
-
-
-/* Résultats - COULEUR DE FOND 2 (Violet légèrement moins clair) */
-.resultats-section {
-    background-color: var(--color-light-purple-2); /* #F0E4F5 */
-}
-.resultats-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-.resultats-list {
-    flex: 1;
-    padding-right: 40px;
-    font-size: 1em;
-}
-.resultats-list ul {
-    list-style: disc;
-    margin-left: 25px;
-    margin-top: 10px;
-    margin-bottom: 15px;
-}
-.resultats-title {
-    flex-basis: 300px;
-    text-align: right;
-    padding-left: 30px;
-    border-left: 2px solid var(--color-accent-red);
-}
-
-/* Ressenti de l'équipe - COULEUR DE FOND 1 (Violet très clair) */
-.ressenti-section {
-    background-color: var(--color-light-purple-1); /* #F8F0FA */
-}
-.ressenti-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-.ressenti-title {
-    flex-basis: 300px;
-    text-align: left;
-    padding-right: 30px;
-    border-right: 2px solid var(--color-accent-red);
-}
-.ressenti-text {
-    flex: 1;
-    padding-left: 40px;
-    font-style: italic;
-    font-size: 1em;
-}
-
-
-/* Noms des personnes - COULEUR DE FOND 2 (Violet légèrement moins clair) */
-.people-section {
-    padding: 40px 5%;
+  .prefooter-right ul {
     text-align: center;
-    background-color: var(--color-light-purple-2); /* #F0E4F5 */
-}
+  }
 
-.people-section h2 {
-    font-size: 2em;
-    margin-bottom: 30px;
-    color: var(--color-accent-red); /* Titre des étudiants en Rouge (déjà forcé par la règle globale) */
-}
-/* Règle pour le titre des encadrants qui était d'une autre couleur (déjà forcé par la règle globale) */
-.people-section .encadrants-title {
-    color: var(--color-accent-red);
-}
-
-.people-grid {
-    display: flex;
-    justify-content: center;
-    gap: 60px;
-    margin-top: 30px;
-    margin-bottom: 50px;
-}
-
-.person-card {
-    text-align: center;
-    width: 180px;
-}
-
-.person-card img {
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 4px solid var(--color-text-light);
-    margin-bottom: 10px;
-}
-.encadrants-grid .person-card img {
-    border-color: var(--color-accent-red);
-}
-
-.person-card .name {
-    font-weight: 700;
-    display: block;
-    font-size: 1.1em;
-    margin-top: 5px;
-}
-
-.person-card .role {
-    font-size: 0.9em;
-    color: var(--color-text-gray);
-    display: block;
-}
-
-/* Multimédias - COULEUR DE FOND 1 (Violet très clair) */
-.multimedia-section {
-    padding: 40px 5%;
-    display: flex;
-    align-items: center;
-    gap: 50px;
-    max-width: 1000px;
-    margin: 0 auto;
-    background-color: var(--color-light-purple-1); /* #F8F0FA */
-}
-.multimedia-section h2 {
-    color: var(--color-accent-red) !important; /* Assurer le rouge */
-    flex-basis: 200px;
-    text-align: left;
-    margin-bottom: 0;
-}
-.multimedia-section img {
-    width: 300px;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* ---------------------- FOOTER ---------------------- */
-footer {
-    background-color: var(--color-black);
-    color: var(--color-footer-text);
-    padding: 40px 5% 20px 5%;
-    font-size: 0.9em;
-}
-
-.footer-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-    margin-bottom: 20px;
-}
-
-.footer-logo-block {
-    display: flex;
-    align-items: flex-end;
-    gap: 15px;
-}
-.footer-logo-block img.epf-logo-footer {
-    height: 60px;
-}
-.footer-logo-block img.epf-years {
+  .partner-logos img {
     height: 40px;
+  }
 }
 
-.follow-us span {
-    margin-right: 15px;
-    font-size: 1em;
-}
-.follow-us a {
-    color: var(--color-footer-text);
-    font-size: 18px;
-    margin-left: 8px;
-}
-
-.footer-links-grid {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 30px;
-}
-
-.footer-column {
-    width: 23%;
-}
-
-.footer-column h4 {
-    font-weight: 700;
-    margin-bottom: 15px;
-    text-transform: uppercase;
-    font-size: 1em;
-    color: var(--color-footer-link);
-}
-
-.footer-column p, .footer-column a {
-    color: var(--color-footer-text);
-    display: block;
-    margin-bottom: 8px;
-    opacity: 0.9;
-    font-size: 0.95em;
-}
-
-.footer-bottom-bar {
-    text-align: center;
-    border-top: 1px solid rgba(0, 0, 0, 0.2);
-    padding-top: 20px;
-    font-size: 0.8em;
-}
-.footer-links-bottom a {
-    color: var(--color-footer-text);
-    margin: 0 10px;
-}
-.footer-logos {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 10px 0;
-    flex-wrap: wrap;
-}
-.footer-logos img {
-    height: 20px;
-    margin: 0 8px;
-    opacity: 0.8;
-}
-
-/* RESPONSIVITÉ LÉGÈRE */
-@media (max-width: 900px) {
-    .intro-grid {
-        flex-direction: column;
+@media (max-width: 768px) {
+    .partner-logo {
+        height: 35px;
     }
-    .intro-image-container {
-        flex: none;
+}
+
+/* Version mobile : galerie multimédia empilée */
+@media (max-width: 768px) {
+    .carousel-wrapper {
+        overflow: visible;
+        padding-bottom: 0;
+    }
+
+    .scroll-area {
+        overflow: visible;
+        max-height: none;
+        padding-right: 0;
+    }
+
+    .carousel-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+        height: auto;
+        flex-wrap: unset;
+    }
+
+    .carousel-item {
         width: 100%;
-        max-width: 500px;
-        margin: 0 auto;
+        height: auto;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        margin-bottom: 0;
     }
-    .team-summary {
+
+    video.carousel-item {
+        height: auto;
+        aspect-ratio: auto;
+    }
+}
+
+/* Responsive : empilement en cartes sur petits écrans */
+@media (max-width: 768px){
+    #bandeau { 
+    background-image: url('/images/capture.jpg'); 
+    }
+    
+    .bandeau-texte {
+        position: absolute;
+        top: 65%;
+        left: 7%;
+        transform: translateY(-50%);
+        font-size: clamp(1rem, 4vw, 2.5rem);
+        font-weight: 700;
+        color: white;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+    }
+}
+
+/* Version mobile - transformation en cartes */
+@media (max-width: 768px) {
+    #Synthese {
+        padding-top: 30px;
+        padding-bottom: 30px;
+    }
+    
+    #Synthese .title {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Cacher le tableau classique */
+    .synthese-table,
+    .synthese-table thead,
+    .synthese-table tbody,
+    .synthese-table th,
+    .synthese-table td,
+    .synthese-table tr {
+        display: block;
+    }
+    
+    .synthese-table thead {
+        display: none;
+    }
+    
+    /* Chaque ligne devient une carte */
+    .synthese-table tbody tr {
+        display: flex;
         flex-direction: column;
-        gap: 20px;
+        margin-bottom: 20px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: 1px solid white;
+        background: white;
     }
-    .team-member-sm {
+    
+    /* En-tête de la carte (Profil) */
+    .synthese-table tbody th {
         width: 100%;
-        justify-content: center;
-    }
-    .objectifs-content, .resultats-content, .ressenti-content, .multimedia-section {
-        flex-direction: column;
-        align-items: center;
         text-align: center;
+        padding: 12px 16px;
+        background-color: white;
+        color: black;
+        font-weight: 700;
+        border-bottom: 1px solid black;
     }
-    .resultats-title, .ressenti-title, .objectifs-title {
-        flex-basis: auto;
-        width: 100%;
-        text-align: center;
-        padding: 20px 0;
-        border: none;
+    
+    /* Contenu de la carte */
+    .synthese-table tbody td {
+        padding: 12px 16px;
+        border-bottom: 1px solid white;
+        position: relative;
     }
-    .resultats-content { flex-direction: column-reverse; }
-    .resultats-list { padding: 0; }
-    .ressenti-text { padding: 0; }
-    .objectif-block { padding: 0; }
+    
+    /* Ajouter les labels avant chaque contenu */
+    .synthese-table tbody td:nth-child(2)::before {
+        content: "Objectif";
+        font-weight: 700;
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+    
+    .synthese-table tbody td:nth-child(3)::before {
+        content: "Résultat";
+        font-weight: 700;
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+    
+    .synthese-table tbody td:nth-child(4)::before {
+        content: "Ressenti";
+        font-weight: 700;
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+    
+    /* Dernier élément sans bordure */
+    .synthese-table tbody td:last-child {
+        border-bottom: none;
+    }
+    
+    /* Espacement entre les lignes Étudiant et Encadrant */
+    .synthese-table tbody tr:first-child {
+        margin-bottom: 25px;
+    }
+}
+
+/* Version très petits écrans */
+@media (max-width: 768px) {
+    #Synthese {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .synthese-table tbody td {
+        padding: 10px 12px;
+    }
+    
+    .synthese-table tbody th {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .synthese-table tbody td::before {
+        font-size: 0.85rem;
+    }
+}
+
+/* Responsive : réduit la taille des cartes sur petit écran */
+@media (max-width: 768px) {
+    .person-card {
+        width: 140px;
+    }
+    
+    .person-card img {
+        width: 110px;
+        height: 110px;
+    }
 
     .people-grid {
-        flex-wrap: wrap;
+        gap: 22px;
+    } 
+}
+
+@media (max-width: 768px) {
+    .intro-grid.columns {
+        flex-direction: column !important;
+        align-items: center;
     }
-    .footer-links-grid {
-        flex-wrap: wrap;
-        gap: 20px;
+
+    .video-column {
+        width: 90%;
+        max-width: 600px;
+        margin-bottom: 1.5rem;
+        margin-top: 10PX;
+        margin-bottom: -20px;
     }
-    .footer-column {
-        width: 45%;
+
+    .intro-grid {
+        gap: 15px;
+    }
+
+    .video-container {
+        padding-top: 56.25%;
+    }
+
+    .intro-text-block {
+        width: 90%;
+        text-align: justify;
+        margin: 0 auto;
     }
 }
 
-.add-person-button {
-    display: block;
-    margin: 20px auto 0;
+/* ===== AFFICHAGE UNIQUEMENT SUR PETIT ÉCRAN ===== */
+@media (max-width: 768px) {
+    .category-filters {
+        position: fixed;
+        font-size: 15px;
+        font-weight: 700;
+        text-align: left;
+    }
+}
+ 
+/* Styles pour l'édition WYSIWYG */ 
+.editable-text { 
+    border: 1px dashed transparent; 
+    padding: 2px; 
+    transition: border-color 0.2s; 
+} 
+ 
+.editable-image, .editable-media { 
+    border: 2px dashed transparent; 
+    transition: border-color 0.2s; 
+} 
+ 
+.editable-image:hover, .editable-media:hover { 
+    border-color: #B2002D; 
+    cursor: pointer; 
+} 
+ 
+.add-person-button, .add-media-button { 
+    margin: 10px 0; 
+} 
+ 
+.delete-person-button { 
+    position: absolute; 
+    top: 5px; 
+    right: 5px; 
+    background: rgba(255, 255, 255, 0.9); 
+    border-radius: 50%; 
+    width: 25px; 
+    height: 25px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer; 
+    font-weight: bold; 
+    color: red; 
+    z-index: 10; 
+} 
+ 
+.delete-media-button { 
+    position: absolute; 
+    top: 5px; 
+    right: 5px; 
+    background: rgba(255, 255, 255, 0.9); 
+    border-radius: 50%; 
+    width: 25px; 
+    height: 25px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer; 
+    font-weight: bold; 
+    color: red; 
+    z-index: 10; 
+} 
+ 
+.media-thumbnail { 
+    position: relative; 
+    display: inline-block; 
 }
 
-.delete-person-button {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    background-color: #ff3860;
-    color: white;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    border: 2px solid white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: transform 0.2s, background-color 0.2s;
-}
-
-.delete-person-button:hover {
-    transform: scale(1.1);
-    background-color: #d9002d;
+@media (min-width: 769px) {
+  .team-summary {
+    flex-wrap: nowrap;
+  }
 }

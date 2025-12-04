@@ -5,7 +5,10 @@
   <title>Éditeur Visuel - BluePrint</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
-  <!-- Les styles du template seront ajoutés ici ou chargés depuis un fichier CSS -->
+  <!-- Font Awesome pour les icônes -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Les styles du template -->
+  <link rel="stylesheet" href="/styles/visuel_bulma.css">
   <link rel="stylesheet" href="../styles/page_projet.css">
   <script src="./tinymce/tinymce.min.js"></script>
 </head>
@@ -19,9 +22,9 @@
   <div class="editor-controls-container" style="padding: 20px; background-color: #f5f5f5; border-top: 1px solid #dbdbdb;">
     <!-- Champ pour les tags -->
     <div class="field">
-      <label class="label">Tags (séparés par des virgules)</label>
-      <div class="control">
-        <input id="project-tags" class="input" type="text" placeholder="Ex: web, design, ux">
+      <label class="label">Tags (sélectionnez un ou plusieurs tags)</label>
+      <div class="control" id="tags-container">
+        <p class="help">Chargement des tags...</p>
       </div>
     </div>
 

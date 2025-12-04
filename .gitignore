@@ -1,6 +1,50 @@
-node_modules
+# Dépendances
+node_modules/
+package-lock.json
+
+# Configuration sensible
 openid-config.js
+.env
+.env.local
+.env.production
 
 # Fichiers de log
 server.log
 logs/
+*.log
+
+# Fichiers temporaires et de développement
+temp/
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Fichiers de test
+coverage/
+.nyc_output/
+*.test.js.snap
+
+# Fichiers d'éditeur
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Fichiers système
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# Uploads (optionnel - à garder si vous voulez versionner les médias)
+# blueprint_local/public/uploads/
+
+# Fichiers de déploiement et sauvegardes
+backups/
+*.tar.gz
+*.zip

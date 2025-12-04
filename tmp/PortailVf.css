@@ -1,0 +1,476 @@
+/* ============================
+   PortailVf.css
+   Version nettoyée & commentée
+   ============================ */
+
+/* ============================
+   GLOBAL
+   - police globale
+   ============================ */
+* {
+  font-family: 'Montserrat', sans-serif;
+  box-sizing: border-box;
+}
+
+/* ============================
+   BANDEAU (header)
+   ============================ */
+#bandeau {
+  position: fixed;
+  width: 100%;
+  height: 150px; /* modifier si besoin */
+  background-image: url('Banière finale.png');
+  background-size: cover;
+  background-position: center;
+  z-index: 1000;
+  top: 0;
+}
+
+/* texte et logo dans le bandeau */
+.bandeau-texte {
+  position: absolute;
+  top: 65%;
+  left: 7%;
+  transform: translateY(-50%);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+}
+.logo-epf {
+  position: absolute;
+  top: 25px;
+  right: 20px;
+  height: 60px;
+}
+
+/* rectangle blanc (actuellement masqué) */
+.bandeau-blanc { display: none; }
+
+/* ============================
+   NAVIGATION FILTRES (fixed sous le bandeau)
+   ============================ */
+.category-filters {
+  position: fixed;
+  top: 150px; /* ajuster si tu changes la hauteur du bandeau */
+  left: 0;
+  width: 100%;
+  display: flex;
+  overflow-x: auto;
+  padding: 10px 5%;
+  background-color: #EDE5F2;
+  border-bottom: 1px solid #D1C4E9;
+  z-index: 999;
+}
+.category-filters a {
+  margin-right: 15px;
+  padding: 8px 15px;
+  font-weight: bold;
+  color: #333;
+  border-bottom: 2px solid transparent;
+  text-decoration: none;
+}
+.category-filters a.active { border-bottom-color: #B2002D; }
+.category-filters a:hover { color: #B2002D; }
+
+/* ============================
+   SECTION PROJETS (espacement sous header)
+   - filtre-banniere sépare la zone du header fixe
+   ============================ */
+.filtre-banniere {
+  margin-top: 187.5px; /* espace entre la bannière et les tags */
+}
+
+/* ============================
+   DISPOSITION DES PROJETS / VIDEO
+   - Utilise Bulma columns : on ajoute juste quelques ajustements
+   ============================ */
+.projet {
+  font-size: 14px;
+}
+
+/* images des projets */
+.projet .media-left img {
+  width: 70px;
+  height: auto;
+}
+
+/* Titres et descriptions */
+.projet .media-content h4 { font-size: 18px; margin-bottom: 5px; }
+.projet .media-content p { font-size: 14px; margin-bottom: 5px; }
+.content h3 {margin-top: 30px;} /* distance entre la vidéo et le titre du projet à la une*/
+
+
+
+
+/* ============================
+   VIDEO (responsive)
+   - retire les tailles fixes HTML, CSS gère maintenant
+   ============================ */
+.video-containeur video {
+  width: 100%;
+  height: auto;
+  max-width: 700px; /* limite sur grands écrans */
+  border-radius: 8px;
+}
+.video-wrapper {
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* ============================
+   TAGS (pills) + SCROLLER
+   - structure : .tags-scroll-wrapper > (left btn) + .tags-scroll-area + (right btn)
+   ============================ */
+
+/* pill de base (utilisée par JS) */
+.tag-pill.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(2,6,23,0.06);
+  border-radius: 4px !important;
+  white-space: nowrap;
+}
+
+/* état actif visuel (sélection) */
+.tag-pill.active {
+  background: transparent !important;
+  color: inherit !important;
+  border-color: rgba(2,6,23,0.08) !important;
+  font-weight: 700;
+}
+
+/* couleurs appliquées aux pills lorsqu'elles ont la classe color-* (définies plus bas) */
+.tag-pill.color-default,
+.tag-pill.color-informatique,
+.tag-pill.color-ia,
+.tag-pill.color-robotique,
+.tag-pill.color-web,
+.tag-pill.color-eco,
+.tag-pill.color-design,
+.tag-pill.color-data,
+.tag-pill.color-ml,
+.tag-pill.color-environnement,
+.tag-pill.color-electronique,
+.tag-pill.color-energie {
+  color: #fff !important;
+}
+
+/* wrapper du scroller */
+.tags-scroll-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  overflow: hidden; /* cache les débordements */
+  position: relative;
+  padding: 6px 5%;
+  background: transparent;
+}
+
+/* flèches */
+.tags-scroll-arrow {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(2,6,23,0.04);
+  transition: transform .12s ease, opacity .12s ease;
+  z-index: 3;
+}
+.tags-scroll-arrow:disabled { opacity: 0.35; cursor: default; transform: none; }
+
+/* zone scrollable (où sont les tags) */
+.tags-scroll-area {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch; /* smooth iOS */
+  scroll-behavior: smooth;
+  flex: 1 1 auto;
+  min-width: 0; /* important pour le flex layout */
+  white-space: nowrap;
+  /* masquer la scrollbar sur la plupart des navigateurs */
+  -ms-overflow-style: none;  /* IE 10+ */
+  scrollbar-width: none;     /* Firefox */
+}
+.tags-scroll-area::-webkit-scrollbar { display: none; } /* Chrome/Safari/Edge */
+
+/* petit ajustement mobile */
+@media (max-width: 640px) {
+  .tags-scroll-arrow { padding: 6px 8px; font-size: 14px; }
+  .tag-pill { padding: 6px 8px; font-size: 14px; }
+}
+
+/* -------------------------
+   TAG COLORS (utilisées par JS)
+   - ces classes sont ajoutées dynamiquement par le script
+   ------------------------- */
+.tag.color-informatique { background: #2b6cff !important; color:#fff !important; border-color: transparent !important; }
+.tag.color-ia           { background: #3817a6 !important; color:#fff !important; border-color: transparent !important; }
+.tag.color-robotique    { background: #0ab39c !important; color:#fff !important; border-color: transparent !important; }
+.tag.color-web          { background: #ff7a59 !important; color:#fff !important; border-color: transparent !important; }
+.tag.color-eco          { background: #47a048 !important; color:#fff !important; border-color: transparent !important; }
+.tag.color-design       { background: #9b6bff !important; color:#fff !important; border-color: transparent !important; }
+.tag.color-data         { background: #f59e0b !important; color:#fff !important; border-color: transparent !important; }
+.tag.color-ml           { background: #d9480f !important; color:#fff !important; border-color: transparent !important; }
+.tag.color-environnement{ background: #16a34a !important; color:#fff !important; border-color: transparent !important; }
+.tag.color-electronique { background: #0ea5a4 !important; color:#fff !important; border-color: transparent !important; }
+.tag.color-energie      { background: #f97316 !important; color:#fff !important; border-color: transparent !important; }
+.tag.color-default      { background: #6b7280 !important; color: #fff !important; border-color: transparent !important; }
+
+/* ============================
+   FOOTER
+   ============================ */
+.epf-footer {
+  background: #f5f5f5;
+  padding: 40px 0;
+  margin-top: 60px;
+}
+.prefooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.prefooter-left img { height: 90px; }
+.partner-logos { margin-top: 30px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+.partner-logos img { height: 50px; object-fit: contain; }
+
+.prefooter-right h4 {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* Réseaux sociaux en ligne */
+.social-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;              /* Alignement horizontal */
+  align-items: center;
+  gap: 16px;                  /* Espace entre Facebook / TikTok / etc. */
+  flex-wrap: wrap;            /* Permet de passer à la ligne sur petits écrans */
+}
+
+.social-links li {
+  margin: 0;                  /* On annule le margin vertical */
+}
+
+.social-links a {
+  white-space: nowrap;        /* Empêche les mots de se couper */
+  font-weight: 500;
+}
+
+.social-links a {
+  color: var(--epf-dark);
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.social-links a:hover {
+  color: var(--epf-blue);
+}
+
+/* Footer bottom */
+.footer-bottom {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.footer-links a {
+  color: var(--epf-dark);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.footer-links a:hover {
+  color: var(--epf-blue);
+}
+
+/* Partner logos */
+.partner-logos {
+  margin-top: 30px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.partner-logos img {
+  height: 50px;
+  object-fit: contain;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .prefooter {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .prefooter-right ul {
+    text-align: center;
+  }
+
+  .partner-logos img {
+    height: 40px;
+  }
+}
+
+
+/* footer-bottom */
+.footer-bottom { text-align: center; margin-top: 30px; }
+.footer-links { list-style: none; padding: 0; margin-top: 10px; display: flex; gap: 16px; justify-content: center; }
+
+/* message "aucun résultat" */
+#noResultsMessage { font-weight: 600; color: #666; margin-top: 12px; }
+
+/* ============================
+   RESPONSIVE (résoudre chevauchements)
+   - garde assez d'espace sous le header fixe sur petits écrans
+   ============================ */
+@media (max-width: 1024px) {
+  .filtre-banniere { margin-top: 200px; }
+}
+@media (max-width: 768px) {
+  .filtre-banniere { margin-top: 220px; }
+  .projet { margin-top: 1rem; max-width: 100%; padding: 0 1rem; }
+  .video-wrapper { margin-top: 0; }
+  .prefooter { flex-direction: column; text-align: center; }
+  .partner-logos img { height: 40px; }
+}
+
+@media (max-width: 1024px) {
+  .filtre-banniere { margin-top: 165px; } /* header + nav adapté */
+}
+@media (max-width: 768px) {
+  .filtre-banniere { margin-top: 180px; } /* mobile, plus d'espace si header plus grand */
+  .section h2 {margin-block-start: 1rem; } /* espace normal sur mobile */
+  .columns.is-multiline {flex-direction: column; }/* déjà géré par Bulma mais on sécurise */
+}
+
+
+
+@media (max-width: 768px) {
+
+  .video-wrapper,
+  .projet {
+    margin-bottom: 2rem; /* espace entre vidéo et projets phares */
+  }
+}
+@media (max-width: 768px) {
+  .column {
+    width: 100% !important;
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    
+  }
+}
+@media (max-width: 768px) {
+  .video-containeur video {
+    max-width: 100%;
+    
+  }
+}
+/* Desktop : rapprocher les titres sous les tags */
+@media (min-width: 769px) {
+  .section h2 {
+    margin-top: -50px; /* rapproche le titre du haut */
+  }
+}
+
+/* Mobile : marge normale pour éviter chevauchement */
+@media (max-width: 768px) {
+  .section h2 {
+    margin-top: 1rem; /* espace normal entre vidéo et titres */
+  }
+
+  .video-wrapper,
+  .projet {
+    margin-bottom: 3rem; /* espace entre vidéo et projets phares */
+  }
+}
+
+/* Desktop : rapprocher sous les tags */
+@media (min-width: 769px) {
+  .section h2 {
+    margin-top: -50px; /* rapprochement ok sur desktop */
+  }
+}
+
+/* Mobile : marge normale pour éviter chevauchement */
+@media (max-width: 768px) {
+  .section h2 {
+    margin-top: 0rem; 
+  }
+}
+@media (max-width: 768px) {
+  .columns.is-multiline {
+    flex-direction: column;
+  }
+
+  .video-wrapper,
+  .projet {
+    margin-bottom: 2rem; /* espace suffisant entre vidéo et projets phares */
+    width: 100%;
+    padding: 0 1rem;
+  }
+
+  .video-containeur video {
+    max-width: 100%; /* évite débordement */
+  }
+}
+/* Desktop large */
+@media (min-width: 1025px) {
+  .filtre-banniere { margin-top: 180px; }
+}
+
+/* Tablette */
+@media (max-width: 1024px) {
+  .filtre-banniere { margin-top: 200px; }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .filtre-banniere { margin-top: 200px; }
+}
+.video-containeur video {
+  width: 100%;
+  height: auto;
+  max-width: 700px; /* limite sur desktop */
+  border-radius: 8px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .video-containeur video {
+    max-width: 100%;
+  }
+}
+
+
+
+
+

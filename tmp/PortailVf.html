@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liste des Projets</title>
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&display=swap" />
+
+  <!-- Bulma (layout) + FontAwesome (icônes) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Ton fichier CSS (séparé, livré plus bas) -->
+  <link rel="stylesheet" href="PortailVf.css">
+</head>
+
+<body>
+
+<!-- ===========================
+     BANDEAU FIXE EN HAUT
+     (header visuel)
+     =========================== -->
+<div id="bandeau">
+  <div class="bandeau-texte editable-text">Nom_platforme</div>
+  <div class="bandeau-blanc"></div>
+  <img src="EPF_blanc_RVB.png" alt="Logo EPF" class="logo-epf">
+</div>
+
+<!-- ===========================
+     NAVIGATION FILTRES (fixed)
+     =========================== -->
+<nav class="category-filters" aria-label="Navigation principale">
+  <a href="#Accueil" class="active">Portail d'Accueil</a>
+  <a href="#">Liste des Projets</a>
+  <a href="#">Page Projet</a>
+</nav>
+
+<!-- ===========================
+     SECTION : TAGS / FILTRES
+     =========================== -->
+<section class="section filtre-banniere">
+  <div class="project-list container">
+
+    <!-- NOTE pour l'utilisateur : c'est un champ de recherche simple.
+         Si tu ne veux pas l'afficher, tu peux masquer avec CSS (display:none)
+         mais il doit exister pour que le JS ne plante pas. -->
+
+
+    <!-- Barre de tags avec flèches (structure importante : ne change pas les ids) -->
+    <div class="tags-scroll-wrapper" aria-label="Filtrer par thématiques">
+      <!-- flèche gauche -->
+      <button id="tagsScrollLeft" class="tags-scroll-arrow" aria-label="Faire défiler les tags vers la gauche" type="button">
+        <i class="fas fa-chevron-left" aria-hidden="true"></i>
+      </button>
+
+      <!-- zone scrollable contenant les tags (id utilisé par le script) -->
+      <div id="tagsBar" class="tags-scroll-area" role="list" tabindex="0" aria-label="Liste des thématiques">
+        <!-- "Tous les projets" : réinitialise la sélection -->
+        <button class="tag-pill tag is-light active" data-tag="__all__" aria-pressed="true">
+          Tous les projets <span class="tag-remove" style="display:none">×</span>
+        </button>
+
+        <!-- tags (garder data-tag) -->
+        <button class="tag-pill tag is-light" data-tag="Informatique">Informatique</button>
+        <button class="tag-pill tag is-light" data-tag="IA">IA</button>
+        <button class="tag-pill tag is-light" data-tag="Robotique">Robotique</button>
+        <button class="tag-pill tag is-light" data-tag="Web">Web</button>
+        <button class="tag-pill tag is-light" data-tag="Éco">Éco</button>
+        <button class="tag-pill tag is-light" data-tag="Design">Design</button>
+        <button class="tag-pill tag is-light" data-tag="Data">Data</button>
+        <button class="tag-pill tag is-light" data-tag="Machine Learning">Machine Learning</button>
+        <button class="tag-pill tag is-light" data-tag="Environnement">Environnement</button>
+        <button class="tag-pill tag is-light" data-tag="Electronique">Electronique</button>
+        <button class="tag-pill tag is-light" data-tag="Energie">Energie</button>
+      </div>
+
+      <!-- flèche droite -->
+      <button id="tagsScrollRight" class="tags-scroll-arrow" aria-label="Faire défiler les tags vers la droite" type="button">
+        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===========================
+     CONTENU PRINCIPAL
+     (vidéo + liste de projets)
+     =========================== -->
+<section class="section">
+  <div class="container">
+
+    <div class="columns is-variable is-8 is-multiline">
+      <!-- VIDEO (colonne flexible) -->
+      <div class="column is-7 video-wrapper">
+        <h2 class="title is-4">Projet à la une</h2>
+        <figure class="video-containeur">
+          <!-- retirer width/height pour que le CSS gère la responsivité -->
+          <video controls>
+            <source src="Untitled Project-VEED.mp4" type="video/mp4">
+            Votre navigateur ne supporte pas la vidéo.
+          </video>
+        </figure>
+
+        <div class="content">
+          <h3>Projet Assolink</h3>
+          <p>Assolink une application qui regroupe tous les événements associatifs EPF.</p>
+        </div>
+      </div>
+
+      <!-- LISTE PROJETS (colonne) -->
+      <div id="Accueil" class="column is-5 projet">
+        <h2 class="title is-4">Projets phares</h2>
+
+        <!-- POUR CHAQUE projet : on ajoute la classe project-card et l'attribut data-tags
+             Le JS s'appuie sur ces éléments pour filtrer et appliquer les couleurs. -->
+
+        <!-- Projet Hydrogène -->
+        <div class="box project-card" data-tags="Energie">
+          <article class="media">
+            <figure class="media-left">
+              <img src="Hydrogene.JPG" alt="Projet Hydrogène">
+            </figure>
+            <div class="media-content">
+              <!-- titre / description : classes attendues par le JS -->
+              <h4 class="project-title">Projet Hydrogène</h4>
+              <p class="project-desc">Réalisation d'une plateforme de test pour la création d'hydrogène.</p>
+              <!-- project-tag : utilisé pour colorer la pastille sur la carte -->
+              <span class="project-tag tag">Energie</span>
+              <p><a href="projet_hydrogene.html">En savoir plus →</a></p>
+            </div>
+          </article>
+        </div>
+
+        <!-- LOCKERBILLAR -->
+        <div class="box project-card" data-tags="Electronique">
+          <article class="media">
+            <figure class="media-left">
+              <img src="LOCKERBILLARD.JPG" alt="LOCKERBILLARD">
+            </figure>
+            <div class="media-content">
+              <h4 class="project-title">LOCKERBILLAR</h4>
+              <p class="project-desc">Réalisation d'une plateforme de test pour la création d'hydrogène.</p>
+              <span class="project-tag tag">Electronique</span>
+              <p><a href="projet_hydrogene.html">En savoir plus →</a></p>
+            </div>
+          </article>
+        </div>
+
+        <!-- Assolink -->
+        <div class="box project-card" data-tags="Informatique">
+          <article class="media">
+            <figure class="media-left">
+              <img src="Assolink.JPEG" alt="Assolink">
+            </figure>
+            <div class="media-content">
+              <h4 class="project-title">Assolink</h4>
+              <p class="project-desc">Assolink est une application regroupant les événements associatifs EPF.</p>
+              <span class="project-tag tag">Informatique</span>
+              <p><a href="projet_hydrogene.html">En savoir plus →</a></p>
+            </div>
+          </article>
+        </div>
+
+        <!-- message si aucun résultat (géré par JS) -->
+        <div id="noResultsMessage" aria-live="polite" style="margin-top:12px;font-weight:600;color:#666;"></div>
+
+      </div>
+    </div>
+
+    <!-- Bouton "Voir plus" -->
+    <div class="has-text-centered" style="margin-top:1rem;">
+      <a href="projet_hydrogene.html" class="button is-black">Voir plus</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===========================
+     FOOTER
+     =========================== -->
+<footer class="footer epf-footer">
+  <div class="prefooter container">
+    <div class="prefooter-left">
+      <img src="EPF_100ans_couleur-crop.png" alt="EPF Logo">
+    </div>
+
+    <div class="prefooter-right">
+      <h4>Suivez-nous</h4>
+      <ul class="social-links">
+        <li><a href="https://www.facebook.com/EPF.engineering.school" target="_blank" rel="noopener">Facebook</a></li>
+        <li><a href="https://www.tiktok.com/@epf_ingenieur" target="_blank" rel="noopener">TikTok</a></li>
+        <li><a href="https://www.instagram.com/epfengineeringschool" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="https://www.linkedin.com/school/epf-ecole-d'ingénieur-e-s/" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href="https://www.youtube.com/user/epfingenieurs" target="_blank" rel="noopener">YouTube</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom container">
+    <p>@ 2025 EPF</p>
+    <ul class="footer-links">
+      <li><a href="/contactez-nous">Contact</a></li>
+      <li><a href="/mentions-legales">Mentions légales</a></li>
+      <li><a href="/donnees-personnelles">Données personnelles</a></li>
+      <li><a href="/presse">Presse</a></li>
+    </ul>
+  </div>
+
+  <div class="partner-logos container">
+    <img src="CGE.png" alt="CGE">
+    <img src="cti-logo-cmjn.png" alt="CTI">
+    <img src="EESPIG.jpeg" alt="EESPIG">
+    <img src="eur-ace_0.png" alt="EUR-ACE">
+    <img src="logo-qualiopi.jpeg" alt="Qualiopi">
+    <img src="concours_avenir_logo (1).jpeg" alt="Concours Avenir">
+    <img src="Label_CampusFrance_Bienv.jpg" alt="Bienvenue en France">
+  </div>
+</footer>
+
+<!-- ===========================
+     SCRIPT : filtrage + coloration + scroller
+     (tout en bas du body pour que le DOM existe)
+     =========================== -->
+<script>
+/*
+  Script commenté en français pour une personne débutante.
+  - GARDE la logique originale : mapping tags -> classes color-*
+  - Filtrage : recherche + tags
+  - Coloration : applique une classe color-* sur la pastille des cartes
+  - Scroller : gère les flèches left/right et l'état disabled
+*/
+
+/* -------------------------
+   Variables et utilitaires
+   ------------------------- */
+const tagsBar = document.getElementById('tagsBar'); // barre des tags
+const projectCards = Array.from(document.querySelectorAll('.project-card')); // cartes projets
+let selectedTags = new Set(); // ensemble des tags sélectionnés
+
+// normalisation texte (pour comparaisons insensibles à la casse)
+const normalize = s => String(s || '').trim().toLowerCase();
+
+/* --- mapping thématique -> classe CSS (doit rester synchronisé avec ton CSS) --- */
+const TAG_CLASS_MAP = {
+  'informatique': 'color-informatique',
+  'ia': 'color-ia',
+  'robotique': 'color-robotique',
+  'web': 'color-web',
+  'éco': 'color-eco',
+  'eco': 'color-eco',
+  'design': 'color-design',
+  'data': 'color-data',
+  'machine learning': 'color-ml',
+  'ml': 'color-ml',
+  'environnement': 'color-environnement',
+  'electronique': 'color-electronique',
+  'énergie': 'color-energie',
+  'energie': 'color-energie'
+};
+
+/* helper : retourne la classe color-* pour un tag (string) */
+function getColorClassForTag(tagValue) {
+  if (!tagValue) return 'color-default';
+  const key = normalize(tagValue);
+  return TAG_CLASS_MAP[key] || 'color-default';
+}
+
+/* ---------------------------
+   Coloration des pastilles sur les CARTES
+   - pour chaque .project-card on cherche .project-tag (ou .tag)
+   - on applique la classe color-* correspondante
+   --------------------------- */
+function applyTagColorsToCards() {
+  document.querySelectorAll('.project-card').forEach(card => {
+    // on cherche un élément dans la carte qui contient le tag à afficher
+    let tagSpan = card.querySelector('.project-tag') || card.querySelector('.tag');
+    let tagText = '';
+
+    if (tagSpan && tagSpan.textContent.trim()) {
+      tagText = tagSpan.textContent.trim();
+    } else {
+      // fallback : on prend le premier tag déclaré dans data-tags si aucun élément visible
+      const raw = (card.getAttribute('data-tags') || '').split(',')[0] || '';
+      tagText = raw.trim();
+    }
+
+    const colorClass = getColorClassForTag(tagText);
+
+    if (tagSpan) {
+      // retire les anciennes classes qui commencent par 'color-'
+      Array.from(tagSpan.classList).forEach(c => {
+        if (c.startsWith('color-')) tagSpan.classList.remove(c);
+      });
+      // ajoute la nouvelle classe color-*
+      tagSpan.classList.add(colorClass);
+    }
+  });
+}
+
+/* ---------------------------
+   Filtrage (recherche + tags)
+   - le champ #searchInput est optionnel dans le DOM, on le récupère ici s'il existe
+   --------------------------- */
+
+
+function cardMatchesFilters(card, searchTerm, selectedTagsSet) {
+  const titleEl = card.querySelector('.project-title');
+  const descEl = card.querySelector('.project-desc');
+
+  const title = normalize(titleEl ? titleEl.textContent : '');
+  const desc = normalize(descEl ? descEl.textContent : '');
+
+  const searchMatch = !searchTerm || title.includes(searchTerm) || desc.includes(searchTerm);
+
+  const dataTagsRaw = card.getAttribute('data-tags') || '';
+  const cardTags = new Set(
+    dataTagsRaw.split(',')
+      .map(t => t.trim())
+      .filter(Boolean)
+      .map(t => t.toLowerCase())
+  );
+
+  if (selectedTagsSet.size === 0) return searchMatch;
+
+  // si un des tags sélectionnés est présent dans la carte -> ok
+  for (const t of selectedTagsSet) {
+    if (cardTags.has(t.toLowerCase())) return searchMatch;
+  }
+  return false;
+}
+
+function refreshProjectsView() {
+  const searchTerm = ''; // recherche désactivée
+  let visibleCount = 0;
+
+  projectCards.forEach(card => {
+    if (cardMatchesFilters(card, searchTerm, selectedTags)) {
+      card.style.display = '';
+      visibleCount++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  const noResultEl = document.getElementById('noResultsMessage');
+  if (noResultEl) noResultEl.textContent = visibleCount === 0 ? "Aucun projet ne correspond aux filtres." : "";
+}
+
+/* ---------------------------
+   Modifier l'apparence d'une pill (tag) quand elle est sélectionnée
+   - on ajoute la classe color-* si shouldApply = true
+   --------------------------- */
+function setPillColorState(pill, shouldApply) {
+  const tagVal = pill.getAttribute('data-tag') || '';
+  const colorClass = getColorClassForTag(tagVal);
+
+  // retirer anciennes classes color-*
+  Array.from(pill.classList).forEach(c => {
+    if (c.startsWith('color-')) pill.classList.remove(c);
+  });
+
+  if (shouldApply) {
+    pill.classList.add(colorClass);
+  }
+}
+
+/* ---------------------------
+   Gestion clics sur la barre de tags
+   - on attache un seul listener délégué sur #tagsBar
+   --------------------------- */
+function initTagClickHandlers() {
+  if (!tagsBar) return;
+
+  tagsBar.addEventListener('click', event => {
+    const btn = event.target.closest('.tag-pill');
+    if (!btn) return;
+
+    const tagValue = btn.getAttribute('data-tag');
+    if (!tagValue) return;
+
+    // cas spécial : "Tous les projets"
+    if (tagValue === '__all__') {
+      selectedTags.clear();
+      document.querySelectorAll('.tag-pill').forEach(p => {
+        p.classList.remove('active');
+        p.setAttribute('aria-pressed','false');
+        // retirer toute classe color-*
+        Array.from(p.classList).forEach(c => { if (c.startsWith('color-')) p.classList.remove(c); });
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed','true');
+      refreshProjectsView();
+      return;
+    }
+
+    const normalized = normalize(tagValue);
+    if (selectedTags.has(normalized)) {
+      // désélectionner
+      selectedTags.delete(normalized);
+      btn.classList.remove('active');
+      btn.setAttribute('aria-pressed','false');
+      setPillColorState(btn, false);
+    } else {
+      // sélectionner
+      selectedTags.add(normalized);
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed','true');
+      setPillColorState(btn, true);
+    }
+
+    // gérer l'état du bouton "Tous les projets"
+    const allBtn = tagsBar.querySelector('.tag-pill[data-tag="__all__"]');
+    if (selectedTags.size > 0) {
+      if (allBtn) { allBtn.classList.remove('active'); allBtn.setAttribute('aria-pressed','false'); }
+    } else {
+      if (allBtn) { allBtn.classList.add('active'); allBtn.setAttribute('aria-pressed','true'); }
+    }
+
+    refreshProjectsView();
+  });
+
+  // suppression via la petite croix (si visible) — logique existante conservée
+  tagsBar.addEventListener('click', (event) => {
+    const removeBtn = event.target.closest('.tag-remove');
+    if (!removeBtn) return;
+    const tagBtn = removeBtn.closest('.tag-pill');
+    if (!tagBtn) return;
+    const tagValue = tagBtn.getAttribute('data-tag');
+    if (tagValue === '__all__') return;
+    tagBtn.remove();
+    selectedTags.delete(tagValue.toLowerCase());
+    if (selectedTags.size === 0) {
+      const allBtn = tagsBar.querySelector('.tag-pill[data-tag="__all__"]');
+      if (allBtn) { allBtn.classList.add('active'); allBtn.setAttribute('aria-pressed','true'); }
+    }
+    refreshProjectsView();
+  });
+}
+
+
+
+/* ---------------------------
+   Scroller : initialisation des flèches left/right
+   - appelé après DOMContentLoaded
+   --------------------------- */
+function initTagsScroller() {
+  const scrollArea = document.getElementById('tagsBar');
+  const leftBtn = document.getElementById('tagsScrollLeft');
+  const rightBtn = document.getElementById('tagsScrollRight');
+
+  if (!scrollArea || !leftBtn || !rightBtn) return;
+
+  function getScrollStep() {
+    return Math.round(scrollArea.clientWidth * 0.6); // 60% de la zone visible
+  }
+
+  function updateArrowsState() {
+    const maxScrollLeft = scrollArea.scrollWidth - scrollArea.clientWidth;
+    leftBtn.disabled = scrollArea.scrollLeft <= 5;
+    rightBtn.disabled = scrollArea.scrollLeft >= (maxScrollLeft - 5);
+  }
+
+  rightBtn.addEventListener('click', () => {
+    scrollArea.scrollBy({ left: getScrollStep(), behavior: 'smooth' });
+  });
+
+  leftBtn.addEventListener('click', () => {
+    scrollArea.scrollBy({ left: -getScrollStep(), behavior: 'smooth' });
+  });
+
+  scrollArea.addEventListener('scroll', () => {
+    window.requestAnimationFrame(updateArrowsState);
+  });
+
+  // navigation clavier (lorsque #tagsBar est focus)
+  scrollArea.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      scrollArea.scrollBy({ left: 150, behavior: 'smooth' });
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      scrollArea.scrollBy({ left: -150, behavior: 'smooth' });
+    }
+  });
+
+  // click sur une pill recentre la pill dans la vue
+  scrollArea.addEventListener('click', (e) => {
+    const pill = e.target.closest('.tag-pill');
+    if (!pill) return;
+    const pillLeft = pill.offsetLeft;
+    const pillWidth = pill.offsetWidth;
+    const areaCenter = (scrollArea.clientWidth / 2) - (pillWidth / 2);
+    scrollArea.scrollTo({ left: pillLeft - areaCenter, behavior: 'smooth' });
+  });
+
+  // s'assurer que les boutons sont "au-dessus" et état initial
+  leftBtn.style.zIndex = rightBtn.style.zIndex = 3;
+  updateArrowsState();
+  window.addEventListener('resize', updateArrowsState);
+  window.addEventListener('load', updateArrowsState);
+}
+
+/* ---------------------------
+   Initialisation générale (après DOM ready)
+   - on appelle les fonctions d'initialisation dans l'ordre sûr
+   --------------------------- */
+document.addEventListener('DOMContentLoaded', () => {
+  applyTagColorsToCards();   // colorer les pastilles des cartes
+  initTagClickHandlers();    // handlers clic pour la barre de tags
+  
+  initTagsScroller();        // initialiser scroller / flèches
+  refreshProjectsView();     // afficher/masquer cartes selon filtres initiaux
+});
+</script>
+
+</body>
+</html>

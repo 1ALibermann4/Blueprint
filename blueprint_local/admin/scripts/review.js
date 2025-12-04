@@ -1,6 +1,11 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const projectTitleElement = document.getElementById('project-title');
-    const reviewContainer = document.querySelector('.container.section');
+    const reviewContainer = document.getElementById('project-content');
+
+    if (!reviewContainer) {
+        console.error('Conteneur de relecture non trouvé');
+        return;
+    }
 
     const params = new URLSearchParams(window.location.search);
     const fileName = params.get('file');
@@ -28,23 +33,101 @@ document.addEventListener('DOMContentLoaded', async () => {
         const projectTitle = projectData.frontMatter.titre || fileName;
         projectTitleElement.textContent = `Relecture : ${projectTitle}`;
 
-        // Préparer le HTML final en injectant le contenu et le titre dans le modèle
-        let finalHtml = templateHtml.replace(
-            /<title>.*<\/title>/i,
-            `<title>${projectTitle} - Aperçu</title>`
-        );
-        finalHtml = finalHtml.replace(
-            /<body[^>]*>[\s\S]*<\/body>/i,
-            `<body>${projectData.content}</body>`
-        );
+        // Parser le template et le contenu du brouillon
+        const parser = new DOMParser();
+        const templateDoc = parser.parseFromString(templateHtml, 'text/html');
+        
+        // Mettre à jour le titre dans le template
+        const titleTag = templateDoc.querySelector('title');
+        if (titleTag) {
+            titleTag.textContent = `${projectTitle} - Aperçu`;
+        }
+        
+        // Mettre à jour le titre dans le bandeau
+        const bandeauTexte = templateDoc.querySelector('.bandeau-texte');
+        if (bandeauTexte) {
+            bandeauTexte.textContent = projectTitle;
+        }
+        
+        // Injecter le contenu du brouillon dans le main du template
+        const main = templateDoc.querySelector('main');
+        
+        if (main) {
+            // Le contenu du brouillon est déjà du HTML qui devrait être injecté dans le main
+            let contentToInject = projectData.content;
+            
+            // Si le contenu contient un <main>, extraire seulement son contenu interne
+            const mainMatch = contentToInject.match(/<main[^>]*>([\s\S]*)<\/main>/i);
+            if (mainMatch) {
+                contentToInject = mainMatch[1];
+            }
+            
+            // Nettoyer uniquement les balises de fermeture problématiques
+            contentToInject = contentToInject
+                .replace(/<\/body>/gi, '')
+                .replace(/<\/html>/gi, '')
+                .replace(/<\/main>/gi, '')
+                .replace(/<footer[\s\S]*?<\/footer>/gi, '') // Retirer les footers qui pourraient être dans le contenu
+                .trim();
+            
+            main.innerHTML = contentToInject;
+        }
+        
+        // S'assurer que tous les liens CSS et scripts sont en chemins absolus
+        const head = templateDoc.querySelector('head');
+        if (head) {
+            head.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && !href.startsWith('http') && !href.startsWith('/')) {
+                    link.setAttribute('href', '/' + href);
+                } else if (href && (href.startsWith('./') || href.startsWith('../'))) {
+                    link.setAttribute('href', href.replace(/^\.\.?\//, '/'));
+                }
+            });
+        }
+        
+        // S'assurer que les scripts dans le body ont aussi des chemins absolus
+        const body = templateDoc.querySelector('body');
+        if (body) {
+            body.querySelectorAll('script[src]').forEach(script => {
+                const src = script.getAttribute('src');
+                if (src && !src.startsWith('http') && !src.startsWith('/')) {
+                    script.setAttribute('src', '/' + src);
+                } else if (src && (src.startsWith('./') || src.startsWith('../'))) {
+                    script.setAttribute('src', src.replace(/^\.\.?\//, '/'));
+                }
+            });
+        }
+        
+        // Obtenir le HTML final
+        let finalHtml = '<!DOCTYPE html>\n' + templateDoc.documentElement.outerHTML;
 
         // Créer un Iframe pour isoler l'aperçu et ses styles
         const iframe = document.createElement('iframe');
         iframe.style.width = '100%';
-        iframe.style.height = '80vh';
+        iframe.style.height = '90vh';
         iframe.style.border = '1px solid #ccc';
-        reviewContainer.innerHTML = ''; // Vider le conteneur
+        iframe.style.borderRadius = '6px';
+        iframe.style.backgroundColor = 'white';
+        
+        // Vider le conteneur et ajouter l'iframe
+        reviewContainer.innerHTML = '';
         reviewContainer.appendChild(iframe);
+
+        // Attendre que l'iframe soit prêt avant d'écrire le contenu
+        iframe.onload = () => {
+            try {
+                const iframeDoc = iframe.contentWindow.document;
+                const iframeBody = iframeDoc.body;
+                if (iframeBody) {
+                    // Ajuster la hauteur de l'iframe au contenu
+                    const height = Math.max(iframeBody.scrollHeight, iframeBody.offsetHeight);
+                    iframe.style.height = Math.min(height + 50, window.innerHeight * 0.9) + 'px';
+                }
+            } catch (e) {
+                console.warn('Impossible d\'ajuster la hauteur de l\'iframe:', e);
+            }
+        };
 
         // Écrire le HTML complet dans l'Iframe
         iframe.contentWindow.document.open();

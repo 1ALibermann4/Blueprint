@@ -47,10 +47,17 @@ async function loadDrafts() {
       const statusInfo = getStatusInfo(draft.status);
 
       let actionsHtml = '';
-      if (draft.status === 'draft' || draft.status === 'rejected') {
+      if (draft.status === 'draft') {
         actionsHtml = `
           <div class="buttons">
             <a href="editor.html?file=${draft.fileName}" class="button is-small is-link">Modifier</a>
+            <button class="button is-small is-danger" onclick="deleteDraft('${draft.fileName}', this)">Supprimer</button>
+          </div>`;
+      } else if (draft.status === 'rejected') {
+        actionsHtml = `
+          <div class="buttons">
+            <a href="editor.html?file=${draft.fileName}" class="button is-small is-link">Modifier</a>
+            <button class="button is-small is-info" onclick="showRejectionReason('${draft.fileName}')">Voir le motif</button>
             <button class="button is-small is-danger" onclick="deleteDraft('${draft.fileName}', this)">Supprimer</button>
           </div>`;
       } else if (draft.status === 'pending_review') {
@@ -121,6 +128,123 @@ async function deleteDraft(fileName, button) {
   } catch (error) {
     notyf.error('Erreur : ' + error.message);
     button.classList.remove('is-loading');
+  }
+}
+
+/**
+ * Affiche le motif de rejet d'un projet.
+ * @param {string} fileName - Le nom du fichier du projet rejeté.
+ */
+async function showRejectionReason(fileName) {
+  try {
+    const response = await fetch(`/api/project?file=${encodeURIComponent(fileName)}&type=draft`);
+    if (!response.ok) throw new Error('Impossible de charger les détails du projet');
+
+    const project = await response.json();
+    
+    // Récupérer le motif de rejet depuis le frontMatter
+    const frontMatter = project.frontMatter || {};
+    const rejectionReason = frontMatter.rejectionReason;
+    const rejectedAt = frontMatter.rejectedAt;
+    
+    console.log('Full project response:', project);
+    console.log('Front matter keys:', Object.keys(frontMatter));
+    console.log('Rejection reason value:', rejectionReason);
+    console.log('Rejection reason type:', typeof rejectionReason);
+    
+    const projectTitle = frontMatter.titre || fileName;
+    const dateStr = rejectedAt ? new Date(rejectedAt).toLocaleString('fr-FR') : 'Non spécifiée';
+    
+    // Vérifier si le motif existe - accepter null, undefined, ou chaîne vide
+    let reasonText = 'Aucun motif spécifié par l\'administrateur.';
+    if (rejectionReason != null && rejectionReason !== undefined) {
+      const trimmed = String(rejectionReason).trim();
+      if (trimmed.length > 0) {
+        reasonText = trimmed;
+      }
+    }
+    
+    // Échapper le HTML pour éviter les problèmes d'affichage
+    const escapeHtml = (text) => {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = String(text);
+      return div.innerHTML;
+    };
+    
+    // Créer le modal
+    const modal = document.createElement('div');
+    modal.className = 'modal is-active';
+    modal.id = 'rejection-reason-modal';
+    
+    modal.innerHTML = `
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Motif de rejet</p>
+          <button class="delete" aria-label="close" id="modal-close-btn"></button>
+        </header>
+        <section class="modal-card-body">
+          <p><strong>Projet :</strong> <span style="color: #3273dc;">${escapeHtml(projectTitle)}</span></p>
+          <p><strong>Date de rejet :</strong> <span style="color: #3273dc;">${dateStr}</span></p>
+          <div class="field mt-4">
+            <label class="label">Motif de rejet :</label>
+            <div class="box" style="min-height: 100px; padding: 1rem; background-color: #f5f5f5;">
+              <p style="white-space: pre-wrap; word-wrap: break-word; margin: 0; color: ${reasonText === 'Aucun motif spécifié par l\'administrateur.' ? '#999' : '#333'};">
+                ${escapeHtml(reasonText)}
+              </p>
+            </div>
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <button class="button" id="close-rejection-modal">Fermer</button>
+        </footer>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Fonction pour fermer le modal
+    const closeModal = (e) => {
+      e?.stopPropagation();
+      modal.classList.remove('is-active');
+      setTimeout(() => {
+        if (modal.parentNode) {
+          modal.parentNode.removeChild(modal);
+        }
+      }, 300);
+    };
+    
+    // Ajouter les event listeners avec capture pour éviter les problèmes
+    const closeBtn = modal.querySelector('#close-rejection-modal');
+    const deleteBtn = modal.querySelector('#modal-close-btn');
+    const background = modal.querySelector('.modal-background');
+    
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeModal, true);
+    }
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', closeModal, true);
+    }
+    if (background) {
+      background.addEventListener('click', (e) => {
+        if (e.target === background) {
+          closeModal(e);
+        }
+      }, true);
+    }
+    
+    // Empêcher la propagation du clic sur le modal-card
+    const modalCard = modal.querySelector('.modal-card');
+    if (modalCard) {
+      modalCard.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
+    
+  } catch (error) {
+    notyf.error('Erreur : ' + error.message);
+    console.error(error);
   }
 }
 

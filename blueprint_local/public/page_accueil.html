@@ -1,121 +1,156 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Projets EPF - Reproduction Fidèle</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        /* ... CSS ... */
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accueil - BluePrint</title>
+
+  <!-- Font -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&display=swap" />
+
+  <!-- Bulma -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="/styles/accueil.css">
 </head>
 <body>
 
-    <header>
-        <div class="header-left">
-            <div class="menu-icon" style="color: var(--color-text-light);">☰</div>
-            <div class="header-title">Page Projets</div>
-        </div>
-        <div class="header-logo">
-            <img src="/public/images/epf-logo-header.png" alt="EPF Logo Header">
-        </div>
-    </header>
+<!-- ===========================
+     BANDEAU FIXE EN HAUT
+     =========================== -->
+<div id="bandeau">
+  <div class="bandeau-texte">Portail</div>
+  <div class="bandeau-blanc"></div>
+  <a href="/public/page_accueil.html" class="logo-maison">
+    <i class="fas fa-house"></i>
+  </a>
+  <img src="/images/epf-logo-right.png" alt="Logo EPF" class="logo-epf">
+</div>
 
-    <section class="hero-section">
-        <h1>Liste des projets</h1>
-    </section>
+<!-- ===========================
+     NAVIGATION FILTRES (fixed)
+     =========================== -->
+<nav class="category-filters" aria-label="Navigation principale">
+  <a href="/public/page_accueil.html" class="active">Portail d'Accueil</a>
+  <a href="/public/project_list.html">Liste des Projets</a>
+</nav>
 
-    <div class="category-filters">
-        <a href="#" class="filter-btn active">Tous les projets</a>
-        <a href="#" class="filter-btn">Informatique & IA</a>
-        <a href="#" class="filter-btn">Robotique & Électronique</a>
-        <a href="#" class="filter-btn">Mécanique & Matériaux</a>
-        <a href="#" class="filter-btn">Énergie & Environnement</a>
-        <a href="#" class="filter-btn">Data</a>
-        <a href="#" class="filter-btn">Système d'Info</a>
+<!-- ===========================
+     SECTION : TAGS / FILTRES
+     =========================== -->
+<section class="section filtre-banniere">
+  <div class="project-list container">
+    <!-- Barre de tags avec flèches -->
+    <div class="tags-scroll-wrapper" aria-label="Filtrer par thématiques">
+      <!-- flèche gauche -->
+      <button id="tagsScrollLeft" class="tags-scroll-arrow" aria-label="Faire défiler les tags vers la gauche" type="button">
+        <i class="fas fa-chevron-left" aria-hidden="true"></i>
+      </button>
+
+      <!-- zone scrollable contenant les tags -->
+      <div id="tagsBar" class="tags-scroll-area" role="list" tabindex="0" aria-label="Liste des thématiques">
+        <!-- "Tous les projets" : réinitialise la sélection -->
+        <button class="tag-pill tag is-light active" data-tag="__all__" aria-pressed="true">
+          Tous les projets <span class="tag-remove" style="display:none">×</span>
+        </button>
+        <!-- Les tags seront chargés dynamiquement depuis l'API -->
+      </div>
+
+      <!-- flèche droite -->
+      <button id="tagsScrollRight" class="tags-scroll-arrow" aria-label="Faire défiler les tags vers la droite" type="button">
+        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ===========================
+     CONTENU PRINCIPAL
+     =========================== -->
+<section class="section">
+  <div class="container">
+    <div class="columns is-variable is-8 is-multiline">
+      <!-- VIDEO (colonne flexible) -->
+      <div class="column is-7 video-wrapper">
+        <h2 class="title is-4">Projet à la une</h2>
+        <figure class="video-containeur">
+          <video controls id="featured-video" style="display: none;">
+            Votre navigateur ne supporte pas la vidéo.
+          </video>
+          <img id="featured-image" src="/images/project-placeholder.png" alt="Projet en vedette" style="display: none;">
+          <div id="featured-placeholder" class="media-placeholder">
+            <p>Chargement du projet en vedette...</p>
+          </div>
+        </figure>
+
+        <div class="content">
+          <h3 id="featured-project-title">Projet en vedette</h3>
+          <p id="featured-project-desc">Chargement...</p>
+          <a id="featured-project-link" href="#" class="featured-link" style="display: none;">En savoir plus →</a>
+        </div>
+      </div>
+
+      <!-- LISTE PROJETS (colonne) -->
+      <div id="Accueil" class="column is-5 projet">
+        <h2 class="title is-4">Projets phares</h2>
+        <div id="recent-projects-list">
+          <p>Chargement des projets...</p>
+        </div>
+        <!-- message si aucun résultat (géré par JS) -->
+        <div id="noResultsMessage" aria-live="polite" style="margin-top:12px;font-weight:600;color:#666;"></div>
+      </div>
     </div>
 
-    <main class="project-grid">
-        <div class="main-project-card">
-            <div class="main-project-images">
-                <img src="/public/images/project-robotique-1.jpg" alt="Image Robotique 1">
-                <img src="/public/images/project-robotique-2.jpg" alt="Image Robotique 2">
-                <img src="/public/images/project-robotique-3.jpg" alt="Image Robotique 3">
-            </div>
-            <div class="main-project-content">
-                <h2>Projet Robotique</h2>
-                <div class="project-meta">
-                    <span>Concours entre étudiants</span>
-                    <a href="#" class="learn-more">En savoir plus <span class="arrow">→</span></a>
-                </div>
-            </div>
-        </div>
+    <!-- Bouton "Voir plus" -->
+    <div class="has-text-centered" style="margin-top:1rem;">
+      <a href="/public/project_list.html" class="button is-black">Voir plus</a>
+    </div>
+  </div>
+</section>
 
-        <div class="side-projects-list">
-            <div class="side-project-item">
-                 <img src="/public/images/project-hydrogene-1.jpg" alt="Image Hydrogène 1">
-                <div class="side-project-text">
-                    <h3>Projet Hydrogène</h3>
-                    <p>Réalisation d'une plateforme de test pour la création d'hydrogène</p>
-                    <a href="#" class="learn-more">En savoir plus <span class="arrow">→</span></a>
-                </div>
-            </div>
-            <div class="side-project-item">
-                <img src="/public/images/project-hydrogene-2.jpg" alt="Image Hydrogène 2">
-                <div class="side-project-text">
-                    <h3>Projet Hydrogène</h3>
-                    <p>Réalisation d'une plateforme de test pour la création d'hydrogène</p>
-                    <a href="#" class="learn-more">En savoir plus <span class="arrow">→</span></a>
-                </div>
-            </div>
-            <div class="side-project-item">
-                <img src="/public/images/project-hydrogene-3.jpg" alt="Image Hydrogène 3">
-                <div class="side-project-text">
-                    <h3>Projet Hydrogène</h3>
-                    <p>Réalisation d'une plateforme de test pour la création d'hydrogène</p>
-                    <a href="#" class="learn-more">En savoir plus <span class="arrow">→</span></a>
-                </div>
-            </div>
-            <a href="projects.html" class="view-more-btn">Voir Plus</a>
-        </div>
-    </main>
+<!-- ===========================
+     FOOTER
+     =========================== -->
+<footer class="footer epf-footer">
+  <div class="prefooter container">
+    <div class="prefooter-left">
+      <img src="/images/epf-100ans-couleur-crop.png" alt="EPF Logo">
+    </div>
 
-    <footer>
-        <div class="footer-top">
-            <div class="footer-logo-block">
-                 <img class="epf-logo" src="/public/images/epf-logo-footer.png" alt="EPF Logo">
-                <img class="epf-years" src="/public/images/epf-1925-2025.png" alt="1925-2025">
-            </div>
-            <div class="footer-social">
-                <span>Follow us</span>
-                <div class="footer-social-icons">
-                    <a href="#">f</a><a href="#">d</a><a href="#">i</a><a href="#">l</a><a href="#">y</a>
-                </div>
-            </div>
-        </div>
+    <div class="prefooter-right">
+      <h4>Suivez-nous</h4>
+      <ul class="social-links">
+        <li><a href="https://www.facebook.com/EPF.engineering.school" target="_blank" rel="noopener">Facebook</a></li>
+        <li><a href="https://www.tiktok.com/@epf_ingenieur" target="_blank" rel="noopener">TikTok</a></li>
+        <li><a href="https://www.instagram.com/epfengineeringschool" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="https://www.linkedin.com/school/epf-ecole-d'ingénieur-e-s/" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href="https://www.youtube.com/user/epfingenieurs" target="_blank" rel="noopener">YouTube</a></li>
+      </ul>
+    </div>
+  </div>
 
-        <div class="footer-links-grid">
-            <!-- ... colonnes ... -->
-        </div>
+  <div class="footer-bottom container">
+    <p>@ 2025 EPF</p>
+    <ul class="footer-links">
+      <li><a href="/contactez-nous">Contact</a></li>
+      <li><a href="/mentions-legales">Mentions légales</a></li>
+      <li><a href="/donnees-personnelles">Données personnelles</a></li>
+      <li><a href="/presse">Presse</a></li>
+    </ul>
+  </div>
 
-        <div class="footer-bottom-bar">
-            <span>© 2024 EPF</span>
-            <div class="footer-logos">
-                <img src="/public/images/logo-partner-1.png" alt="Partner Logo 1">
-                <img src="/public/images/logo-partner-2.png" alt="Partner Logo 2">
-                <img src="/public/images/logo-partner-3.png" alt="Partner Logo 3">
-                <img src="/public/images/logo-partner-4.png" alt="Partner Logo 4">
-                <img src="/public/images/logo-partner-5.png" alt="Partner Logo 5">
-            </div>
-            <div class="footer-links-bottom">
-                <a href="#">Contact</a>
-                <a href="#">Legal Information</a>
-                <a href="#">Données personnelles</a>
-                <a href="#">Press</a>
-            </div>
-        </div>
-    </footer>
+  <div class="partner-logos container">
+    <img src="/images/cge.png" alt="CGE">
+    <img src="/images/cti-logo-cmjn.png" alt="CTI">
+    <img src="/images/eespig.jpeg" alt="EESPIG">
+    <img src="/images/eur-ace-0.png" alt="EUR-ACE">
+    <img src="/images/logo-qualiopi.jpeg" alt="Qualiopi">
+    <img src="/images/concours-avenir-logo.jpeg" alt="Concours Avenir">
+    <img src="/images/label-campusfrance-bienv.jpg" alt="Bienvenue en France">
+  </div>
+</footer>
 
-    <script src="/public/scripts/accueil.js"></script>
+<script src="/scripts/accueil.js"></script>
+
 </body>
 </html>

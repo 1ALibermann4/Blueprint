@@ -6,6 +6,7 @@
     <title>Administration - Validation des Projets</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
     <style>
         :root {
             --color-black: #c5c5c5;
@@ -78,14 +79,72 @@
             </div>
         </div>
 
-        <!-- Section des projets publiés et mise en avant -->
+        <!-- Section des projets publiés -->
         <div class="box">
-            <h2 class="title is-4">Gestion des projets à la une</h2>
-            <p class="subtitle is-6">Sélectionnez jusqu'à 4 projets à mettre en avant sur la page d'accueil.</p>
-            <div id="featured-projects-list">
-                <!-- La liste des projets publiés avec les cases à cocher sera chargée ici -->
+            <h2 class="title is-4">Projets publiés</h2>
+            <p class="subtitle is-6">Gérer les projets actuellement publiés.</p>
+            <div id="published-projects-list">
+                <!-- La liste des projets publiés sera chargée ici -->
                 <p>Chargement...</p>
             </div>
+        </div>
+
+        <!-- Section des projets à la une -->
+        <div class="box">
+            <h2 class="title is-4">Projets à la une</h2>
+            <p class="subtitle is-6">Sélectionnez les projets à mettre en avant sur la page d'accueil (positions 1 à 4).</p>
+            
+            <div class="columns">
+                <div class="column">
+                    <div class="field">
+                        <label class="label">Position 1 (Projet principal)</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select id="featured-position-1">
+                                    <option value="">-- Aucun projet --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field">
+                        <label class="label">Position 2</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select id="featured-position-2">
+                                    <option value="">-- Aucun projet --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field">
+                        <label class="label">Position 3</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select id="featured-position-3">
+                                    <option value="">-- Aucun projet --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field">
+                        <label class="label">Position 4</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select id="featured-position-4">
+                                    <option value="">-- Aucun projet --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <button class="button is-primary mt-4" onclick="saveFeaturedProjects()">Enregistrer les modifications</button>
         </div>
 
@@ -96,6 +155,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="/admin/scripts/validate.js"></script>
 
 </body>

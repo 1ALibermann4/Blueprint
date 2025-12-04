@@ -1,54 +1,579 @@
-/* General layout for split view */
-.container-split {
-  display: flex;
-  height: 100vh;
+/* ============================================================
+   styles.css
+   Overrides Bulma + styles spécifiques pour la page Liste des projets
+   Version intégrée depuis ListeProjetVF.css
+   ============================================================ */
+
+/* --- Variables de couleurs (charte EPF approximative) --- */
+:root{
+  --epf-blue: #d2433e;
+  --epf-dark: #05204a;
+  --muted: #6c757d;
+  --bg: #ffffff;
+  --card-bg: #ffffff;
+  --accent: #e9f2ff;
+  --radius: 10px;
+  --gap: 20px;
+  --box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+  --max-width: 1200px; /* largeur max du conteneur */
 }
 
-.editor-pane {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-  border-right: 1px solid #dbdbdb;
+/* Appliquer Montserrat globalement */
+html, body { font-family: 'Montserrat', sans-serif; background:var(--bg); color:var(--epf-dark); margin:0; }
+
+/* ---------------- BANNIÈRE (en dessous de topbar) ---------------- */
+#bandeau {
+    position: fixed;
+    width: 100%;
+    height: 150px;
+    background-image: url('/images/capture.jpg');
+    background-size: cover;
+    background-position: center;
+    z-index: 1000;
+    top: 0%;
+}
+ 
+/* Rectangle blanc derrière les logos */
+.bandeau-blanc {
+    display: none;
+    top: -150px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    height: 90px;
+    width: calc(100% - 0px);
+    background-color: white;
+    z-index: 0;
+}
+ 
+.bandeau-texte {
+    position: absolute;
+    top: 65%;
+    left: 7%;
+    transform: translateY(-50%);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+}
+ 
+.logo-epf, .logo-barre {
+    position: absolute;
+    top: 25px;
+    height: 60px;
 }
 
-.preview-pane {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
+.logo-epf {
+    right: 20px;
 }
 
-.notyf__buttons {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
+.logo-maison {
+    position: absolute;
+    top: 25px;
+    left: 20px;
+    color: white;
+    font-size: 1.5rem;
+    z-index: 1001;
+    transition: transform 0.2s;
 }
 
-.notyf__button {
-  border: none;
-  background: #eee;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+.logo-maison:hover {
+    transform: scale(1.2);
+}
+
+/* ----------- NAVIGATION FILTRES ----------- */
+.category-filters {
+    position: fixed;
+    top: 150px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    overflow-x: auto;
+    padding: 10px 5%;
+    background-color: #EDE5F2;
+    border-bottom: 1px solid #D1C4E9;
+    z-index: 999;
+}
+
+.category-filters a {
+    margin-right: 15px;
+    padding: 8px 15px;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 2px solid transparent;
+    text-decoration: none;
+}
+
+.category-filters a.active {
+    border-bottom-color: #B2002D;
+    font-weight: bold;
+}
+
+.category-filters a:hover { 
+    color: #B2002D; 
+}
+
+/* ---------------- Container principal ---------------- */
+.container { 
+    max-width:var(--max-width); 
+    margin: 18px auto; 
+    padding: 0 19px; 
+}
+
+.container1 { 
+    max-width:var(--max-width); 
+    margin: 18px auto; 
+    padding: 0 19px; 
+    padding-top: 210px; 
+}
+
+/* Intro : titre + description */
+.page-title { 
+    margin:0 0 8px 0; 
+    font-size:30px; 
+    font-weight:700; 
+    color:var(--epf-dark); 
+}
+
+.page-desc { 
+    margin:0 0 14px 0; 
+    color:var(--muted); 
+    font-size:14px; 
+    max-width:1200px; 
+    line-height:1.45; 
+}
+
+/* Controls : alignement simple */
+.controls { 
+    display:flex; 
+    flex-direction:column; 
+    gap:12px; 
+}
+
+/* limiter la largeur du champ recherche */
+#searchInput {
+  width: 100%;
+  max-width: 640px;
+}
+
+/* ---------------- TAGS (pills) ---------------- */
+.tag-pill.tag {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 12px;
+  cursor:pointer;
+  margin-right:8px;
+  margin-bottom:8px;
+  border: 1px solid rgba(2,6,23,0.06);
+  border-radius: 4px !important;
+  white-space: nowrap;
+}
+
+/* état actif visuel (sélectionné) */
+.tag-pill.active {
+  background: transparent !important;
+  color: inherit !important;
+  border-color: rgba(2,6,23,0.08) !important;
+  box-shadow: none !important;
+  font-weight: 700;
+  outline: none;
+}
+
+.tag-pill.color-default { 
+    background: var(--accent) !important; 
+    color: var(--epf-dark) !important; 
+}
+
+/* ---------- Barre horizontale scrollable + flèches ---------- */
+.tags-scroll-wrapper {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  position: relative;
+}
+
+/* Flèches */
+.tags-scroll-arrow {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 8px 10px;
+  border-radius: 6px;
   cursor: pointer;
-  margin-left: 0.5rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 2px 8px rgba(2,6,23,0.04);
+  transition: transform .12s ease, opacity .12s ease;
 }
 
-.notyf__button--confirm {
-  background: #3e8ed0;
-  color: white;
+.tags-scroll-arrow:disabled { 
+    opacity: 0.35; 
+    cursor: default; 
+    transform: none; 
 }
 
-body {
-  background-color: #f5f5f5;
+/* Zone scrollable */
+.tags-scroll-area {
+  display:flex;
+  gap:8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  padding: 6px 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+  scrollbar-width: none;
 }
 
-.title {
-  color: #363636;
+.tags-scroll-area::-webkit-scrollbar { 
+    display: none; 
 }
 
-.box {
-  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
+/* ---------------- TAGS DANS LES CARTES ---------------- */
+.project-body .tag {
+  border-radius: 6px !important;
+  padding: 4px 10px !important;
+  font-size: 12px !important;
+  font-weight: 600;
 }
 
-.button {
-  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+.project-body .tag.color-informatique,
+.project-body .tag.color-ia,
+.project-body .tag.color-robotique,
+.project-body .tag.color-web,
+.project-body .tag.color-eco,
+.project-body .tag.color-design,
+.project-body .tag.color-data,
+.project-body .tag.color-ml,
+.project-body .tag.color-environnement,
+.project-body .tag.color-electronique,
+.project-body .tag.color-energie {
+  border-radius: 6px !important;
+  color: #fff !important;
+}
+
+/* ---------------- GRILLE DES PROJETS ---------------- */
+:root {
+  --card-max-height: 470px;
+}
+
+.projects-grid {
+  display: grid;
+  gap: var(--gap);
+  margin: 24px auto 12px auto;
+  align-items: start;
+  justify-items: center;
+  width: 100%;
+  max-width: var(--max-width);
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 1fr;
+}
+
+/* Desktop large : 4 colonnes */
+@media (max-width: 1200px) {
+  .projects-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Tablette : 2 colonnes */
+@media (max-width: 900px) {
+  .projects-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Mobile : 1 colonne */
+@media (max-width: 640px) {
+  .projects-grid { grid-template-columns: 1fr; }
+}
+
+/* Carte projet */
+.project-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+  transition: transform .18s ease, box-shadow .18s ease;
+  width: 100%;
+  max-width: 360px;
+  height: 100%;
+}
+
+.project-meta {
+  margin-bottom: 4px !important;
+}
+
+.project-title {
+  margin-top: 8px !important;
+  margin-bottom: 6px !important;
+}
+
+.project-desc {
+  margin-bottom: 8px !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.project-body .content {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.project-footer {
+  margin-top: auto;
+  padding: 10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  padding-top: 6px;
+  padding-bottom: 2px;
+}
+
+.project-footer .btn.button {
+  background: transparent !important;
+  border: 1.5px solid #000 !important;
+  color: #000 !important;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+/* zone media */
+.project-media{
+  width:100%;
+  aspect-ratio: 16 / 9;
+  max-height: 300px;
+  background: linear-gradient(180deg, #ffffff 0%, #f2f6fb 100%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.project-media img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+/* Contenu */
+.project-body{
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  flex:1;
+  overflow: visible;
+}
+
+.project-meta{ 
+    display:flex; 
+    justify-content:space-between; 
+    gap:10px; 
+    align-items:center; 
+    color:var(--muted); 
+    font-size:13px; 
+}
+
+.tag, .project-tag{ 
+    background:var(--accent); 
+    color:var(--epf-dark); 
+    padding:6px 10px; 
+    border-radius:8px; 
+    font-weight:600; 
+    font-size:13px; 
+}
+
+.project-title{
+  margin:0;
+  font-size:18px;
+  color:var(--epf-dark);
+  line-height:1.15;
+}
+
+.project-desc{
+  margin:0;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.35;
+}
+
+.media-indicator{ 
+    color:var(--muted); 
+    font-size:13px; 
+}
+
+/* ---------------- TAG COLORS ---------------- */
+.tag.color-informatique { background: #2b6cff !important; color:#fff !important; border-color: transparent !important;}
+.tag.color-ia           { background: #3817a6 !important; color:#fff !important; border-color: transparent !important;}
+.tag.color-robotique    { background: #0ab39c !important; color:#fff !important; border-color: transparent !important;}
+.tag.color-web          { background: #ff7a59 !important; color:#fff !important; border-color: transparent !important;}
+.tag.color-eco          { background: #47a048 !important; color:#fff !important; border-color: transparent !important;}
+.tag.color-design       { background: #9b6bff !important; color:#fff !important; border-color: transparent !important;}
+.tag.color-data         { background: #f59e0b !important; color:#fff !important; border-color: transparent !important;}
+.tag.color-ml           { background: #d9480f !important; color:#fff !important; border-color: transparent !important;}
+.tag.color-environnement{ background: #16a34a !important; color:#fff !important; border-color: transparent !important;}
+.tag.color-electronique { background: #0ea5a4 !important; color:#fff !important; border-color: transparent !important;}
+.tag.color-energie      { background: #f97316 !important; color:#fff !important; border-color: transparent !important;}
+.tag.color-default      { background: var(--accent) !important; color: var(--epf-dark) !important; }
+
+/* ---------- FOOTER EPF ---------- */
+.epf-footer {
+  background: #f5f5f5;
+  padding: 40px 0;
+  margin-top: 60px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.prefooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.prefooter-left img {
+  height: 90px;
+}
+
+.prefooter-right h4 {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.social-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.social-links li {
+  margin: 0;
+}
+
+.social-links a {
+  white-space: nowrap;
+  font-weight: 500;
+  color: var(--epf-dark);
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.social-links a:hover {
+  color: var(--epf-blue);
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.footer-links a {
+  color: var(--epf-dark);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.footer-links a:hover {
+  color: var(--epf-blue);
+}
+
+.partner-logos {
+  margin-top: 30px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.partner-logos img {
+  height: 50px;
+  object-fit: contain;
+}
+
+/* helper message */
+#noResultsMessage { 
+    font-weight:600; 
+    color:var(--muted); 
+    margin-top:12px; 
+}
+
+/* ---------------- Responsive adjustments ---------------- */
+@media (max-width: 900px) {
+  .logo-epf-top { max-height:42px; }
+  #bandeau { min-height:140px; padding:18px; top: 0%;}
+  .container1 { 
+      max-width:var(--max-width); 
+      margin: 18px auto; 
+      padding: 0 19px; 
+      padding-top: 230px; 
+  }
+  .project-media { height:160px; }
+  .project-body { padding:12px; gap:8px; }
+  .project-meta { font-size:12px; }
+  .project-title { font-size:16px; }
+  .project-desc { font-size:13px; }
+  .project-media { max-height:220px; aspect-ratio: 4/3; }
+}
+
+@media (max-width: 640px) {
+  #bandeau { 
+    top: 0px; 
+  }
+  
+  .bandeau-texte {
+    position: absolute;
+    top: 65%;
+    left: 7%;
+    transform: translateY(-50%);
+    font-size: clamp(1rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: white;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+  }
+  
+  .project-body { padding:10px; gap:6px; }
+  .project-title { font-size:15px; }
+  .project-desc { font-size:13px; }
+  .project-media { max-height:200px; aspect-ratio: 4/3; }
+  .tag, .project-tag { padding:4px 8px; font-size:12px; }
+  .project-card { max-width: none; width: 100%; box-shadow: none; border-radius: 8px; }
+  
+  .tags-scroll-arrow { padding: 6px 8px; }
+  .tag-pill { padding: 6px 8px; font-size: 14px; }
+  
+  .prefooter {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .prefooter-right ul {
+    text-align: center;
+  }
+
+  .partner-logos img {
+    height: 40px;
+  }
 }

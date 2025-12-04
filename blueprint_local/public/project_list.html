@@ -1,105 +1,139 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des Projets - BluePrint</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/styles/styles.css"> <!-- Assumant que le style général est ici -->
-    <style>
-        /* Copier/coller le CSS de page_accueil.html pour la cohérence */
-        :root {
-            --color-black: #c5c5c5;
-            --color-dark-bg: #f0f0f0;
-            --color-text-light: #000000;
-            --color-text-gray: #000000;
-            --color-accent-red: #C00040;
-            --color-accent-purple: #8A3D9E;
-        }
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--color-dark-bg);
-            color: var(--color-text-light);
-            margin: 0;
-            padding: 0;
-        }
-        header, footer {
-            background-color: var(--color-black);
-            padding: 15px 5%;
-        }
-        /* ... (styles de l'en-tête et du pied de page de index.html) ... */
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  
+  <!-- Bulma (UI framework) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 
-        /* Styles pour la grille de projets, inspirés par l'exemple externe */
-        .projects-container {
-            padding: 40px 5%;
-        }
-        .project-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-        }
-        .project-card {
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: transform 0.2s;
-        }
-        .project-card:hover {
-            transform: translateY(-5px);
-        }
-        .project-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .project-card-content {
-            padding: 15px;
-        }
-        .project-card h2 {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-        }
-        .project-card p {
-            font-size: 0.9em;
-            color: #555;
-        }
-    </style>
+  <!-- Font Awesome pour icônes -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Google Fonts : Montserrat -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+
+  <!-- Styles personnalisés -->
+  <link rel="stylesheet" href="/styles/styles.css">
+
+  <title>Liste des projets - BluePrint</title>
 </head>
 <body>
 
-    <!-- En-tête (copié de index.html) -->
-    <header>
-        <div class="header-left">
-            <div class="menu-icon" style="color: var(--color-text-light);">☰</div>
-            <a href="index.html" class="header-title">Accueil</a>
+<!-- Bandeau fixe -->
+<div id="bandeau">
+    <div class="bandeau-texte">BluePrintLab</div>
+    <div class="bandeau-blanc"></div>
+    <a href="/public/page_accueil.html" class="logo-maison">
+        <i class="fas fa-house"></i>
+    </a>
+    <img src="/images/epf-logo-right.png" alt="Logo EPF" class="logo-epf">
+</div>
+ 
+<!-- Navigation filtres -->
+<nav class="category-filters">
+    <a href="/public/page_accueil.html">Portail d'Accueil</a>
+    <a href="/public/project_list.html" class="active">Liste des Projets</a>
+</nav>
+
+  <!-- ================= CONTENU PRINCIPAL ================= -->
+  <main id="Accueil" class="container1 main-content" role="main">
+    <!-- Intro : titre + description avant la barre de recherche -->
+    <section class="intro">
+      <h2 class="page-title">Liste des projets</h2>
+      <p class="page-desc">
+        Découvrez les projets réalisés par les étudiants de l'EPF Montpellier. Cette page centralise les réalisations par thématique et année.
+        <br>Utilisez la recherche et les filtres thématiques pour trouver un projet.
+      </p>
+
+      <!-- Controls (Bulma) : recherche + tags -->
+      <div class="controls">
+        <!-- Champ recherche : limité en largeur -->
+        <div class="field" style="max-width:640px;">
+          <label class="label is-sr-only" for="searchInput">Recherche</label>
+          <div class="control has-icons-left">
+            <input id="searchInput" class="input" type="search" placeholder="Rechercher un projet..." aria-label="Rechercher un projet" />
+            <span class="icon is-left"><i class="fas fa-search"></i></span>
+          </div>
         </div>
-        <div class="header-logo">
-            <img src="/public/images/epf-logo-header.png" alt="EPF Logo Header">
+
+        <!-- Tags (pills) avec scroller -->
+        <div class="tags-scroll-wrapper" aria-label="Filtrer par thématiques">
+          <!-- flèche gauche -->
+          <button id="tagsScrollLeft" class="tags-scroll-arrow" aria-label="Faire défiler les tags vers la gauche" type="button">
+            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+          </button>
+
+          <!-- zone scrollable contenant les tags -->
+          <div id="tagsBar" class="tags-scroll-area" role="list" tabindex="0">
+            <!-- Bouton 'Tous les projets' -->
+            <button class="tag-pill tag is-light active" data-tag="__all__" aria-pressed="true">
+              Tous les projets <span class="tag-remove" style="display:none">×</span>
+            </button>
+            <!-- Les tags seront chargés dynamiquement depuis l'API -->
+          </div>
+
+          <!-- flèche droite -->
+          <button id="tagsScrollRight" class="tags-scroll-arrow" aria-label="Faire défiler les tags vers la droite" type="button">
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+          </button>
         </div>
-    </header>
+      </div>
+    </section>
 
-    <main class="projects-container">
-        <h1>Tous les Projets</h1>
+    <!-- ================= GRILLE DES PROJETS ================= -->
+    <section class="projects-grid" id="projectsContainer" aria-label="Liste des projets">
+      <!-- Les projets seront injectés ici par JavaScript -->
+    </section>
 
-        <!-- Contrôles de tri et de filtre -->
-        <div class="filter-controls" style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
-            <button onclick="loadProjects('date')">Trier par date</button>
-            <button onclick="loadProjects('title')">Trier par titre</button>
-            <input type="text" id="tag-filter-input" placeholder="Filtrer par tag..." style="flex-grow: 1; padding: 5px;">
-            <button onclick="applyTagFilter()">Filtrer</button>
-        </div>
+    <!-- message "aucun résultat" (créé dynamiquement si besoin) -->
+    <div id="noResultsMessage" aria-live="polite"></div>
+  </main>
 
-        <div id="project-grid" class="project-grid">
-            <!-- Les projets seront injectés ici par JavaScript -->
-        </div>
-    </main>
+  <!-- ===========================
+       FOOTER
+       =========================== -->
+  <footer class="footer epf-footer">
+    <div class="prefooter container">
+      <div class="prefooter-left">
+        <img src="/images/epf-100ans-couleur-crop.png" alt="EPF Logo">
+      </div>
 
-    <!-- Pied de page (copié de index.html) -->
-    <footer>
-        <!-- ... (Contenu du pied de page de index.html) ... -->
-    </footer>
+      <div class="prefooter-right">
+        <h4>Suivez-nous</h4>
+        <ul class="social-links">
+          <li><a href="https://www.facebook.com/EPF.engineering.school" target="_blank" rel="noopener">Facebook</a></li>
+          <li><a href="https://www.tiktok.com/@epf_ingenieur" target="_blank" rel="noopener">TikTok</a></li>
+          <li><a href="https://www.instagram.com/epfengineeringschool" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.linkedin.com/school/epf-ecole-d'ingénieur-e-s/" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="https://www.youtube.com/user/epfingenieurs" target="_blank" rel="noopener">YouTube</a></li>
+        </ul>
+      </div>
+    </div>
 
-    <script src="/public/scripts/project-list.js"></script>
+    <div class="footer-bottom container">
+      <p>@ 2025 EPF</p>
+      <ul class="footer-links">
+        <li><a href="/contactez-nous">Contact</a></li>
+        <li><a href="/mentions-legales">Mentions légales</a></li>
+        <li><a href="/donnees-personnelles">Données personnelles</a></li>
+        <li><a href="/presse">Presse</a></li>
+      </ul>
+    </div>
+
+    <div class="partner-logos container">
+      <img src="/images/cge.png" alt="CGE">
+      <img src="/images/cti-logo-cmjn.png" alt="CTI">
+      <img src="/images/eespig.jpeg" alt="EESPIG">
+      <img src="/images/eur-ace-0.png" alt="EUR-ACE">
+      <img src="/images/logo-qualiopi.jpeg" alt="Qualiopi">
+      <img src="/images/concours-avenir-logo.jpeg" alt="Concours Avenir">
+      <img src="/images/label-campusfrance-bienv.jpg" alt="Bienvenue en France">
+    </div>
+  </footer>
+
+  <!-- ================= SCRIPTS ================= -->
+  <script src="/scripts/project-list.js"></script>
+
 </body>
 </html>
